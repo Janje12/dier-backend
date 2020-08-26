@@ -5,7 +5,17 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 mongoose.plugin(require('mongoose-autopopulate'));
 
-mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true, useFindAndModify: false, useUnifiedTopology: true, useCreateIndex: true});
+try {
+  mongoose.connect('mongodb+srv://admin:HUxTfvEVaM6y6uLd@diertest.oan7d.mongodb.net/DierTest?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+  });
+} catch (err) {
+  console.log('Problem with connecting with database!')
+  console.log(err);
+}
 const db = mongoose.connection;
 
 db.on('error', (err) => { console.log(err)});
