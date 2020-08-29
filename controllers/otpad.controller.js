@@ -12,20 +12,9 @@ exports.create = async (req, res) => {
     const newData = req.body.otpad;
     const skladisteID = req.body.skladiste;
     try {
+        let data = await this.createMethod(newData);
         const skladiste = await skladiste_controller.readOneMethod(skladisteID);
-        if (skladiste.neopasniOtpad.some(x => x.indeksniBroj === newData.indeksniBroj)
-            || skladiste.opasniOtpad.some(x => x.indeksniBroj === newData.indeksniBroj)) {
-            let updateData = skladiste.neopasniOtpad.filter(x => x.indeksniBroj === newData.indeksniBroj)[0];
-            index = skladiste.neopasniOtpad.indexOf(updateData);
-            updateData.kolicina = updateData.kolicina + newData.kolicina;
-            console.log(updateData);
-            updateData = await this.updateMethod(updateData._id, updateData);
-            skladiste.neopasniOtpad[index] = updateData;
-            console.log(skladiste.neopasniOtpad[index]);
-        } else {
-            const data = await this.createMethod(newData);
-            skladiste.neopasniOtpad.push(data);
-        }
+        skladiste.neopasniOtpad.push(data);
         await skladiste_controller.updateMethod(skladisteID, skladiste);
         res.status(201).json(data);
     } catch (err) {
@@ -43,6 +32,7 @@ exports.createMethod = async (data) => {
         return err;
     }
 }
+
 exports.readMany = async (req, res) => {
     // WIP
     query = {};

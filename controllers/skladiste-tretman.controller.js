@@ -131,6 +131,7 @@ exports.getSkladistaFirme = async (req, res) => {
         for (let i = 0; i < skladistaTretman.length; i++) {
             skladistaTretman[i] = await this.readOneMethod(skladistaTretman[i]._id);
         }
+        console.log(skladistaTretman[0]);
         res.status(200).json(skladistaTretman);
     } catch (err) {
         console.log(err);

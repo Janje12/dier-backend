@@ -6,7 +6,7 @@ const firmaSchema = Schema({
     mat: {type: String, required: true, unique: true},
     naziv: {type: String, required: true},
     email: {type: String, required: true},
-    faks: {type: String},
+    faks: {type: String, required: false},
     emailPrijem: {type: String, required: true},
     telefon: {type: String, required: true},
     radFirme: [{type: String, required: true}],
