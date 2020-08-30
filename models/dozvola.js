@@ -3,6 +3,7 @@ const Schema = mongoose.Schema
 
 const dozvolaSchema = Schema({
         sifra: {type: String, required: true},
+        naziv: {type: String, required: false},
         datumNastanka: {type: Date, required: true},
         datumTrajanja: {type: Date, required: true},
         vrstaDozvole: {type: String, required: true},
