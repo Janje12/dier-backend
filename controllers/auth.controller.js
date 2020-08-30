@@ -2,6 +2,7 @@ const korisnik_controller = require('../controllers/korisnik.controller');
 const firma_controller = require('../controllers/firma.controller');
 const skladiste_controller = require('../controllers/skladiste.controller');
 const skladisteTretman_controller = require('../controllers/skladiste-tretman.controller');
+const skladisteDeponija_controller = require('../controllers/skladiste-deponija.controller');
 const mesto_controller = require('../controllers/mesto.controller');
 const delatnost_controller = require('../controllers/delatnost.controller');
 const dozvola_controller = require('../controllers/dozvole_controller');
@@ -21,9 +22,7 @@ exports.login = async (req, res) => {
         // nadji Korisnika po emailu
         let korisnik1 = await korisnik_controller.findOneMethod(korisnik.email, 'email');
         // nadji Firmu
-        console.log(korisnik1);
         let firma = await firma_controller.readOneMethod(korisnik1.firma);
-        console.log(firma);
         // Proveri da li je sifra tacna
         bcrypt.compare(korisnik.password, korisnik1.sifra).then((match) => {
             if (match) {
@@ -152,24 +151,45 @@ exports.register = async (req, res) => {
     }
     let dozvole = firma.dozvola;
     let skladistaTretman = [];
+    let skladistaDeponija = [];
+    let skladistaSkladistenje = [];
     if (dozvole !== undefined) {
         dozvole.forEach(x => {
             x._id = mongoose.Types.ObjectId()
-            x.adresa = x.skladistaTretman.adresa;
+            if(x.skladistaTretman !== undefined)
+                x.adresa = x.skladistaTretman.adresa;
+            if(x.skladistaDeponija !== undefined)
+                x.adresa = x.skladistaDeponija.adresa;
+            if(x.skladistaSkladistenje !== undefined)
+                x.adresa = x.skladistaSkladistenje.adresa;
         });
         for (let i = 0; i < dozvole.length; i++) {
             dozvole[i].adresa.mesto = await mesto_controller
                 .findOneMethod(dozvole[i].adresa.mesto.mestoNaziv, 'mestoNaziv');
-            /* dodaj Skladiste po dozvoli ako postoji */
+            /* dodaj Skladiste po dozvoli ako postoje */
             if (dozvole[i].skladistaTretman !== undefined) {
                 const st = dozvole[i].skladistaTretman;
                 st.adresa = dozvole[i].adresa;
                 st._id = mongoose.Types.ObjectId();
                 dozvole[i].skladistaTretman = st;
                 skladistaTretman.push(st);
+            } else if (dozvole[i].skladistaDeponija !== undefined) {
+                const sd = dozvole[i].skladistaDeponija;
+                sd.adresa = dozvole[i].adresa;
+                sd._id = mongoose.Types.ObjectId();
+                dozvole[i].skladistaDeponija = sd;
+                skladistaDeponija.push(sd);
+            } else if (dozvole[i].skladistaSkladistenje !== undefined) {
+                const ss = dozvole[i].skladistaSkladistenje;
+                ss.adresa = dozvole[i].adresa;
+                ss._id = mongoose.Types.ObjectId();
+                dozvole[i].skladistaSkladistenje = ss;
+                skladistaSkladistenje.push(ss);
             }
         }
         firma.skladistaTretman = skladistaTretman;
+        firma.skladistaDeponija = skladistaDeponija;
+        firma.skladistaSkladistenje = skladistaSkladistenje;
     }
 
     // Save the objects in the DB
@@ -201,6 +221,26 @@ exports.register = async (req, res) => {
         try {
             for (let i = 0; i < skladistaTretman.length; i++) {
                 skladistaTretman[i] = await skladisteTretman_controller.createMethod(skladistaTretman[i]);
+            }
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+        }
+    }
+    if (skladistaDeponija !== undefined) {
+        try {
+            for (let i = 0; i < skladistaDeponija.length; i++) {
+                skladistaDeponija[i] = await skladisteDeponija_controller.createMethod(skladistaDeponija[i]);
+            }
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+        }
+    }
+    if (skladistaSkladistenje !== undefined) {
+        try {
+            for (let i = 0; i < skladistaSkladistenje.length; i++) {
+                skladistaSkladistenje[i] = await skladiste_controller.createMethod(skladistaSkladistenje[i]);
             }
         } catch (err) {
             console.log(err);

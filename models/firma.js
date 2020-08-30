@@ -21,6 +21,8 @@ const firmaSchema = Schema({
     menadzer: {type: String},
     skladista: [{type: Schema.Types.ObjectId, ref: 'Skladiste'}],
     skladistaTretman: [{type: Schema.Types.ObjectId, ref: 'SkladisteTretman'}],
+    skladistaDeponija: [{type: Schema.Types.ObjectId, ref: 'SkladisteDeponija'}],
+    skladistaSkladistenje: [{type: Schema.Types.ObjectId, ref: 'Skladiste'}],
 });
 
 module.exports = mongoose.model('Firma', firmaSchema);

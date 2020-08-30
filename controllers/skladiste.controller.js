@@ -128,7 +128,29 @@ exports.getSkladistaFirme = async (req, res) => {
     try {
         const firma = await Firma.findById(firmaID).populate('skladista');
         const skladista = firma.skladista;
+        for (let i = 0; i < skladista.length; i++) {
+            skladista[i] = await this.readOneMethod(skladista[i]._id);
+        }
         res.status(200).json(skladista);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+}
+
+exports.getSkladistaSkladistenjeFirme = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(404);
+        return;
+    }
+    const firmaID = req.params.id;
+    try {
+        const firma = await Firma.findById(firmaID).populate('skladistaSkladistenje');
+        const skladistaSkladistenje = firma.skladistaSkladistenje;
+        for (let i = 0; i < skladistaSkladistenje.length; i++) {
+            skladistaSkladistenje[i] = await this.readOneMethod(skladistaSkladistenje[i]._id);
+        }
+        res.status(200).json(skladistaSkladistenje);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);

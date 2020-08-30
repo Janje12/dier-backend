@@ -20,10 +20,18 @@ const skladisteTretmanSchema = Schema({
     geolokacijaE: {required: true, type: Number},
 });
 
+const skladisteDeponijaSchema = Schema({
+    geolokacijaN: {required: true, type: Number},
+    geolokacijaE: {required: true, type: Number},
+    vrstaDeponije: {type: String, required: true},
+})
+
 const Skladiste = mongoose.model('Skladiste', skladisteSchema);
 const SkladisteTretman = Skladiste.discriminator('SkladisteTretman', skladisteTretmanSchema);
+const SkladisteDeponija = Skladiste.discriminator('SkladisteDeponija', skladisteDeponijaSchema);
 
 module.exports = {
     Skladiste: Skladiste,
     SkladisteTretman: SkladisteTretman,
+    SkladisteDeponija: SkladisteDeponija,
 };

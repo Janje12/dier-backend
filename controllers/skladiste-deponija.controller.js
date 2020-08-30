@@ -1,3 +1,4 @@
+const SkladisteDeponijaController = require('../models/skladiste').SkladisteDeponija;
 const Firma = require('../models/firma');
 
 exports.create = async (req, res) => {
@@ -16,7 +17,7 @@ exports.create = async (req, res) => {
 
 exports.createMethod = async (data) => {
     try {
-        const savedData = await Firma.create(data);
+        const savedData = await SkladisteDeponijaController.create(data);
         return savedData;
     } catch (err) {
         console.log(err);
@@ -37,7 +38,7 @@ exports.readMany = async (req, res) => {
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await Firma.find(query);
+        const foundData = await SkladisteDeponijaController.find(query);
         return foundData;
     } catch (err) {
         console.log(err);
@@ -59,24 +60,9 @@ exports.readOne = async (req, res) => {
     }
 }
 
-/*
-    Find a more elegant way of chosing which things to populate and which not to.
- */
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await Firma.findById(_id).populate('dozvola').populate('adresa.mesto').populate('delatnost');
-        return foundData;
-    } catch (err) {
-        console.log(err);
-        return err;
-    }
-}
-
-exports.findOneMethod = async (value, type) => {
-    let query = {};
-    query[type] = value;
-    try {
-        const foundData = await Firma.findOne(query);
+        const foundData = await SkladisteDeponijaController.findById(_id).populate('neopasniOtpad').populate('opasniOtpad');
         return foundData;
     } catch (err) {
         console.log(err);
@@ -101,7 +87,7 @@ exports.update = async (req, res) => {
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
-        const updatedData = await Firma.findByIdAndUpdate(_id, updatingData);
+        const updatedData = await SkladisteDeponijaController.findByIdAndUpdate(_id, updatingData);
         return updatedData;
     } catch (err) {
         console.log(err);
@@ -125,10 +111,30 @@ exports.delete = async (req, res) => {
 
 exports.deleteMethod = async (_id) => {
     try {
-        const deletedData = await Firma.findByIdAndDelete(_id);
+        const deletedData = await SkladisteDeponijaController.findByIdAndDelete(_id);
         return deletedData;
     } catch (err) {
         console.log(err);
         return err;
     }
+}
+
+exports.getSkladistaFirme = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(404);
+        return;
+    }
+    const firmaID = req.params.id;
+    try {
+        const firma = await Firma.findById(firmaID).populate('skladistaDeponija');
+        const skladistaDeponija = firma.skladistaDeponija;
+        for (let i = 0; i < skladistaDeponija.length; i++) {
+            skladistaDeponija[i] = await this.readOneMethod(skladistaDeponija[i]._id);
+        }
+        res.status(200).json(skladistaDeponija);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+
 }

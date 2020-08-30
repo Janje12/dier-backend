@@ -42,6 +42,7 @@ const katalogRouter = require('./routes/katalogRouter');
 const delatnostRouter = require('./routes/delatnostRouter');
 const skladisteRouter = require('./routes/skladisteRouter');
 const skladisteTretmanRouter = require('./routes/skladisteTretmanRouter');
+const skladisteDeponijaRouter = require('./routes/skladisteDeponijaRouter');
 const authRouter = require('./routes/authRouter');
 const app = express();
 
@@ -68,6 +69,7 @@ app.use('/api/opasniotpad', opasniOtpadRouter);
 app.use('/api/dozvola', dozvolaRouter);
 app.use('/api/skladiste', skladisteRouter);
 app.use('/api/skladistetretman', skladisteTretmanRouter);
+app.use('/api/skladistedeponija', skladisteDeponijaRouter);
 app.use('/api/delatnost', delatnostRouter);
 app.use('/api/katalog', katalogRouter);
 
