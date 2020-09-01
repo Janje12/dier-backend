@@ -156,40 +156,42 @@ exports.register = async (req, res) => {
     if (dozvole !== undefined) {
         dozvole.forEach(x => {
             x._id = mongoose.Types.ObjectId()
-            if(x.skladistaTretman !== undefined)
+            if (x.skladistaTretman !== undefined)
                 x.adresa = x.skladistaTretman.adresa;
-            if(x.skladistaDeponija !== undefined)
+            if (x.skladistaDeponija !== undefined)
                 x.adresa = x.skladistaDeponija.adresa;
-            if(x.skladistaSkladistenje !== undefined)
+            if (x.skladistaSkladistenje !== undefined)
                 x.adresa = x.skladistaSkladistenje.adresa;
         });
-        for (let i = 0; i < dozvole.length; i++) {
-            dozvole[i].adresa.mesto = await mesto_controller
-                .findOneMethod(dozvole[i].adresa.mesto.mestoNaziv, 'mestoNaziv');
-            /* dodaj Skladiste po dozvoli ako postoje */
-            if (dozvole[i].skladistaTretman !== undefined) {
-                const st = dozvole[i].skladistaTretman;
-                st.adresa = dozvole[i].adresa;
-                st._id = mongoose.Types.ObjectId();
-                dozvole[i].skladistaTretman = st;
-                skladistaTretman.push(st);
-            } else if (dozvole[i].skladistaDeponija !== undefined) {
-                const sd = dozvole[i].skladistaDeponija;
-                sd.adresa = dozvole[i].adresa;
-                sd._id = mongoose.Types.ObjectId();
-                dozvole[i].skladistaDeponija = sd;
-                skladistaDeponija.push(sd);
-            } else if (dozvole[i].skladistaSkladistenje !== undefined) {
-                const ss = dozvole[i].skladistaSkladistenje;
-                ss.adresa = dozvole[i].adresa;
-                ss._id = mongoose.Types.ObjectId();
-                dozvole[i].skladistaSkladistenje = ss;
-                skladistaSkladistenje.push(ss);
+        if (dozvole[0].adresa !== undefined) {
+            for (let i = 0; i < dozvole.length; i++) {
+                dozvole[i].adresa.mesto = await mesto_controller
+                    .findOneMethod(dozvole[i].adresa.mesto.mestoNaziv, 'mestoNaziv');
+                /* dodaj Skladiste po dozvoli ako postoje */
+                if (dozvole[i].skladistaTretman !== undefined) {
+                    const st = dozvole[i].skladistaTretman;
+                    st.adresa = dozvole[i].adresa;
+                    st._id = mongoose.Types.ObjectId();
+                    dozvole[i].skladistaTretman = st;
+                    skladistaTretman.push(st);
+                } else if (dozvole[i].skladistaDeponija !== undefined) {
+                    const sd = dozvole[i].skladistaDeponija;
+                    sd.adresa = dozvole[i].adresa;
+                    sd._id = mongoose.Types.ObjectId();
+                    dozvole[i].skladistaDeponija = sd;
+                    skladistaDeponija.push(sd);
+                } else if (dozvole[i].skladistaSkladistenje !== undefined) {
+                    const ss = dozvole[i].skladistaSkladistenje;
+                    ss.adresa = dozvole[i].adresa;
+                    ss._id = mongoose.Types.ObjectId();
+                    dozvole[i].skladistaSkladistenje = ss;
+                    skladistaSkladistenje.push(ss);
+                }
             }
+            firma.skladistaTretman = skladistaTretman;
+            firma.skladistaDeponija = skladistaDeponija;
+            firma.skladistaSkladistenje = skladistaSkladistenje;
         }
-        firma.skladistaTretman = skladistaTretman;
-        firma.skladistaDeponija = skladistaDeponija;
-        firma.skladistaSkladistenje = skladistaSkladistenje;
     }
 
     // Save the objects in the DB
