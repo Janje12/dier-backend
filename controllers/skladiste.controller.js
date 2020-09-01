@@ -62,7 +62,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await Skladiste.findById(_id).populate('neopasniOtpad').populate('opasniOtpad');
+        const foundData = await Skladiste.findById(_id).populate('neopasniOtpad').populate('opasniOtpad').populate('adresa.mesto');;
         return foundData;
     } catch (err) {
         console.log(err);
@@ -116,6 +116,34 @@ exports.deleteMethod = async (_id) => {
     } catch (err) {
         console.log(err);
         return err;
+    }
+}
+
+exports.getAllSkladistaFirme = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(404);
+        return;
+    }
+    const firmaID = req.params.id;
+    try {
+        const firma = await Firma.findById(firmaID).populate('skladista').populate('skladistaTretman').populate('skladistaDeponija')
+            .populate('skladistaSkladistenje')
+        let skladista = [];
+        if (firma.skladista.length > 0)
+            skladista = skladista.concat(firma.skladista);
+        if (firma.skladistaSkladistenje.length > 0)
+            skladista = skladista.concat(firma.skladistaSkladistenje);
+        if (firma.skladistaDeponija.length > 0)
+            skladista = skladista.concat(firma.skladistaDeponija);
+        if (firma.skladistaTretman.length > 0)
+            skladista = skladista.concat(firma.skladistaTretman);
+        for (let i = 0; i < skladista.length; i++) {
+            skladista[i] = await this.readOneMethod(skladista[i]._id);
+        }
+        res.status(200).json(skladista);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
     }
 }
 

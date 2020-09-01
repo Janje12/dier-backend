@@ -1,7 +1,5 @@
 require('dotenv').config();
 const Korisnik = require('../models/korisnik');
-const firma_controller = require('../controllers/firma.controller');
-const dozvola_controller = require('../controllers/dozvole_controller');
 const bcrypt = require('bcrypt');
 
 exports.create = async (req, res) => {
@@ -147,29 +145,14 @@ exports.getProfileKorisnik = async (req, res) => {
     const korisnickoIme = req.params.id;
     try {
         const korisnik = await this.findOneMethod(korisnickoIme, 'korisnickoIme');
-        const firma = await firma_controller.readOneMethod(korisnik.firma);
         res.status(200).json({
+            _id: korisnik._id,
             korisnickoIme: korisnik.korisnickoIme,
             ime: korisnik.ime,
             prezime: korisnik.prezime,
             email: korisnik.email,
             telefon: korisnik.telefon,
             uloga: korisnik.uloga,
-            firma: {
-                naziv: firma.naziv,
-                pib: firma.pib,
-                mat: firma.mat,
-                email: firma.email,
-                faks: firma.faks,
-                emailPrijem: firma.emailPrijem,
-                telefon: firma.telefon,
-                zakonskiZastupnik: firma.zakonskiZastupnik,
-                radFirme: firma.radFirme,
-                dozvola: firma.dozvola,
-                adresa: firma.adresa,
-                delatnost: firma.delatnost,
-                menadzer: firma.menadzer,
-            },
         });
     } catch (err) {
         console.log(err);

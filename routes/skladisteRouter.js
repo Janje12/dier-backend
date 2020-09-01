@@ -21,6 +21,8 @@ router.delete('/:id', skladiste_controller.delete);
 // GET Skladista
 router.get('/firma/:id', skladiste_controller.getSkladistaFirme);
 
+router.get('/firma/skladisteAll/:id', skladiste_controller.getAllSkladistaFirme);
+
 router.get('/firma/skladiste/:id', skladiste_controller.getSkladistaSkladistenjeFirme);
 
 module.exports = router;

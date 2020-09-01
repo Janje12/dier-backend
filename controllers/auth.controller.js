@@ -12,7 +12,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 exports.login = async (req, res) => {
-    if (!req.body) {
+    if (!req.body.password || !req.body.email) {
         res.sendStatus(400);
         return;
     }
