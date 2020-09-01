@@ -1,4 +1,5 @@
 const PrevoznoSredstvo = require('../models/prevoznoSredstvo');
+const Firma = require('../models/firma');
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -115,5 +116,21 @@ exports.deleteMethod = async (_id) => {
     } catch (err) {
         console.log(err);
         return err;
+    }
+}
+
+exports.getPrevoznoSredstvoFirme = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(404);
+        return;
+    }
+    const firmaID = req.params.id;
+    try {
+        const firma = await Firma.findById(firmaID).populate('prevoznoSredstvo');
+        let prevoznoSredstvo = firma.prevoznoSredstvo;
+        res.status(200).json(prevoznoSredstvo);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
     }
 }

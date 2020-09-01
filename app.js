@@ -35,6 +35,7 @@ try {
 const indexRouter = require('./routes/index');
 const korisnikRouter = require('./routes/korisnikRouter');
 const firmaRouter = require('./routes/firmaRouter');
+const prevoznoSredstvoRouter = require('./routes/prevoznoSredstvoRouter');
 const mestoRouter = require('./routes/mestoRouter');
 const dozvolaRouter = require('./routes/dozvolaRouter');
 const otpadRouter = require('./routes/otpadRouter');
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/korisnik', korisnikRouter);
+app.use('/api/prevoznosredstvo', prevoznoSredstvoRouter);
 app.use('/api/firma', firmaRouter);
 app.use('/api/mesto', mestoRouter);
 app.use('/api/otpad', otpadRouter);
