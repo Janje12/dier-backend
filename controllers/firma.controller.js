@@ -72,11 +72,28 @@ exports.readOneMethod = async (_id) => {
     }
 }
 
+exports.findOne = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(400);
+        return;
+    }
+    const type = req.params.type;
+    const value = req.params.value;
+    try {
+        const data = await this.findOneMethod(value, type);
+        res.status(200).json(data);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}
+
+
 exports.findOneMethod = async (value, type) => {
     let query = {};
     query[type] = value;
+    console.log(query);
     try {
-        const foundData = await Firma.findOne(query);
+        const foundData = await Firma.findOne(query).populate('adresa.mesto').populate('delatnost');
         return foundData;
     } catch (err) {
         console.log(err);

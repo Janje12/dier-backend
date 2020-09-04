@@ -9,7 +9,7 @@ const korisnikSchema = Schema({
     sifra: {type: String, required: true},
     telefon: {type: String, required: true},
     uloga: {type: String, required: true},
-    firma: {type: Schema.Types.ObjectId, required: false},
+    firma: {type: Schema.Types.ObjectId, ref: 'Firma', required: false},
     token: {type: String, required: false},
 });
 

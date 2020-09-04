@@ -8,6 +8,9 @@ router.get('/', korisnik_controller.readMany);
 // GET Korisnik
 router.get('/:id', korisnik_controller.readOne);
 
+// GET (FIND) ONE Korisnik
+router.get('/admin/:type/:value', korisnik_controller.findOne);
+
 // PATCH Korisnik
 router.patch('/:id', korisnik_controller.update);
 

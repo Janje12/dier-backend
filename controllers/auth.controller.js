@@ -16,33 +16,39 @@ exports.login = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    korisnik = req.body;
-    console.log(req.body);
+    const user = req.body;
     try {
-        // nadji Korisnika po emailu
-        let korisnik1 = await korisnik_controller.findOneMethod(korisnik.email, 'email');
-        // nadji Firmu
-        let firma = await firma_controller.readOneMethod(korisnik1.firma);
-        // Proveri da li je sifra tacna
-        bcrypt.compare(korisnik.password, korisnik1.sifra).then((match) => {
-            if (match) {
-                // Genersisi tokene
-                refreshToken = generateRefreshToken(korisnik1, firma);
-                korisnik1.token = refreshToken;
-                accessToken = generateAccessToken(korisnik1, firma);
-                // Sacuvaj u DB
-                korisnik_controller.updateMethod(korisnik1._id, korisnik1);
-                res.status(200).json({
-                    token: accessToken,
-                    korisnik: korisnik1,
-                });
-            } else {
-                res.sendStatus(403);
+        const foundUser = await korisnik_controller.findOneMethod(user.email, 'email');
+        if (!foundUser) {
+            res.sendStatus(403);
+            return;
+        }
+        const company = await firma_controller.readOneMethod(foundUser.firma);
+        if (!company) {
+            res.sendStatus(403);
+            return;
+        }
+        bcrypt.compare(user.password, foundUser.sifra, (err, rez) => {
+            if (err) {
+                console.log(err)
+                res.sendStatus(500);
+                return;
             }
+            if (!rez) {
+                res.sendStatus(403);
+                return;
+            }
+            const refreshToken = generateRefreshToken(foundUser, company);
+            const accessToken = generateAccessToken(foundUser, company);
+
+            foundUser.token = refreshToken;
+            korisnik_controller.updateMethod(foundUser._id, foundUser);
+
+            res.status(200).json({token: accessToken, korisnik: foundUser});
         });
     } catch (err) {
         console.log(err);
-        res.sendStatus(401);
+        res.sendStatus(500);
     }
 }
 
@@ -52,74 +58,76 @@ exports.refresh = async (req, res) => {
         return;
     }
     let accessToken = req.body.token;
-    // pull out the data out of a object
     const data = jwt.decode(accessToken).data;
-    let refreshToken = data.korisnik.token;
+    const refreshToken = data.korisnik.token;
     try {
-        const korisnik = await korisnik_controller.findOneMethod(refreshToken, 'token');
-        if (korisnik == null) {
+        const user = await korisnik_controller.findOneMethod(refreshToken, 'token');
+        if (!user) {
             res.sendStatus(403);
             return;
         }
-        const firma = await firma_controller.readOneMethod(korisnik.firma);
-        accessToken = generateAccessToken(korisnik, firma);
-        res.status(200).json({token: accessToken, korisnik: korisnik});
+        const company = await firma_controller.readOneMethod(user.firma);
+        if (!company) {
+            res.sendStatus(403);
+            return;
+        }
+        accessToken = generateAccessToken(user, company);
+
+        res.status(200).json({token: accessToken, korisnik: user});
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
 }
 
-function generateAccessToken(korisnik, firma) {
+function generateAccessToken(user, company) {
     let expirePeriod = '20m';
-    if (korisnik.rememberMe) {
+    if (user.rememberMe)
         expirePeriod = '730h'
-    }
-    return jwt.sign({
+    const accessToken = jwt.sign({
         data: {
             korisnik: {
-                korisnickoIme: korisnik.korisnickoIme,
-                ime: korisnik.ime,
-                prezime: korisnik.prezime,
-                token: korisnik.token,
+                korisnickoIme: user.korisnickoIme,
+                ime: user.ime,
+                prezime: user.prezime,
+                uloga: user.uloga,
+                token: user.token,
             },
-            skladista: firma.skladista,
             firma: {
-                radFirme: firma.radFirme,
-                _id: firma._id
+                _id: company._id,
+                radFirme: company.radFirme,
             },
         }
     }, process.env.ACCESS_TOKEN, {expiresIn: expirePeriod});
+    return accessToken;
 }
 
-function generateRefreshToken(korisnik, firma) {
-    return jwt.sign({
+function generateRefreshToken(user) {
+    const refreshToken = jwt.sign({
         data: {
             korisnik: {
-                korisnickoIme: korisnik.korisnickoIme, ime: korisnik.ime, prezime: korisnik.prezime
-            },
-            firma: {
-                radFirme: firma.radFirme,
-                _id: firma._id
+                korisnickoIme: user.korisnickoIme, ime: user.ime, prezime: user.prezime,
             },
         }
     }, process.env.REFERSH_TOKEN);
+    return refreshToken;
 }
 
 exports.logout = async (req, res) => {
-    token = req.headers['authorization'].split(' ')[1];
+    const token = req.headers['authorization'].split(' ')[1];
     if (token == null) {
         res.sendStatus(401);
         return;
     }
-    data = jwt.decode(token).data;
-    korisnik = await korisnik_controller.findOneMethod(data.korisnik.korisnickoIme, 'korisnickoIme');
-    korisnik.token = '';
-    korisnik = await korisnik_controller.updateMethod(korisnik._id, korisnik);
-    if (korisnik instanceof Error) {
+    try {
+        const data = jwt.decode(token).data;
+        const user = await korisnik_controller.findOneMethod(data.korisnik.korisnickoIme, 'korisnickoIme');
+        user.token = '';
+        await korisnik_controller.updateMethod(user._id, user);
+        res.status(200).json(user);
+    } catch (err) {
+        console.log(err);
         res.sendStatus(500);
-    } else {
-        res.status(200).json(korisnik);
     }
 }
 
@@ -128,142 +136,150 @@ exports.register = async (req, res) => {
         res.status(400).json({message: 'Korisnik ne postoji!'});
         return;
     }
-    // Initalize the IDs
-    let korisnik = req.body;
-    korisnik._id = mongoose.Types.ObjectId();
-    let firma = req.body.firma;
-    firma._id = mongoose.Types.ObjectId();
-    let prevozna_sredstva = firma.prevoznoSredstvo;
-    if (prevozna_sredstva !== undefined) {
-        prevozna_sredstva.forEach(x => x._id = mongoose.Types.ObjectId());
+    // Initalize the values to save
+    let user = req.body;
+    let company = req.body.firma;
+    let transport = company.prevoznoSredstvo;
+    let permit = company.dozvola;
+    let storage = company.skladista;
+    let storageTreatment = company.skladistaTretman;
+    let storageDump = company.skladistaDeponija;
+    let storageCache = company.skladistaSkladistenje;
+
+    // init the IDs
+    user._id = mongoose.Types.ObjectId();
+    company._id = mongoose.Types.ObjectId();
+    if (transport !== undefined)
+        transport.forEach(t => t._id = mongoose.Types.ObjectId());
+    if (permit !== undefined)
+        permit.forEach(p => p._id = mongoose.Types.ObjectId());
+    if (storage !== undefined)
+        storage.forEach(s => s._id = mongoose.Types.ObjectId());
+    if (storageTreatment !== undefined)
+        storageTreatment.forEach(st => st._id = mongoose.Types.ObjectId());
+    if (storageDump !== undefined)
+        storageDump.forEach(sd => sd._id = mongoose.Types.ObjectId());
+    if (storageCache !== undefined)
+        storageCache.forEach(sc => sc._id = mongoose.Types.ObjectId());
+
+    // Populate the addresses
+    company.adresa.mesto = await mesto_controller.findOneMethod(company.adresa.mesto.mestoNaziv, 'mestoNaziv');
+    if (storage !== undefined) {
+        for (let s of storage) {
+            s.adresa.mesto = await mesto_controller
+                .findOneMethod(s.adresa.mesto.mestoNaziv, 'mestoNaziv');
+        }
     }
 
-    // Populate the missing values
-    firma.adresa.mesto = await mesto_controller.findOneMethod(firma.adresa.mesto.mestoNaziv, 'mestoNaziv');
-    firma.delatnost = await delatnost_controller.findOneMethod(firma.delatnost.naziv, 'naziv');
-    let skladista = firma.skladista;
-    if (skladista !== undefined) {
-        skladista.forEach(x => x._id = mongoose.Types.ObjectId());
-        for (let i = 0; i < skladista.length; i++) {
-            skladista[i].adresa.mesto = await mesto_controller
-                .findOneMethod(skladista[i].adresa.mesto.mestoNaziv, 'mestoNaziv')
-        }
+    if (storageTreatment !== undefined) {
+        for (let st of storageTreatment)
+            st.adresa.mesto = await mesto_controller
+                .findOneMethod(st.adresa.mesto.mestoNaziv, 'mestoNaziv');
     }
-    let dozvole = firma.dozvola;
-    let skladistaTretman = [];
-    let skladistaDeponija = [];
-    let skladistaSkladistenje = [];
-    if (dozvole !== undefined) {
-        dozvole.forEach(x => {
-            x._id = mongoose.Types.ObjectId()
-            if (x.skladistaTretman !== undefined)
-                x.adresa = x.skladistaTretman.adresa;
-            if (x.skladistaDeponija !== undefined)
-                x.adresa = x.skladistaDeponija.adresa;
-            if (x.skladistaSkladistenje !== undefined)
-                x.adresa = x.skladistaSkladistenje.adresa;
-        });
-        if (dozvole[0].adresa !== undefined) {
-            for (let i = 0; i < dozvole.length; i++) {
-                dozvole[i].adresa.mesto = await mesto_controller
-                    .findOneMethod(dozvole[i].adresa.mesto.mestoNaziv, 'mestoNaziv');
-                /* dodaj Skladiste po dozvoli ako postoje */
-                if (dozvole[i].skladistaTretman !== undefined) {
-                    const st = dozvole[i].skladistaTretman;
-                    st.adresa = dozvole[i].adresa;
-                    st._id = mongoose.Types.ObjectId();
-                    dozvole[i].skladistaTretman = st;
-                    skladistaTretman.push(st);
-                } else if (dozvole[i].skladistaDeponija !== undefined) {
-                    const sd = dozvole[i].skladistaDeponija;
-                    sd.adresa = dozvole[i].adresa;
-                    sd._id = mongoose.Types.ObjectId();
-                    dozvole[i].skladistaDeponija = sd;
-                    skladistaDeponija.push(sd);
-                } else if (dozvole[i].skladistaSkladistenje !== undefined) {
-                    const ss = dozvole[i].skladistaSkladistenje;
-                    ss.adresa = dozvole[i].adresa;
-                    ss._id = mongoose.Types.ObjectId();
-                    dozvole[i].skladistaSkladistenje = ss;
-                    skladistaSkladistenje.push(ss);
+    if (storageDump !== undefined) {
+        for (let sd of storageDump)
+            sd.adresa.mesto = await mesto_controller
+                .findOneMethod(sd.adresa.mesto.mestoNaziv, 'mestoNaziv');
+    }
+    if (storageCache !== undefined) {
+        for (let sc of storageCache)
+            sc.adresa.mesto = await mesto_controller
+                .findOneMethod(sc.adresa.mesto.mestoNaziv, 'mestoNaziv');
+    }
+
+    // Populate the addresses for permits and its facilities and link the IDs
+    if (permit !== undefined) {
+        let countST = 0;
+        let countSD = 0;
+        let countSC = 0;
+        for (let p of permit) {
+            if (p.adresa !== undefined) {
+                p.adresa.mesto = await mesto_controller
+                    .findOneMethod(p.adresa.mesto.mestoNaziv, 'mestoNaziv');
+                /* HAS TO BE TESTED THOROUGHLY!! AND MOVE THE STORAGE ADDRESS LOOKUP HERE */
+                if (p.skladistaTretman !== undefined) {
+                    p.skladistaTretman._id = storageTreatment[countST]._id;
+                    countST++;
+                }
+                if (p.skladistaDeponija !== undefined) {
+                    p.skladistaDeponija._id = storageDump[countSD]._id;
+                    countSD++;
+                }
+                if (p.skladistaSkladistenje !== undefined) {
+                    p.skladistaSkladistenje._id = storageCache[countSC]._id;
+                    countSC++;
                 }
             }
-            firma.skladistaTretman = skladistaTretman;
-            firma.skladistaDeponija = skladistaDeponija;
-            firma.skladistaSkladistenje = skladistaSkladistenje;
         }
     }
+
+    // Initialize the companies activity
+    company.delatnost = await delatnost_controller.findOneMethod(company.delatnost.naziv, 'naziv');
 
     // Save the objects in the DB
     try {
-        korisnik = await korisnik_controller.createMethod(korisnik);
+        user = await korisnik_controller.createMethod(user);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
     try {
-        firma = await firma_controller.createMethod(firma);
+        company = await firma_controller.createMethod(company);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
 
     // Check which of the entities you CAN save in DB
-    if (skladista !== undefined) {
+    if (storage !== undefined) {
         try {
-            for (let i = 0; i < skladista.length; i++) {
-                skladista[i] = await skladiste_controller.createMethod(skladista[i]);
-            }
+            for (const s of storage)
+                await skladiste_controller.createMethod(s);
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
         }
     }
-    if (skladistaTretman !== undefined) {
+    if (storageTreatment !== undefined) {
         try {
-            for (let i = 0; i < skladistaTretman.length; i++) {
-                skladistaTretman[i] = await skladisteTretman_controller.createMethod(skladistaTretman[i]);
-            }
+            for (const st of storageTreatment)
+                await skladisteTretman_controller.createMethod(st);
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
         }
     }
-    if (skladistaDeponija !== undefined) {
+    if (storageDump !== undefined) {
         try {
-            for (let i = 0; i < skladistaDeponija.length; i++) {
-                skladistaDeponija[i] = await skladisteDeponija_controller.createMethod(skladistaDeponija[i]);
-            }
+            for (const sd of storageDump)
+                await skladisteDeponija_controller.createMethod(sd);
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
         }
     }
-    if (skladistaSkladistenje !== undefined) {
+    if (storageCache !== undefined) {
         try {
-            for (let i = 0; i < skladistaSkladistenje.length; i++) {
-                skladistaSkladistenje[i] = await skladiste_controller.createMethod(skladistaSkladistenje[i]);
-            }
+            for (const sc of storageCache)
+                await skladiste_controller.createMethod(sc);
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
         }
     }
-    if (dozvole !== undefined) {
+    if (permit !== undefined) {
         try {
-            for (let i = 0; i < dozvole.length; i++) {
-                dozvole[i] = await dozvola_controller.createMethod(dozvole[i]);
-            }
+            for (const p of permit)
+                await dozvola_controller.createMethod(p);
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
         }
     }
-    if (prevozna_sredstva !== undefined) {
+    if (transport !== undefined) {
         try {
-            for (let i = 0; i < prevozna_sredstva.length; i++) {
-                prevozna_sredstva[i] = await prevoznoSredstvo_controller.createMethod(prevozna_sredstva[i]);
-            }
+            for (const t of transport)
+                await prevoznoSredstvo_controller.createMethod(t);
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
@@ -272,11 +288,11 @@ exports.register = async (req, res) => {
 
     // Login the user
     try {
-        const refreshToken = generateRefreshToken(korisnik, firma);
-        korisnik.token = refreshToken;
-        const accessToken = generateAccessToken(korisnik, firma);
-        await korisnik_controller.updateMethod(korisnik._id, korisnik);
-        res.status(200).json({token: accessToken, korisnik: korisnik});
+        const refreshToken = generateRefreshToken(user, company);
+        const accessToken = generateAccessToken(user, company);
+        user.token = refreshToken;
+        await korisnik_controller.updateMethod(user._id, user);
+        res.status(200).json({token: accessToken, korisnik: user});
     } catch (err) {
         console.log(err);
         res.sendStatus(500);

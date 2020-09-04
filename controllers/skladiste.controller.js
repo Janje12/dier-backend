@@ -51,9 +51,9 @@ exports.readOne = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.readOneMethod(_id);
+        const data = await this.readOneMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
@@ -63,6 +63,34 @@ exports.readOne = async (req, res) => {
 exports.readOneMethod = async (_id) => {
     try {
         const foundData = await Skladiste.findById(_id).populate('neopasniOtpad').populate('opasniOtpad').populate('adresa.mesto');;
+        return foundData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+}
+
+exports.findOne = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(400);
+        return;
+    }
+    const type = req.params.type;
+    const value = req.params.value;
+    try {
+        const data = await this.findOneMethod(value, type);
+        res.status(200).json(data);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}
+
+
+exports.findOneMethod = async (value, type) => {
+    let query = {};
+    query[type] = value;
+    try {
+        const foundData = await Skladiste.findOne(query).populate('adresa.mesto');
         return foundData;
     } catch (err) {
         console.log(err);

@@ -16,13 +16,13 @@ const skladisteSchema = Schema({
     ambalaze: [{type: Schema.Types.ObjectId, ref: 'Ambalaza', required: false}],
 });
 const skladisteTretmanSchema = Schema({
-    geolokacijaN: {required: true, type: Number},
-    geolokacijaE: {required: true, type: Number},
+    geolokacijaN: {required: true, type: String},
+    geolokacijaE: {required: true, type: String},
 });
 
 const skladisteDeponijaSchema = Schema({
-    geolokacijaN: {required: true, type: Number},
-    geolokacijaE: {required: true, type: Number},
+    geolokacijaN: {required: true, type: String},
+    geolokacijaE: {required: true, type: String},
     vrstaDeponije: {type: String, required: true},
 })
 

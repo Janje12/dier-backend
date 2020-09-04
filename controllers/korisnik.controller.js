@@ -32,8 +32,9 @@ exports.createMethod = async (data) => {
 }
 
 exports.readMany = async (req, res) => {
-    // WIP
-    query = {};
+    let query = {};
+    if (req.body.query)
+        query = req.body.query;
     try {
         const data = await this.readManyMethod(query);
         res.status(200).json(data);
@@ -44,7 +45,7 @@ exports.readMany = async (req, res) => {
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await Korisnik.find(query);
+        const foundData = await Korisnik.find(query).populate('firma');
         return foundData;
     } catch (err) {
         console.log(err);
@@ -57,9 +58,9 @@ exports.readOne = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.readOneMethod(_id);
+        const data = await this.readOneMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
@@ -76,11 +77,28 @@ exports.readOneMethod = async (_id) => {
     }
 }
 
+exports.findOne = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(400);
+        return;
+    }
+    const type = req.params.type;
+    const value = req.params.value;
+    try {
+        const data = await this.findOneMethod(value, type);
+        console.log(data);
+        res.status(200).json(data);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}
+
 exports.findOneMethod = async (value, type) => {
     let query = {};
     query[type] = value;
+    console.log(query);
     try {
-        const foundData = await Korisnik.findOne(query);
+        const foundData = await Korisnik.findOne(query).populate('firma');
         return foundData;
     } catch (err) {
         console.log(err);
@@ -93,10 +111,10 @@ exports.update = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
-    updatingData = req.body;
+    const _id = req.params.id;
+    const updatingData = req.body;
     try {
-        data = await this.updateMethod(_id, updatingData);
+        const data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);

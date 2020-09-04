@@ -24,6 +24,7 @@
     "pug": "^3.0.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.743.0",
     "nodemon": "^2.0.4"
   },
   "engines": {
