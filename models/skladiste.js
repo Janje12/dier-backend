@@ -9,6 +9,8 @@ const skladisteSchema = Schema({
         mesto: {type: Schema.Types.ObjectId, ref: 'Mesto', required: true, autopopulate: true},
         ulica: {type: String, required: true},
     },
+    geolokacijaN: {required: false, type: String},
+    geolokacijaE: {required: false, type: String},
     neopasniOtpad: [{type: Schema.Types.ObjectId, ref: 'Otpad', required: false}],
     opasniOtpad: [{type: Schema.Types.ObjectId, ref: 'OpasniOtpad', required: false}],
     posebniTokoviOtpada: [{type: Schema.Types.ObjectId, ref: 'PosebniTokoviOtpada', required: false}],
@@ -16,13 +18,10 @@ const skladisteSchema = Schema({
     ambalaze: [{type: Schema.Types.ObjectId, ref: 'Ambalaza', required: false}],
 });
 const skladisteTretmanSchema = Schema({
-    geolokacijaN: {required: true, type: String},
-    geolokacijaE: {required: true, type: String},
+    tretman: {type: Boolean, required: false},
 });
 
 const skladisteDeponijaSchema = Schema({
-    geolokacijaN: {required: true, type: String},
-    geolokacijaE: {required: true, type: String},
     vrstaDeponije: {type: String, required: true},
 })
 

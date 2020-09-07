@@ -12,7 +12,7 @@ router.get('/', skladiste_controller.readMany);
 router.get('/:id', skladiste_controller.readOne);
 
 // GET (FIND) ONE Firma
-router.get('/:type/:value', skladiste_controller.findOne);
+router.get('/admin/:type/:value', skladiste_controller.findOne);
 
 // PATCH Skladiste
 router.patch('/:id', skladiste_controller.update);
