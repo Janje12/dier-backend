@@ -10,6 +10,8 @@ const otpadSchema = Schema({
         qLista: {type: String},
         nacinPakovanja: {type: String},
         tretman: {type: Boolean, required: false},
+        rOznaka: {type: String, required: false},
+        dOznaka: {type: String, required: false},
     },
 );
 const opasniOtpadSchema = Schema({
