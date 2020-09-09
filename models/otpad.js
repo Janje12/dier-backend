@@ -12,15 +12,19 @@ const otpadSchema = Schema({
         tretman: {type: Boolean, required: false},
         rOznaka: {type: String, required: false},
         dOznaka: {type: String, required: false},
+        sifraIspitivanja: {type: String, required: false},
+        datumIspitivanja: {type: Date, required: false},
     },
 );
 const opasniOtpadSchema = Schema({
         hLista: {type: String, required: true},
         yLista: {type: String, required: true},
         cLista: {type: String, required: true},
-        hemijskiNaziv: {type: String, required: true},
-        cas: {type: String, required: true},
-        kgMaterije: {type: Number, required: true, default: 0.0},
+        opasnaKomponenta: [{
+            hemijskiNaziv: {type: String, required: true},
+            cas: {type: String, required: true},
+            kgMaterije: {type: Number, required: true, default: 0.0},
+        }],
     },
 );
 

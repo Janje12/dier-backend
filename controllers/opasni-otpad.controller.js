@@ -16,6 +16,7 @@ exports.create = async (req, res) => {
         let data = await this.createMethod(newData);
         const skladiste = await skladiste_controller.readOneMethod(skladisteID);
         skladiste.opasniOtpad.push(data);
+        skladiste.kolicina += data.kolicina;
         await skladiste_controller.updateMethod(skladisteID, skladiste);
         res.status(201).json(data);
     } catch (err) {
@@ -60,9 +61,9 @@ exports.readOne = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.readOneMethod(_id);
+        const data = await this.readOneMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
@@ -84,10 +85,15 @@ exports.update = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
-    updatingData = req.body;
+    const _id = req.params.id;
+    const updatingData = req.body.otpad;
+    const updatingStorageID = req.body.skladiste;
     try {
-        data = await this.updateMethod(_id, updatingData);
+        const skladiste = await skladiste_controller.readOneMethod(updatingStorageID);
+        const previousAmount = skladiste.opasniOtpad.filter(x => x._id.toString() === _id)[0].kolicina;
+        skladiste.kolicina = skladiste.kolicina + (updatingData.kolicina - previousAmount);
+        await skladiste_controller.updateMethod(updatingStorageID, skladiste);
+        const data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
@@ -96,7 +102,7 @@ exports.update = async (req, res) => {
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
-        const updatedData = await OpasniOtpad.findByIdAndUpdate(_id, updatingData);
+        const updatedData = await OpasniOtpad.findByIdAndUpdate(_id, updatingData, {new: true});
         return updatedData;
     } catch (err) {
         console.log(err);
@@ -109,9 +115,9 @@ exports.delete = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.deleteMethod(_id);
+        const data = await this.deleteMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);

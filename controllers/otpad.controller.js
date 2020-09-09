@@ -60,9 +60,9 @@ exports.readOne = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.readOneMethod(_id);
+        const data = await this.readOneMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
@@ -84,15 +84,15 @@ exports.update = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
-    updatingData = req.body.otpad;
-    updatingStorageID = req.body.skladiste;
+    const _id = req.params.id;
+    const updatingData = req.body.otpad;
+    const updatingStorageID = req.body.skladiste;
     try {
         const skladiste = await skladiste_controller.readOneMethod(updatingStorageID);
         const previousAmount = skladiste.neopasniOtpad.filter(x => x._id.toString() === _id)[0].kolicina;
         skladiste.kolicina = skladiste.kolicina + (updatingData.kolicina - previousAmount);
         await skladiste_controller.updateMethod(updatingStorageID, skladiste);
-        data = await this.updateMethod(_id, updatingData);
+        const data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log(err);
@@ -115,9 +115,9 @@ exports.delete = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.deleteMethod(_id);
+        const data = await this.deleteMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
