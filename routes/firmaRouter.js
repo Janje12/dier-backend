@@ -12,7 +12,7 @@ router.get('/', firma_controller.readMany);
 router.get('/:id', firma_controller.readOne);
 
 // GET (FIND) ONE Firma
-router.get('/:type/:value', firma_controller.findOne);
+router.get('/admin/:type/:value', firma_controller.findOne);
 
 // PATCH Firma
 router.patch('/:id', firma_controller.update);

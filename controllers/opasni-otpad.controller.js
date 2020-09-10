@@ -26,7 +26,6 @@ exports.create = async (req, res) => {
 
 exports.createMethod = async (data) => {
     try {
-        console.log(data);
         const savedData = await OpasniOtpad.create(data);
         return savedData;
     } catch (err) {

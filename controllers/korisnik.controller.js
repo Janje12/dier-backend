@@ -86,7 +86,6 @@ exports.findOne = async (req, res) => {
     const value = req.params.value;
     try {
         const data = await this.findOneMethod(value, type);
-        console.log(data);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);

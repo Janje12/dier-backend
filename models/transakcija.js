@@ -3,7 +3,8 @@ const Schema = mongoose.Schema
 
 const transkacijaSchema = Schema({
         datum: {type: Date, required: true, default: Date.now()},
-        vrstaTransakcije: {type, String, required: true},
+        vrstaTransakcije: {type: String, required: true},
+        metoda: {type: String, required: true},
         otpad: {type: Schema.Types.ObjectId, ref: 'Otpad', required: false},
         korisnik: {type: Schema.Types.ObjectId, ref: 'Korisnik', required: true},
         firma: {type: Schema.Types.ObjectId, ref: 'Firma', required: false},

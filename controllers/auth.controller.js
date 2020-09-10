@@ -87,6 +87,7 @@ function generateAccessToken(user, company) {
     const accessToken = jwt.sign({
         data: {
             korisnik: {
+                _id: user._id,
                 korisnickoIme: user.korisnickoIme,
                 ime: user.ime,
                 prezime: user.prezime,
@@ -144,7 +145,7 @@ exports.register = async (req, res) => {
     let storage = company.skladista;
     let storageTreatment = company.skladistaTretman;
     let storageDump = company.skladistaDeponija;
-    let storageCache = company.skladistaSkladistenje;
+    let storageCache = company.skladisteSkladistenje;
 
     // init the IDs
     user._id = mongoose.Types.ObjectId();

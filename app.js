@@ -45,6 +45,7 @@ const delatnostRouter = require('./routes/delatnostRouter');
 const skladisteRouter = require('./routes/skladisteRouter');
 const skladisteTretmanRouter = require('./routes/skladisteTretmanRouter');
 const skladisteDeponijaRouter = require('./routes/skladisteDeponijaRouter');
+const izvestajRouter = require('./routes/izvestajRouter');
 const authRouter = require('./routes/authRouter');
 const app = express();
 
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/izvestaj', izvestajRouter);
 app.use('/api/korisnik', korisnikRouter);
 app.use('/api/prevoznosredstvo', prevoznoSredstvoRouter);
 app.use('/api/firma', firmaRouter);
@@ -77,9 +79,10 @@ app.use('/api/skladistedeponija', skladisteDeponijaRouter);
 app.use('/api/delatnost', delatnostRouter);
 app.use('/api/katalog', katalogRouter);
 
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    next(createError(404));
+        next(createError(404));
 });
 
 module.exports = app;
