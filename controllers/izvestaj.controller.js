@@ -1,18 +1,48 @@
 const Izvestaj = require('../models/mesecniIzvestaj');
-const {PdfReader} = require('pdfreader');
+const pdf = require("pdf-creator-node");
 const fs = require('fs');
 
 exports.create = async (req, res) => {
     try {
-        const reader = new PdfReader();
-        fs.readFile("DEO.pdf", (err, pdfBuffer) => {
-            // pdfBuffer contains the file content
-            reader.parseBuffer(pdfBuffer, function(err, item) {
-                if (err) console.log(err);
-                else if (!item) return;
-                else if (item.text) console.log(item.text);
+        const html = fs.readFileSync('DEO1.html', 'utf8');
+        const options = {
+            format: "A4",
+            orientation: "portrait",
+            border: "10mm",
+        };
+        const akcije = [
+            {
+            datum: '25.4.2019',
+            proizvedenaKolicina: 78,
+            predataKolicina: '/',
+            stanje: 672,
+        },
+            {
+                datum: '26.4.2019',
+                proizvedenaKolicina: 28,
+                predataKolicina: '/',
+                stanje: 700,
+            }];
+        const ukupno = 500;
+        let count = [];
+        for (let i = 0; i < 28; i++)
+            count.push(i);
+        const document = {
+            html: html,
+            data: {
+                akcije: akcije,
+                count: count,
+                ukupno: ukupno,
+            },
+            path: "./output.pdf"
+        };
+        pdf.create(document, options)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(error => {
+                console.error(error)
             });
-        });
         res.sendStatus(200);
     } catch (err) {
         console.log(err);

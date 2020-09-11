@@ -110,14 +110,19 @@ exports.updateMethod = async (_id, updatingData) => {
     }
 }
 
+/* Trash has to be removed in the storage refrence as well */
 exports.delete = async (req, res) => {
     if (!req.body) {
         res.sendStatus(400);
         return;
     }
     const _id = req.params.id;
+    const skladisteID = req.params.skladisteID;
     try {
+        const skladiste = await skladiste_controller.readOneMethod(skladisteID);
         const data = await this.deleteMethod(_id);
+        const index = skladiste.neopasniOtpad.indexOf(data);
+        skladiste.neopasniOtpad.splice(index, 1);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);

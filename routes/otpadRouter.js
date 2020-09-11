@@ -15,6 +15,6 @@ router.get('/:id', otpad_controller.readOne);
 router.patch('/:id', otpad_controller.update);
 
 // DELETE Otpad
-router.delete('/:id', otpad_controller.delete);
+router.delete('/:id/:skladisteID', otpad_controller.delete);
 
 module.exports = router;

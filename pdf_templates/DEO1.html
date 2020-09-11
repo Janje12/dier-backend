@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <mate charest="utf-8" />
+</head>
+<style>
+    * {
+        font-family: Calibri;
+        font-size: 18px;
+    }
+    table,th,td {
+        border: 1pt solid black;
+        text-align: center;
+        border-collapse: collapse;
+    }
+    .blue {
+        background-color: #BDD6EE;
+    }
+    .left {
+        text-align: left;
+    }
+</style>
+<body>
+<h2 style="text-align: center; font-size: 20px;">DNEVNA EVIDENCIJA O OTPADU PROIZVOĐAČA OTPADA</h2>
+<table style="width: 80%; border-bottom: none;">
+    <tr>
+        <td class="blue left" style="width: 62.5%;">Godina</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="blue left">Mesec</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="blue left" style="border-bottom: none;">Indeksni broj otpada iz Kataloga otpada</td>
+        <td style="border-bottom: none;"></td>
+    </tr>
+</table>
+<table style="margin: auto; width: 100%;">
+    <tr>
+        <td class="blue left" style="width: 50%;">Naziv <otpada></otpada></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="blue left">Opis otpada</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td class="blue left">Evidenciju vodi (Ime i prezime)</td>
+        <td></td>
+    </tr>
+</table>
+<table style="margin-top: 5%; border-top: none;">
+    <tr>
+        <th class="blue" colspan="4">PROIZVEDENE KOLIČINE OTPADA</th>
+        <th class="blue" colspan="8">OTPAD PREDAT</th>
+    </tr>
+    <tr>
+        <td class="blue">Datum</td>
+        <td class="blue">Proizvede na količina otpada (t)</td>
+        <td class="blue">Predata količina otpad a (t)</td>
+        <td class="blue">Stanje na privremenom skladištu (t)</td>
+        <td class="blue">Sakupljaču</td>
+        <td class="blue">Operateru na ponovno iskorišćen je</td>
+        <td class="blue">R ozna ka</td>
+        <td class="blue">Operateru na odlaganje</td>
+        <td class="blue">D oznaka</td>
+        <td class="blue">Izvoz</td>
+        <td class="blue">Naziv preduzeća kojem je otpad predat</td>
+        <td class="blue">Broj dozvole</td>
+    </tr>
+    {{#each akcije}}
+    <tr>
+        <td>{{this.datum }}</td>
+        <td>{{this.proizvedenaKolicina}}</td>
+        <td>{{this.predataKolicina}}</td>
+        <td>{{this.stanje}}</td>
+        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+    </tr>
+    {{/each}}
+    {{#each count}}
+    <tr style="height: 16px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    {{/each}}
+    <tr><td class="blue">Ukupno</td><td>{{ukupno}}</td><td></td><td></td><td colspan="8" class="blue" stlye="width: 100%"></td></tr>
+</table>
+</body>
+</html>
