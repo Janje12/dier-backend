@@ -91,7 +91,6 @@ exports.findOne = async (req, res) => {
 exports.findOneMethod = async (value, type) => {
     let query = {};
     query[type] = value;
-    console.log(query);
     try {
         const foundData = await Firma.findOne(query).populate('adresa.mesto').populate('delatnost');
         return foundData;

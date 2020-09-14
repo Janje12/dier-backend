@@ -65,7 +65,7 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
-app.use('/api/izvestaj', izvestajRouter);
+app.use('/api/mesecniizvestaj', izvestajRouter);
 app.use('/api/korisnik', korisnikRouter);
 app.use('/api/prevoznosredstvo', prevoznoSredstvoRouter);
 app.use('/api/firma', firmaRouter);

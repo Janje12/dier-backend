@@ -117,12 +117,14 @@ exports.delete = async (req, res) => {
         return;
     }
     const _id = req.params.id;
-    const skladisteID = req.params.skladisteID;
+    const storageID = req.params.skladiste;
     try {
-        const skladiste = await skladiste_controller.readOneMethod(skladisteID);
+        const storage = await skladiste_controller.readOneMethod(storageID);
         const data = await this.deleteMethod(_id);
-        const index = skladiste.neopasniOtpad.indexOf(data);
-        skladiste.neopasniOtpad.splice(index, 1);
+        const index = storage.opasniOtpad.indexOf(data);
+        storage.opasniOtpad.splice(index, 1);
+        storage.kolicina = storage.kolicina - data.kolicina;
+        await skladiste_controller.updateMethod(storage._id, storage);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);

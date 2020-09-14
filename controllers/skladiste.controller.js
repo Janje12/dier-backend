@@ -62,7 +62,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await Skladiste.findById(_id).populate('neopasniOtpad').populate('opasniOtpad').populate('adresa.mesto');;
+        const foundData = await Skladiste.findById(_id).populate('neopasniOtpad').populate('opasniOtpad').populate('adresa.mesto');
         return foundData;
     } catch (err) {
         console.log(err);
