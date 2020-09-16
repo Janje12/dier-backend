@@ -1,11 +1,12 @@
 {
   "name": "dier-backend",
-  "version": "0.1.0",
+  "version": "0.3.0",
+  "description": "Backend API server for the frontend DIER APP.",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "start:dev": "nodemon ./bin/www",
-    "deploy": "git push heroku master"
+    "deploy": "git add . && git commit -m \"new version\" && git push && git push heroku master"
   },
   "dependencies": {
     "@handlebars/allow-prototype-access": "^1.0.3",
@@ -20,14 +21,11 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.9",
     "mongoose": "^5.9.25",
-    "mongoose-autopopulate": "^0.12.2",
     "morgan": "~1.9.1",
     "pdf-creator-node": "^1.4.1",
-    "pdfjs": "^2.4.1",
     "pug": "^3.0.0"
   },
   "devDependencies": {
-    "handlebars": "^4.5.0",
     "nodemon": "^2.0.4"
   },
   "engines": {

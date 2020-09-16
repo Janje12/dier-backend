@@ -4,6 +4,7 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+/tmp
 # Editor-based HTTP Client requests
 /httpRequests/
 /node_modules
