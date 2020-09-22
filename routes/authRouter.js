@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth_controller = require('../controllers/auth.controller');
-const transakcija_controller = require('../controllers/transakcije.controller');
+const authLogs = require('../middlewear/authLogs.middlewear');
 
 router.use((req, res, next) => {
     const oldWrite = res.write;
@@ -19,7 +19,8 @@ router.use((req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-            await transakcija_controller.authMethod(req, JSON.parse(resBody));
+            if (res.statusCode >= 200 && res.statusCode < 300)
+                await authLogs.authMethod(req, JSON.parse(resBody));
         });
         oldEnd.apply(res, restArgs);
     };

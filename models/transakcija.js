@@ -12,6 +12,7 @@ const transkacijaSchema = Schema({
         kolicinaOtpada: {type: Number, required: false},
         prethodnaKolicina: {type: Number, required: false},
         trenutnaKolicina: {type: Number, required: false},
+        dko: {type: Schema.Types.ObjectId, ref: 'DKO', required: false},
     },
 );
 

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <mate charest="utf-8"/>
+</head>
+<style>
+    * {
+        font-family: Calibri;
+        font-size: 18px;
+    }
+
+    table, th, td {
+        border: 1pt solid black;
+        text-align: left;
+        border-collapse: collapse;
+    }
+    td {
+        width: 30%;
+    }
+    th {
+        background-color: rgb(191, 191, 191);
+    }
+</style>
+<body>
+<div style="text-align: right; width: 100%; font-weight: bold;">Образац</div>
+<h5 style="text-align: center">ДОКУМЕНТ О КРЕТАЊУ ОТПАДА</h5>
+{{#with dko}}
+<table width="100%">
+    <tr>
+        <th colspan="3">ДЕО А - ПОДАЦИ О ОТПАДУ (ПОПУЊАВА ПРОИЗВОЂАЧ/ВЛАСНИК ОТПАДА)</th>
+    </tr>
+    <tr>
+        <td>Врста отпада</td>
+        <td colspan="2" style="width: 50%">{{vrstaOtpada}}</td>
+    </tr>
+    <tr>
+        <td rowspan="2">Класификација отпада</td>
+        <td>Индексни број отпада</td>
+        <td>{{otpad.indeksniBroj}}</td>
+
+    </tr>
+    <tr>
+        <td>Ознака отпада према Q листи</td>
+        <td>{{qLista}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">Маса отпада (t)</td>
+        <td>{{masaOtpada}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">Начин паковања отпада</td>
+        <td>{{nacinPakovanja}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">Физичко стање отпада</td>
+        <td>{{fizickoStanje}}</td>
+    </tr>
+    <tr>
+        <td rowspan="2">Извештај о испитивању отпада</td>
+        <td>Број</td>
+        <td>{{sifraIspitivanja}}</td>
+    </tr>
+    <tr>
+        <td>Датум издавања</td>
+        <td>{{datumIspitivanja}}</td>
+    </tr>
+    {{/with}}
+    <tr>
+        <td colspan="2">Одредиште</td>
+        <td>{{pocetak}}</td>
+    </tr>
+    {{#with dko}}
+    <tr>
+        <td colspan="2">Вид превоза</td>
+        <td>{{vidPrevoza}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">Посебне напомене за руковање и додатне информације</td>
+        <td>{{dodatneInformacije}}</td>
+    </tr>
+</table>
+<br>
+<table>
+    <tr>
+        <th colspan="3">ДЕО Б – ПОДАЦИ О ПРОИЗВОЂАЧУ/ВЛАСНИКУ ОТПАДА</th>
+    </tr>
+    <tr>
+        <td>ПИБ произвођача/власника </td>
+        <td  colspan="2">{{firmaProizvodjac.pib}}</td>
+    </tr>
+    <tr>
+        <td>Матични број произвођача/власника</td>
+        <td  colspan="2">{{firmaProizvodjac.mat}}</td>
+    </tr>
+    <tr>
+        <td>Назив произвођача/власника</td>
+        <td  colspan="2">{{firmaProizvodjac.naziv}}</td>
+    </tr>
+    <tr>
+        <td rowspan="7">Адреса произвођача/
+            власника
+        </td>
+        <td>Општина</td>
+        <td>{{firmaProizvodjac.adresa.mesto.opstinaNaziv}}</td>
+    </tr>
+    <tr>
+        <td>Место</td>
+        <td>{{firmaProizvodjac.adresa.mesto.mestoNaziv}}</td>
+    </tr>
+    <tr>
+        <td>Поштански број</td>
+        <td>{{firmaProizvodjac.adresa.mesto.postanskiBroj}}</td>
+    </tr>
+    <tr>
+        <td>Улица и број</td>
+        <td>{{firmaProizvodjac.adresa.ulica}}</td>
+    </tr>
+    <tr>
+        <td>Телефон</td>
+        <td>{{firmaProizvodjac.telefon}}</td>
+    </tr>
+    <tr>
+        <td>Телефакс</td>
+        <td>{{firmaProizvodjac.faks}}</td>
+    </tr>
+    <tr>
+        <td>Е mail</td>
+        <td>{{firmaProizvodjac.email}}</td>
+    </tr>
+    <tr>
+        <td rowspan="3">Произвођач/власник отпада
+            (означити са „x”)
+        </td>
+        <td>Произвођач</td>
+        <td>X</td>
+    </tr>
+    <tr>
+        <td>Власник</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Оператер постројења за управљање отпадом</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td rowspan="2">Предвиђени начин поступања са отпадом
+        </td>
+        <td>Операција поновног искоришћења (R листа)</td>
+        <td>{{nacinPostupanja}}</td>
+    </tr>
+    <tr>
+        <td>Операција одлагања (D листа)</td>
+        <td>{{nacinPostupanja}}</td>
+    </tr>
+    <tr>
+        <td rowspan="2">Дозвола за управљање отпадом</td>
+        <td>Број</td>
+        <td>{{sifraDozvoleProizvodjac}}</td>
+    </tr>
+    <tr>
+        <td>Датум издавања</td>
+        <td>{{datumDozvoleProizvodjac}}</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align: center">Изјава произвођача/власника отпада<br><br>
+            „Потврђујем да је отпад одобрен за транспорт, да су испуњени сви захтеви за паковање и обележавање
+            и да је превозник информисан о врсти терета и неопходним предострожностима.”
+        </td>
+    </tr>
+    <tr>
+        <td  colspan="2">Датум предаје отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Читко име и презиме одговорног лица произвођача/власника отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Број мобилног телефона одговорног лица произвођача/власника отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Потпис и овера</td>
+        <td></td>
+    </tr>
+</table>
+<br>
+<table>
+    <tr>
+        <th colspan="3">ДЕО Ц – ПОДАЦИ О ПРЕВОЗНИКУ ОТПАДА</th>
+    </tr>
+    <tr>
+        <td>ПИБ произвођача/власника </td>
+        <td  colspan="2">{{firmaTransport.pib}}</td>
+    </tr>
+    <tr>
+        <td>Матични број произвођача/власника</td>
+        <td  colspan="2">{{firmaTransport.mat}}</td>
+    </tr>
+    <tr>
+        <td>Назив произвођача/власника</td>
+        <td  colspan="2">{{firmaTransport.naziv}}</td>
+    </tr>
+    <tr>
+        <td rowspan="7">Адреса произвођача/
+            власника
+        </td>
+        <td>Општина</td>
+        <td>{{firmaTransport.adresa.mesto.opstinaNaziv}}</td>
+    </tr>
+    <tr>
+        <td>Место</td>
+        <td>{{firmaTransport.adresa.mesto.mestoNaziv}}</td>
+    </tr>
+    <tr>
+        <td>Поштански број</td>
+        <td>{{firmaTransport.adresa.mesto.postanskiBroj}}</td>
+    </tr>
+    <tr>
+        <td>Улица и број</td>
+        <td>{{firmaTransport.adresa.uluca}}</td>
+    </tr>
+    <tr>
+        <td>Телефон</td>
+        <td>{{firmaTransport.telefon}}</td>
+    </tr>
+    <tr>
+        <td>Телефакс</td>
+        <td>{{firmaTransport.faks}}</td>
+    </tr>
+    <tr>
+        <td>Е mail</td>
+        <td>{{firmaTransport.email}}</td>
+    </tr>
+    <tr>
+        <td>Врста превозног средства</td>
+        <td colspan="2">{{vrstaVozila}}</td>
+    </tr>
+    <tr>
+        <td>Регистарски број превозног средства</td>
+        <td colspan="2">{{registarskiBroj}}</td>
+    </tr>
+    {{/with}}
+    <tr>
+        <td rowspan="5">Рута кретања отпада</td>
+        <td>Локација утовара</td>
+        <td>{{pocetak}}</td>
+    </tr>
+    <tr>
+        <td>Преко (via)</td>
+        <td>{{lokacija1}}</td>
+    </tr>
+    <tr>
+        <td>Преко (via)</td>
+        <td>{{lokacija2}}</td>
+    </tr>
+    <tr>
+        <td>Преко (via)</td>
+        <td>{{lokacija3}}</td>
+    </tr>
+    <tr>
+        <td>Локација истовара</td>
+        <td>{{odrediste}}</td>
+    </tr>
+    {{#with dko}}
+    <tr>
+        <td colspan="3"  style="text-align: center">Изјава превозника отпада:<br><br>
+
+            „Потврђујем да је отпад у стању које одговара опису и да су тачни подаци дати у делу А.”
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="2">Дозвола за управљање отпадом</td>
+        <td>Број</td>
+        <td>{{sifraDozvoleTransport}}</td>
+    </tr>
+    <tr>
+        <td>Датум издавања</td>
+        <td>{{datumDozvoleTransport}}</td>
+    </tr>
+    <tr>
+        <td  colspan="2">Датум предаје отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Читко име и презиме одговорног лица превозника отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Број мобилног телефона одговорног лица превозника отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Потпис и овера</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Датум предаје отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Читко име и презиме одговорног лица превозника отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Број мобилног телефона одговорног лица превозника отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Потпис и овера</td>
+        <td></td>
+    </tr>
+</table>
+<br>
+<table>
+    <tr>
+        <th colspan="3">ДЕО Д – ПОДАЦИ О ПРИМАОЦУ ОТПАДА</th>
+    </tr>
+    <tr>
+        <td>ПИБ произвођача/власника </td>
+        <td  colspan="2">{{firmaPrimalac.pib}}</td>
+    </tr>
+    <tr>
+        <td>Матични број произвођача/власника</td>
+        <td  colspan="2">{{firmaPrimalac.mat}}</td>
+    </tr>
+    <tr>
+        <td>Назив произвођача/власника</td>
+        <td  colspan="2">{{firmaPrimalac.naziv}}</td>
+    </tr>
+    <tr>
+        <td rowspan="7">Адреса произвођача/
+            власника
+        </td>
+        <td>Општина</td>
+        <td>{{firmaPrimalac.adresa.mesto.opstinaNaziv}}</td>
+    </tr>
+    <tr>
+        <td>Место</td>
+        <td>{{firmaPrimalac.adresa.mesto.mestoNaziv}}</td>
+    </tr>
+    <tr>
+        <td>Поштански број</td>
+        <td>{{firmaPrimalac.adresa.mesto.postanskiBroj}}</td>
+    </tr>
+    <tr>
+        <td>Улица и број</td>
+        <td>{{firmaPrimalac.adresa.ulica}}</td>
+    </tr>
+    <tr>
+        <td>Телефон</td>
+        <td>{{firmaPrimalac.telefon}}</td>
+    </tr>
+    <tr>
+        <td>Телефакс</td>
+        <td>{{firmaPrimalac.faks}}</td>
+    </tr>
+    <tr>
+        <td>Е mail</td>
+        <td>{{firmaPrimalac.email}}</td>
+    </tr>
+    <tr>
+        <td rowspan="3">Прималац
+            (означити са „x”)
+        </td>
+        <td>Постројење за складиштење отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Постројење за третман отпада</td>
+        <td>X</td>
+    </tr>
+    <tr>
+        <td>Постројење за одлагање отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td rowspan="2">Дозвола за управљање отпадом</td>
+        <td>Број</td>
+        <td>{{sifraDozvolePrimalac}}</td>
+    </tr>
+    <tr>
+        <td>Датум издавања</td>
+        <td>{{datumDozvolePrimalac}}</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align: center">
+            Изјава примаоца отпада<br><br>
+            „Потврђујем да је отпад описан у делу А испоручен превозним средством типа {{vrstaVozila}},
+            регистарски броj {{registarskiBroj}}, као и да одговара условима за прихватање.”
+        </td>
+    </tr>
+    <tr>
+        <td  colspan="2">Датум пријема отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Читко име и презиме одговорног лица примаоца отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Број мобилног телефона одговорног лица примаоца отпада</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td  colspan="2">Потпис и овера</td>
+        <td></td>
+    </tr>
+</table>
+{{/with}}
+</body>
+</html>

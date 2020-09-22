@@ -88,11 +88,7 @@ exports.update = async (req, res) => {
     const updatingData = req.body.otpad;
     const updatingStorageID = req.body.skladiste;
     try {
-        const skladiste = await skladiste_controller.readOneMethod(updatingStorageID);
-        const previousAmount = skladiste.neopasniOtpad.filter(x => x._id.toString() === _id)[0].kolicina;
-        skladiste.kolicina = skladiste.kolicina + (updatingData.kolicina - previousAmount);
-        await skladiste_controller.updateMethod(updatingStorageID, skladiste);
-        const data = await this.updateMethod(_id, updatingData);
+        const data = await this.updateMethod(_id, updatingData, updatingStorageID);
         res.status(200).json(data);
     } catch (err) {
         console.log(err);
@@ -100,8 +96,13 @@ exports.update = async (req, res) => {
     }
 }
 
-exports.updateMethod = async (_id, updatingData) => {
+exports.updateMethod = async (_id, updatingData, updatingStorageID) => {
     try {
+        const skladiste = await skladiste_controller.readOneMethod(updatingStorageID);
+        const previousAmount = skladiste.neopasniOtpad.filter(x => x._id.toString() === _id)[0].kolicina;
+        skladiste.kolicina = skladiste.kolicina + (updatingData.kolicina - previousAmount);
+        await skladiste_controller.updateMethod(updatingStorageID, skladiste);
+
         const updatedData = await Otpad.findByIdAndUpdate(_id, updatingData, {new: true});
         return updatedData;
     } catch (err) {

@@ -1,6 +1,4 @@
-require('dotenv').config();
-const Korisnik = require('../models/korisnik');
-const bcrypt = require('bcrypt');
+const DnevniIzvestaj = require('../models/dnevniIzvestaj');
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -14,44 +12,48 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
-/*
-    When creating a new user the password needs to be hashed for safer storage.
- */
 exports.createMethod = async (data) => {
+    let query = {};
+    const today = new Date();
+    query['otpad'] = data.otpad._id;
+    query['dan'] = today.getDay();
+    query['mesec'] = today.getMonth();
     try {
-        const hashedSifra = await bcrypt.hash(data.sifra, 10);
-        data.sifra = hashedSifra;
-        const savedData = await Korisnik.create(data);
+        const foundData = await this.findOneMethod(query);
+        let savedData;
+        if (!foundData)
+            savedData = await DnevniIzvestaj.create(data);
+        else
+            savedData = await this.updateMethod(foundData._id, data);
         return savedData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
-    let query = {};
-    if (req.body.query)
-        query = req.body.query;
+    // WIP
+    const query = {};
     try {
         const data = await this.readManyMethod(query);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await Korisnik.find(query).populate('firma');
+        const foundData = await DnevniIzvestaj.find(query);
         return foundData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -65,44 +67,27 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await Korisnik.findById(_id);
+        const foundData = await DnevniIzvestaj.findById(_id);
         return foundData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
-exports.findOne = async (req, res) => {
-    if (!req.params) {
-        res.sendStatus(400);
-        return;
-    }
-    const type = req.params.type;
-    const value = req.params.value;
+exports.findOneMethod = async (query) => {
     try {
-        const data = await this.findOneMethod(value, type);
-        res.status(200).json(data);
-    } catch (err) {
-        res.sendStatus(500);
-    }
-}
-
-exports.findOneMethod = async (value, type) => {
-    let query = {};
-    query[type] = value;
-    try {
-        const foundData = await Korisnik.findOne(query);
+        const foundData = await DnevniIzvestaj.findOne(query);
         return foundData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -112,66 +97,43 @@ exports.update = async (req, res) => {
     const _id = req.params.id;
     const updatingData = req.body;
     try {
-        const data = await this.updateMethod(_id, updatingData);
+        const data = await this.updateMethod(_id, updatingData, {returnOriginal: false});
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
-        const updatedData = await Korisnik.findByIdAndUpdate(_id, updatingData);
+        const updatedData = await DnevniIzvestaj.findByIdAndUpdate(_id, updatingData);
         return updatedData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.deleteMethod(_id);
+        const data = await this.deleteMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
-        const deletedData = await Korisnik.findByIdAndDelete(_id);
+        const deletedData = await DnevniIzvestaj.findByIdAndDelete(_id);
         return deletedData;
     } catch (err) {
         console.log(err);
         return err;
-    }
-}
-
-exports.getProfileKorisnik = async (req, res) => {
-    if (!req.params) {
-        res.sendStatus(404);
-        return;
-    }
-    const korisnickoIme = req.params.id;
-    try {
-        const korisnik = await this.findOneMethod(korisnickoIme, 'korisnickoIme');
-        res.status(200).json({
-            _id: korisnik._id,
-            korisnickoIme: korisnik.korisnickoIme,
-            ime: korisnik.ime,
-            prezime: korisnik.prezime,
-            email: korisnik.email,
-            telefon: korisnik.telefon,
-            uloga: korisnik.uloga,
-        });
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(500);
     }
 };

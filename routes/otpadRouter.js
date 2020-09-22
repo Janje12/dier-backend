@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const otpad_controller = require('../controllers/otpad.controller');
-const transakcija_controller = require('../controllers/transakcije.controller');
+const trashLogs = require('../middlewear/trashLogs.middlewear');
 
 router.use(async (req, res, next) => {
     const oldWrite = res.write;
     const oldEnd = res.end;
     const chunks = [];
-    let storageID, prevTrash;
+    let storageID, prevTrash, currTrash;
 
     if (req.method === 'PATCH' || req.method === 'DELETE') {
         let id = req.url.split('/')[1];
@@ -26,7 +26,8 @@ router.use(async (req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-            await transakcija_controller.trashMethod(req, JSON.parse(resBody), storageID, prevTrash);
+            if (res.statusCode >= 200 && res.statusCode < 300)
+                await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
         });
         oldEnd.apply(res, restArgs);
     };

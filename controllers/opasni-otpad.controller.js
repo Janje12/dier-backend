@@ -11,18 +11,18 @@ exports.create = async (req, res) => {
         return;
     }
     const newData = req.body.otpad;
-    const skladisteID = req.body.skladiste;
+    const storageID = req.body.skladiste;
     try {
         let data = await this.createMethod(newData);
-        const skladiste = await skladiste_controller.readOneMethod(skladisteID);
+        const skladiste = await skladiste_controller.readOneMethod(storageID);
         skladiste.opasniOtpad.push(data);
         skladiste.kolicina += data.kolicina;
-        await skladiste_controller.updateMethod(skladisteID, skladiste);
+        await skladiste_controller.updateMethod(storageID, skladiste);
         res.status(201).json(data);
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.createMethod = async (data) => {
     try {
@@ -32,7 +32,7 @@ exports.createMethod = async (data) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
     // WIP
@@ -43,7 +43,7 @@ exports.readMany = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
@@ -53,7 +53,7 @@ exports.readManyMethod = async (query) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -67,7 +67,7 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
@@ -77,7 +77,7 @@ exports.readOneMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -97,7 +97,7 @@ exports.update = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
@@ -107,7 +107,7 @@ exports.updateMethod = async (_id, updatingData) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
@@ -127,7 +127,7 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
@@ -137,4 +137,4 @@ exports.deleteMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};

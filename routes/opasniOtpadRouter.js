@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const opasniOtpad_controller = require('../controllers/opasni-otpad.controller');
-const transakcija_controller = require('../controllers/transakcije.controller');
+const trashLogs = require('../middlewear/trashLogs.middlewear');
 
 router.use(async (req, res, next) => {
     const oldWrite = res.write;
@@ -26,7 +26,7 @@ router.use(async (req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-            await transakcija_controller.trashMethod(req, JSON.parse(resBody), storageID, prevTrash);
+            await trashLogs.trashMethod(req, JSON.parse(resBody), storageID, prevTrash);
         });
         oldEnd.apply(res, restArgs);
     };
@@ -46,6 +46,6 @@ router.get('/:id', opasniOtpad_controller.readOne);
 router.patch('/:id', opasniOtpad_controller.update);
 
 // DELETE Otpad
-router.delete('/:id/:skladisteID', opasniOtpad_controller.delete);
+router.delete('/:id/:skladiste', opasniOtpad_controller.delete);
 
 module.exports = router;

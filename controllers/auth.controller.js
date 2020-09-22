@@ -30,7 +30,7 @@ exports.login = async (req, res) => {
         }
         bcrypt.compare(user.password, foundUser.sifra, (err, rez) => {
             if (err) {
-                console.log(err)
+                console.log(err);
                 res.sendStatus(500);
                 return;
             }
@@ -50,7 +50,7 @@ exports.login = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
 exports.refresh = async (req, res) => {
     if (!req.body) {
@@ -78,12 +78,12 @@ exports.refresh = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
 function generateAccessToken(user, company) {
     let expirePeriod = '20m';
     if (user.rememberMe)
-        expirePeriod = '730h'
+        expirePeriod = '730h';
     const accessToken = jwt.sign({
         data: {
             korisnik: {
@@ -130,7 +130,7 @@ exports.logout = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
 exports.register = async (req, res) => {
     if (!req.body) {
@@ -299,4 +299,4 @@ exports.register = async (req, res) => {
         res.sendStatus(500);
     }
 
-}
+};

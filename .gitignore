@@ -4,6 +4,7 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+# Tmp PDF files created
 /tmp
 # Editor-based HTTP Client requests
 /httpRequests/

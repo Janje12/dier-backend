@@ -1,6 +1,7 @@
-const Izvestaj = require('../models/mesecniIzvestaj');
-const transkacije_controller = require('../controllers/transakcije.controller');
-const pdf = require("pdf-creator-node");
+const MesecniIzvestaj = require('../models/mesecniIzvestaj');
+const logsController = require('../controllers/transakcije.controller');
+const dayLogsController = require('../controllers/dnevniIzvestaj.controller');
+const pdf = require('pdf-creator-node');
 const fs = require('fs');
 const path = require('path');
 const PDF_OPTIONS = require('../pdf_templates/pdf_options').PDF_OPTIONS;
@@ -12,32 +13,60 @@ exports.createProductionReport = async (trash, storageID) => {
     let query = {};
     query['datum'] =
         {
-            "$gte": new Date(today.getFullYear(), today.getMonth() - 1, 1),
-            "$lt": new Date(today.getFullYear(), today.getMonth(), 31)
-        }
+            '$gte': new Date(today.getFullYear(), today.getMonth(), 1),
+            '$lt': new Date(today.getFullYear(), today.getMonth(), 31)
+        };
     query['otpad'] = trash._id;
     query['kolicinaOtpada'] = {$gt: 0};
-    const akcijaProizvodnje = await transkacije_controller.readManyMethod(query);
-    // console.log(akcijaProizvodnje);
+    const akcijaProizvodnje = await logsController.readManyMethod(query);
     let ukupnoProizvodnja = 0, ukupnoStanje = 0;
-    akcijaProizvodnje.forEach(x => {
-        ukupnoProizvodnja += x.kolicinaOtpada;
-        ukupnoStanje += x.trenutnaKolicina;
-        x.datumm = x.datum.getDay() + '.' + x.datum.getMonth();
+    let dnevniIzvestaj = new Array(31);
 
-    })
-    const count = []
-    for (let i = 0; i < 31 - akcijaProizvodnje.length; i++) {
-        count.push(i);
+    akcijaProizvodnje.forEach(x => {
+        let i = x.datum.getDate();
+        if (!dnevniIzvestaj[i]) {
+            dnevniIzvestaj[i] = {};
+            dnevniIzvestaj[i].otpad = x.otpad;
+            dnevniIzvestaj[i].godina = x.datum.getFullYear();
+            dnevniIzvestaj[i].mesec = x.datum.getMonth() + 1; // Month starts at 0 >.<
+            dnevniIzvestaj[i].dan = x.datum.getDate();
+            dnevniIzvestaj[i].skladiste = x.skladiste;
+            dnevniIzvestaj[i].akcijaProizvodnja = [];
+            dnevniIzvestaj[i].akcijaProizvodnja.push(x);
+            dnevniIzvestaj[i].ukupnoProizvodnja = x.kolicinaOtpada;
+            dnevniIzvestaj[i].ukupnoTransport = 0;
+            dnevniIzvestaj[i].ukupnoStanje = x.kolicinaOtpada;
+        } else {
+            dnevniIzvestaj[i].akcijaProizvodnja.push(x);
+            dnevniIzvestaj[i].ukupnoProizvodnja += x.kolicinaOtpada;
+            dnevniIzvestaj[i].ukupnoStanje += x.kolicinaOtpada;
+        }
+        ukupnoProizvodnja += x.kolicinaOtpada;
+    });
+    const count = [];
+    for (let i = 0; i < 31; i++) {
+        if (!dnevniIzvestaj[i])
+            count.push(i);
     }
+    const tmp = []
+    let lastAmmount = 0;
+    for (let i = 0; i < dnevniIzvestaj.length; i++) {
+        if (dnevniIzvestaj[i]) {
+            ukupnoStanje += dnevniIzvestaj[i].ukupnoStanje;
+            dnevniIzvestaj[i].ukupnoStanje += lastAmmount;
+            tmp.push(await dayLogsController.createMethod(dnevniIzvestaj[i]));
+            lastAmmount = dnevniIzvestaj[i].ukupnoStanje;
+        }
+    }
+    dnevniIzvestaj = tmp;
+
     const document = {
         html: html,
         data: {
             godina: today.getFullYear(),
-            mesec: today.getMonth(),
+            mesec: today.getMonth() + 1,
             otpad: trash,
-            akcijaProizvodnje: akcijaProizvodnje,
-            akcijaTransporta: 0,
+            dnevniIzvestaj: dnevniIzvestaj,
             ukupnoProizvodnja: ukupnoProizvodnja,
             ukupnoTransport: 0,
             ukupnoStanje: ukupnoStanje,
@@ -50,15 +79,14 @@ exports.createProductionReport = async (trash, storageID) => {
         mesec: today.getMonth(),
         otpad: trash,
         skladiste: storageID,
-        akcijaProizvodnja: akcijaProizvodnje,
-        akcijaTransport: [],
+        dnevniIzvestaj: dnevniIzvestaj,
         ukupnoProizvodnja: ukupnoProizvodnja,
         ukupnoTransport: 0,
         ukupnoStanje: ukupnoStanje,
-    }
-    //await this.createMethod(newData);
+    };
+    await this.createMethod(newData);
     return document;
-}
+};
 
 exports.prepareReportMethod = async (trash, reportType, storageID) => {
     let document;
@@ -67,7 +95,7 @@ exports.prepareReportMethod = async (trash, reportType, storageID) => {
             document = await this.createProductionReport(trash, storageID);
     }
     return document;
-}
+};
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -82,10 +110,10 @@ exports.create = async (req, res) => {
         // console.log(document);
         await pdf.create(document, PDF_OPTIONS)
             .then(res => {
-                console.log(res)
+                console.log(res);
             })
             .catch(error => {
-                console.error(error)
+                console.error(error);
             });
         const today = new Date();
         res.sendFile(path.join(__dirname, '../tmp/DEO1/' + trash._id + '_' + today.getMonth() + '.pdf'));
@@ -93,17 +121,26 @@ exports.create = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
 exports.createMethod = async (data) => {
+    let query = {};
+    const today = new Date();
+    query['otpad'] = data.otpad._id;
+    query['mesec'] = today.getMonth();
     try {
-        const savedData = await Izvestaj.create(data);
+        const foundData = await this.findOneMethod(query);
+        let savedData;
+        if (!foundData)
+            savedData = await MesecniIzvestaj.create(data);
+        else
+            savedData = this.updateMethod(foundData._id, data);
         return savedData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
     // WIP
@@ -114,17 +151,17 @@ exports.readMany = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await Izvestaj.find(query);
+        const foundData = await MesecniIzvestaj.find(query);
         return foundData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -138,29 +175,27 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await Izvestaj.findById(_id);
+        const foundData = await MesecniIzvestaj.findById(_id);
         return foundData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
-exports.findOneMethod = async (value, type) => {
-    let query = {};
-    query[type] = value;
+exports.findOneMethod = async (query) => {
     try {
-        const foundData = await Izvestaj.findOne(query);
+        const foundData = await MesecniIzvestaj.findOne(query);
         return foundData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -175,17 +210,17 @@ exports.update = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
-        const updatedData = await Izvestaj.findByIdAndUpdate(_id, updatingData);
+        const updatedData = await MesecniIzvestaj.findByIdAndUpdate(_id, updatingData, {returnOriginal: false});
         return updatedData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
@@ -199,14 +234,14 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
-        const deletedData = await Izvestaj.findByIdAndDelete(_id);
+        const deletedData = await MesecniIzvestaj.findByIdAndDelete(_id);
         return deletedData;
     } catch (err) {
         console.log(err);
         return err;
     }
-}
+};

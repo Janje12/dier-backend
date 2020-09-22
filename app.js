@@ -1,11 +1,11 @@
-const createError = require('http-errors');
 const express = require('express');
-const path = require('path');
+const mongoose = require('mongoose');
+const createError = require('http-errors');
 const cors = require('cors');
 const logger = require('morgan');
-const mongoose = require('mongoose');
+const path = require('path');
 
-console.log('[APP] Server up and running on port', process.env.PORT === undefined ? '3000.' : process.env.PORT);
+console.log('[SERVER] Server up and running on port', process.env.PORT === undefined ? '3000.' : process.env.PORT);
 
 // database init
 const env = process.env.NODE_ENV || 'development';
@@ -21,13 +21,13 @@ try {
     });
     const db = mongoose.connection;
     db.on('error', (err) => {
-        console.log(err)
+        console.log(err);
     });
     db.once('open', () => {
         console.log('[DB] Connection to database intiliazed!');
     });
 } catch (err) {
-    console.log('[DB] Problem with connecting with database!')
+    console.log('[DB] Problem with connecting with database!');
     console.log(err);
 }
 
@@ -37,6 +37,7 @@ const korisnikRouter = require('./routes/korisnikRouter');
 const firmaRouter = require('./routes/firmaRouter');
 const prevoznoSredstvoRouter = require('./routes/prevoznoSredstvoRouter');
 const mestoRouter = require('./routes/mestoRouter');
+const dkoRouter = require('./routes/dkoRouter');
 const dozvolaRouter = require('./routes/dozvolaRouter');
 const otpadRouter = require('./routes/otpadRouter');
 const opasniOtpadRouter = require('./routes/opasniOtpadRouter');
@@ -58,10 +59,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
-})
+});
 
 app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
@@ -78,11 +79,11 @@ app.use('/api/skladistetretman', skladisteTretmanRouter);
 app.use('/api/skladistedeponija', skladisteDeponijaRouter);
 app.use('/api/delatnost', delatnostRouter);
 app.use('/api/katalog', katalogRouter);
-
+app.use('/api/dko', dkoRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-        next(createError(404));
+    next(createError(404));
 });
 
 module.exports = app;

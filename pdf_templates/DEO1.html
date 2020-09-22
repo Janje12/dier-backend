@@ -72,12 +72,12 @@
         <td class="blue">Naziv preduzeća kojem je otpad predat</td>
         <td class="blue">Broj dozvole</td>
     </tr>
-    {{#each akcijaProizvodnje}}
+    {{#each dnevniIzvestaj}}
     <tr>
-        <td>{{this.datumm}}</td>
-        <td>{{this.kolicinaOtpada}}</td>
+        <td>{{this.dan}}.{{this.mesec}}</td>
+        <td>{{this.ukupnoProizvodnja}}</td>
         <td>0</td>
-        <td>{{this.trenutnaKolicina}}</td>
+        <td>{{this.ukupnoStanje}}</td>
         <td></td>
         <td></td>
         <td></td>
