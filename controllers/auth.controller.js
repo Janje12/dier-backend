@@ -43,9 +43,9 @@ exports.login = async (req, res) => {
                 return;
             }
             const refreshToken = generateRefreshToken(foundUser, company);
+            foundUser.token = refreshToken;
             const accessToken = generateAccessToken(foundUser, company);
 
-            foundUser.token = refreshToken;
             korisnik_controller.updateMethod(foundUser._id, foundUser);
 
             res.status(200).json({token: accessToken, korisnik: foundUser});
@@ -85,7 +85,7 @@ exports.refresh = async (req, res) => {
 };
 
 function generateAccessToken(user, company) {
-    let expirePeriod = '20m';
+    let expirePeriod = '30m';
     if (user.rememberMe)
         expirePeriod = '730h';
     const accessToken = jwt.sign({
@@ -149,7 +149,7 @@ exports.register = async (req, res) => {
     let storage = company.skladista;
     let storageTreatment = company.skladistaTretman;
     let storageDump = company.skladistaDeponija;
-    let storageCache = company.skladisteSkladistenje;
+    let storageCache = company.skladistaSkladistenje;
 
     // init the IDs
     user._id = mongoose.Types.ObjectId();
