@@ -18,7 +18,11 @@ exports.login = async (req, res) => {
     }
     const user = req.body;
     try {
-        const foundUser = await korisnik_controller.findOneMethod(user.email, 'email');
+        let foundUser;
+        if(user.email.includes('@'))
+            foundUser = await korisnik_controller.findOneMethod(user.email, 'email');
+        else
+            foundUser = await korisnik_controller.findOneMethod(user.email, 'korisnickoIme');
         if (!foundUser) {
             res.sendStatus(403);
             return;
