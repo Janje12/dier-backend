@@ -1,16 +1,69 @@
 const DKO = require('../models/dko');
+const mongoose = require('mongoose');
+const cyr_converter = require('../lib/cyr-converter');
+const trashController = require('../controllers/otpad.controller');
+const companyController = require('../controllers/firma.controller');
+const addressController = require('../controllers/mesto.controller');
 const pdf = require('pdf-creator-node');
 const fs = require('fs');
 const path = require('path');
 const PDF_OPTIONS = require('../pdf_templates/pdf_options').PDF_OPTIONS;
 
+exports.convertToCyrilic = (obj) => {
+    let result = obj;
+    for (let key in obj) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (obj.hasOwnProperty(key)) {
+            if (typeof obj[key] === 'string' && key !== '_id' && key !== 'email' && key !== 'emailPrijem' && key !== 'nacinPostupanja'
+                && key !== 'qLista')
+                result[key] = cyr_converter(obj[key]);
+            else if (typeof obj[key] === 'object')
+                result[key] = this.convertToCyrilic(obj[key]);
+        }
+    }
+    return result;
+};
+
 exports.createTransportReport = async (dko) => {
     const html = fs.readFileSync('pdf_templates/DKO.html', 'utf8');
     const today = new Date();
     const path = './tmp/DKO/' + 'DKO_' + dko.otpad._id + '_' + today.getMonth() + '.pdf';
-    let vrstaProizvodjaca;
-    let RiliD;
-    let vrstaPrimalaca;
+
+    const vrstaProizvodjaca = new Array();
+    const vrstaPrimalaca = new Array();
+    const rLista = dko.nacinPostupanja.startsWith('R') ? dko.nacinPostupanja : '';
+    const dLista = dko.nacinPostupanja.startsWith('D') ? dko.nacinPostupanja : '';
+    vrstaProizvodjaca.push(dko.vrstaProizvodjaca === 'production' ? 'X' : '');
+    vrstaProizvodjaca.push(dko.vrstaProizvodjaca === 'treatment' ? 'X' : '');
+    vrstaProizvodjaca.push(dko.vrstaProizvodjaca === 'storage' ? 'X' : '');
+    vrstaPrimalaca.push(dko.vrstaPrimalaca === 'storage' ? 'X' : '');
+    vrstaPrimalaca.push(dko.vrstaPrimalaca === 'treatment' ? 'X' : '');
+    vrstaPrimalaca.push(dko.vrstaPrimalaca === 'dump' ? 'X' : '');
+    await this.createMethod(dko);
+    let tmp;
+    if (dko.datumIspitivanja) {
+        dko.datumIspitivanja = dko.datumIspitivanja.slice(0, 10);
+        dko.datumIspitivanja = dko.datumIspitivanja.replace(/-/g, '.');
+        tmp = dko.datumIspitivanja.split('.');
+        dko.datumIspitivanja = tmp[2] + '.' + tmp[1] + '.' + tmp[0];
+    }
+    if (dko.datumDozvoleProizvodjac) {
+        dko.datumDozvoleProizvodjac = dko.datumDozvoleProizvodjac.slice(0, 10);
+        dko.datumDozvoleProizvodjac = dko.datumDozvoleProizvodjac.replace(/-/g, '.');
+        tmp = dko.datumDozvoleProizvodjac.split('.');
+        dko.datumDozvoleProizvodjac = tmp[2] + '.' + tmp[1] + '.' + tmp[0];
+    }
+    dko.datumDozvoleTransport = dko.datumDozvoleTransport.slice(0, 10);
+    dko.datumDozvoleTransport = dko.datumDozvoleTransport.replace(/-/g, '.');
+    tmp = dko.datumDozvoleTransport.split('.');
+    dko.datumDozvoleTransport = tmp[2] + '.' + tmp[1] + '.' + tmp[0];
+    dko.datumDozvolePrimalac = dko.datumDozvolePrimalac.slice(0, 10);
+    dko.datumDozvolePrimalac = dko.datumDozvolePrimalac.replace(/-/g, '.');
+    tmp = dko.datumDozvolePrimalac.split('.');
+    dko.datumDozvolePrimalac = tmp[2] + '.' + tmp[1] + '.' + tmp[0];
+    console.log(dko.datumDozvolePrimalac);
+    const tmpDKO = this.convertToCyrilic(dko);
+
 
     const document = {
         html: html,
@@ -22,11 +75,18 @@ exports.createTransportReport = async (dko) => {
             lokacija2: dko.rutaKretanja[2],
             lokacija3: dko.rutaKretanja[3],
             odrediste: dko.rutaKretanja[4],
+            proizvodjac: vrstaProizvodjaca[0],
+            tretman: vrstaProizvodjaca[1],
+            vlasnik: vrstaProizvodjaca[2],
+            rLista: rLista,
+            dLista: dLista,
+            skladistenjePrimalac: vrstaPrimalaca[0],
+            tretmanPrimalac: vrstaPrimalaca[1],
+            odlaganjePrimalac: vrstaPrimalaca[2],
         },
         path: path,
     };
-    const newData = {};
-    //await this.createMethod(newData);
+
     return document;
 };
 
@@ -37,8 +97,31 @@ exports.create = async (req, res) => {
     }
     const dko = req.body.dko;
     try {
+        const trash = await trashController.readOneMethod(dko.otpad._id);
+        dko.firmaTransport._id = '5f6cb758eb23a91294fbbc65';
+        dko.firmaPrimalac._id = '5f6cb758eb23a91294fbbc67';
+        if (!trash)
+            res.sendStatus(401);
+        const companySender = await companyController.readOneMethod(dko.firmaProizvodjac._id);
+        if (!companySender)
+            res.sendStatus(401);
+        const companyTransport = await companyController.readOneKomitentMethod(dko.firmaTransport._id);
+        if (!companyTransport) {
+            dko.firmaTransport._id = mongoose.Types.ObjectId();
+            dko.firmaTransport.adresa.mesto
+                = await addressController.findOneMethod(dko.firmaTransport.adresa.mesto.mestoNaziv, 'mestoNaziv');
+            dko.firmaTransport = await companyController.createKomitentMethod(dko.firmaTransport);
+        }
+        const companyReceiver = await companyController.readOneKomitentMethod(dko.firmaPrimalac._id);
+        if (!companyReceiver) {
+            dko.firmaPrimalac._id = mongoose.Types.ObjectId();
+            dko.firmaPrimalac.adresa.mesto =
+                await addressController.findOneMethod(dko.firmaPrimalac.adresa.mesto.mestoNaziv, 'mestoNaziv');
+            dko.firmaPrimalac = await companyController.createKomitentMethod(dko.firmaPrimalac);
+        }
+
+
         const document = await this.createTransportReport(dko);
-        // console.log(document);
         await pdf.create(document, PDF_OPTIONS)
             .then(res => {
                 console.log(res);
@@ -46,8 +129,9 @@ exports.create = async (req, res) => {
             .catch(error => {
                 console.error(error);
             });
+
         const today = new Date();
-        res.sendFile(path.join(__dirname, '../tmp/DEO1/' + 'DKO' + dko.otpad._id + '_' + today.getMonth() + '.pdf'));
+        res.sendFile(path.join(__dirname, '../tmp/DKO/' + 'DKO_' + dko.otpad._id + '_' + today.getMonth() + '.pdf'));
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
@@ -55,9 +139,9 @@ exports.create = async (req, res) => {
 };
 
 exports.createMethod = async (data) => {
-    let query = {};
+    // const query = {};
     try {
-        savedData = await DKO.create(data);
+        const savedData = await DKO.create(data);
         return savedData;
     } catch (err) {
         console.log(err);

@@ -1,4 +1,5 @@
-const Firma = require('../models/firma');
+const Firma = require('../models/firma').Firma;
+const FirmaKomitent = require('../models/firma').FirmaKomitent;
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -12,7 +13,17 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
+
+exports.createKomitentMethod = async (data) => {
+    try {
+        const savedData = await FirmaKomitent.create(data);
+        return savedData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
 
 exports.createMethod = async (data) => {
     try {
@@ -22,7 +33,7 @@ exports.createMethod = async (data) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
     // WIP
@@ -33,7 +44,7 @@ exports.readMany = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
@@ -43,7 +54,7 @@ exports.readManyMethod = async (query) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -57,7 +68,7 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 /*
     Find a more elegant way of chosing which things to populate and which not to.
@@ -70,7 +81,17 @@ exports.readOneMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
+
+exports.readOneKomitentMethod = async (_id) => {
+    try {
+        const foundData = await FirmaKomitent.findById(_id);
+        return foundData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
 
 exports.findOne = async (req, res) => {
     if (!req.params) {
@@ -85,7 +106,7 @@ exports.findOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 
 exports.findOneMethod = async (value, type) => {
@@ -98,7 +119,7 @@ exports.findOneMethod = async (value, type) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -113,7 +134,7 @@ exports.update = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
@@ -123,7 +144,7 @@ exports.updateMethod = async (_id, updatingData) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
@@ -137,7 +158,7 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
@@ -147,4 +168,4 @@ exports.deleteMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};

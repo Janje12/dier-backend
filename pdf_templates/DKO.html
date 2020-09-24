@@ -14,9 +14,7 @@
         text-align: left;
         border-collapse: collapse;
     }
-    td {
-        width: 30%;
-    }
+
     th {
         background-color: rgb(191, 191, 191);
     }
@@ -25,386 +23,385 @@
 <div style="text-align: right; width: 100%; font-weight: bold;">Образац</div>
 <h5 style="text-align: center">ДОКУМЕНТ О КРЕТАЊУ ОТПАДА</h5>
 {{#with dko}}
-<table width="100%">
+<table style="width: 100%;">
     <tr>
-        <th colspan="3">ДЕО А - ПОДАЦИ О ОТПАДУ (ПОПУЊАВА ПРОИЗВОЂАЧ/ВЛАСНИК ОТПАДА)</th>
+        <th colspan="5">ДЕО А - ПОДАЦИ О ОТПАДУ (ПОПУЊАВА ПРОИЗВОЂАЧ/ВЛАСНИК ОТПАДА)</th>
     </tr>
     <tr>
-        <td>Врста отпада</td>
-        <td colspan="2" style="width: 50%">{{vrstaOtpada}}</td>
+        <td style="width:35%" colspan="2">Врста отпада</td>
+        <td style="width: 65%" colspan="3">{{vrstaOtpada}}</td>
     </tr>
     <tr>
-        <td rowspan="2">Класификација отпада</td>
-        <td>Индексни број отпада</td>
-        <td>{{otpad.indeksniBroj}}</td>
+        <td colspan="2" rowspan="2">Класификација отпада</td>
+        <td colspan="2" style="width: 33%">Индексни број отпада</td>
+        <td style="width: 22%">{{otpad.indeksniBroj}}</td>
 
     </tr>
     <tr>
-        <td>Ознака отпада према Q листи</td>
-        <td>{{qLista}}</td>
+        <td colspan="2">Ознака отпада према Q листи</td>
+        <td style="text-align: center">{{qLista}}</td>
     </tr>
     <tr>
         <td colspan="2">Маса отпада (t)</td>
-        <td>{{masaOtpada}}</td>
+        <td colspan="3">{{masaOtpada}}</td>
     </tr>
     <tr>
         <td colspan="2">Начин паковања отпада</td>
-        <td>{{nacinPakovanja}}</td>
+        <td colspan="3">{{nacinPakovanja}}</td>
     </tr>
     <tr>
         <td colspan="2">Физичко стање отпада</td>
-        <td>{{fizickoStanje}}</td>
+        <td colspan="3">{{fizickoStanje}}</td>
     </tr>
     <tr>
-        <td rowspan="2">Извештај о испитивању отпада</td>
-        <td>Број</td>
-        <td>{{sifraIspitivanja}}</td>
+        <td colspan="2" rowspan="2">Извештај о испитивању отпада</td>
+        <td style="width: 18%">Број</td>
+        <td colspan="2" style="width: 47%">{{sifraIspitivanja}}</td>
     </tr>
     <tr>
         <td>Датум издавања</td>
-        <td>{{datumIspitivanja}}</td>
+        <td colspan="2">{{datumIspitivanja}}</td>
     </tr>
     {{/with}}
     <tr>
         <td colspan="2">Одредиште</td>
-        <td>{{pocetak}}</td>
+        <td colspan="3">{{odrediste}}</td>
     </tr>
     {{#with dko}}
     <tr>
         <td colspan="2">Вид превоза</td>
-        <td>{{vidPrevoza}}</td>
+        <td colspan="3">{{vidPrevoza}}</td>
     </tr>
     <tr>
         <td colspan="2">Посебне напомене за руковање и додатне информације</td>
-        <td>{{dodatneInformacije}}</td>
+        <td colspan="3">{{dodatneInformacije}}</td>
     </tr>
 </table>
 <br>
-<table>
+<table style="width: 100%;">
     <tr>
-        <th colspan="3">ДЕО Б – ПОДАЦИ О ПРОИЗВОЂАЧУ/ВЛАСНИКУ ОТПАДА</th>
+        <th colspan="5">ДЕО Б – ПОДАЦИ О ПРОИЗВОЂАЧУ/ВЛАСНИКУ ОТПАДА</th>
     </tr>
     <tr>
-        <td>ПИБ произвођача/власника </td>
-        <td  colspan="2">{{firmaProizvodjac.pib}}</td>
+        <td style="width: 35%;" colspan="2">ПИБ произвођача/власника</td>
+        <td style="width: 65%;" colspan="3">{{firmaProizvodjac.pib}}</td>
     </tr>
     <tr>
-        <td>Матични број произвођача/власника</td>
-        <td  colspan="2">{{firmaProizvodjac.mat}}</td>
+        <td colspan="2">Матични број<br> произвођача/власника</td>
+        <td colspan="3">{{firmaProizvodjac.mat}}</td>
     </tr>
     <tr>
-        <td>Назив произвођача/власника</td>
-        <td  colspan="2">{{firmaProizvodjac.naziv}}</td>
+        <td colspan="2">Назив произвођача/власника</td>
+        <td colspan="3">{{firmaProizvodjac.naziv}}</td>
     </tr>
     <tr>
-        <td rowspan="7">Адреса произвођача/
-            власника
-        </td>
-        <td>Општина</td>
-        <td>{{firmaProizvodjac.adresa.mesto.opstinaNaziv}}</td>
+        <td style="width: 20%;" rowspan="7">Адреса<br> произвођача/<br>власника</td>
+        <td style="width: 15%;">Општина</td>
+        <td colspan="3">{{firmaProizvodjac.adresa.mesto.opstinaNaziv}}</td>
     </tr>
     <tr>
         <td>Место</td>
-        <td>{{firmaProizvodjac.adresa.mesto.mestoNaziv}}</td>
+        <td colspan="3">{{firmaProizvodjac.adresa.mesto.mestoNaziv}}</td>
     </tr>
     <tr>
         <td>Поштански број</td>
-        <td>{{firmaProizvodjac.adresa.mesto.postanskiBroj}}</td>
+        <td colspan="3">{{firmaProizvodjac.adresa.mesto.postanskiBroj}}</td>
     </tr>
     <tr>
         <td>Улица и број</td>
-        <td>{{firmaProizvodjac.adresa.ulica}}</td>
+        <td colspan="3">{{firmaProizvodjac.adresa.ulica}}</td>
     </tr>
     <tr>
         <td>Телефон</td>
-        <td>{{firmaProizvodjac.telefon}}</td>
+        <td colspan="3">{{firmaProizvodjac.telefon}}</td>
     </tr>
     <tr>
         <td>Телефакс</td>
-        <td>{{firmaProizvodjac.faks}}</td>
+        <td colspan="3">{{firmaProizvodjac.faks}}</td>
     </tr>
     <tr>
         <td>Е mail</td>
-        <td>{{firmaProizvodjac.email}}</td>
+        <td colspan="3">{{firmaProizvodjac.email}}</td>
     </tr>
+    {{/with}}
     <tr>
-        <td rowspan="3">Произвођач/власник отпада
-            (означити са „x”)
+        <td colspan="2" rowspan="3">
+            Произвођач власник отпада<br>
+                (означити са „x”)
         </td>
-        <td>Произвођач</td>
-        <td>X</td>
+        <td colspan="2">Произвођач</td>
+        <td style="text-align: center">{{proizvodjac}}</td>
     </tr>
     <tr>
-        <td>Власник</td>
-        <td></td>
+        <td colspan="2">Власник</td>
+        <td style="text-align: center">{{vlasnik}}</td>
     </tr>
     <tr>
-        <td>Оператер постројења за управљање отпадом</td>
-        <td></td>
+        <td colspan="2">Оператер постројења за управљање отпадом</td>
+        <td style="text-align: center">{{tretman}}</td>
     </tr>
     <tr>
-        <td rowspan="2">Предвиђени начин поступања са отпадом
+        <td colspan="2" rowspan="2">Предвиђени начин поступања са отпадом
         </td>
-        <td>Операција поновног искоришћења (R листа)</td>
-        <td>{{nacinPostupanja}}</td>
+        <td colspan="2">Операција поновног искоришћења (R листа)</td>
+        <td style="text-align: center">{{rLista}}</td>
     </tr>
     <tr>
-        <td>Операција одлагања (D листа)</td>
-        <td>{{nacinPostupanja}}</td>
+        <td colspan="2">Операција одлагања (D листа)</td>
+        <td style="text-align: center">{{dLista}}</td>
+    </tr>
+    {{#with dko}}
+    <tr>
+        <td colspan="2" rowspan="2">Дозвола за управљање отпадом</td>
+        <td style="width:10%;">Број</td>
+        <td colspan="2">{{sifraDozvoleProizvodjac}}</td>
     </tr>
     <tr>
-        <td rowspan="2">Дозвола за управљање отпадом</td>
-        <td>Број</td>
-        <td>{{sifraDozvoleProizvodjac}}</td>
+        <td style="width:10%;">Датум издавања</td>
+        <td colspan="2">{{datumDozvoleProizvodjac}}</td>
     </tr>
     <tr>
-        <td>Датум издавања</td>
-        <td>{{datumDozvoleProizvodjac}}</td>
-    </tr>
-    <tr>
-        <td colspan="3" style="text-align: center">Изјава произвођача/власника отпада<br><br>
+        <td colspan="5" style="text-align: center">Изјава произвођача/власника отпада<br><br>
             „Потврђујем да је отпад одобрен за транспорт, да су испуњени сви захтеви за паковање и обележавање
             и да је превозник информисан о врсти терета и неопходним предострожностима.”
         </td>
     </tr>
     <tr>
-        <td  colspan="2">Датум предаје отпада</td>
-        <td></td>
+        <td colspan="3">Датум предаје отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Читко име и презиме одговорног лица произвођача/власника отпада</td>
-        <td></td>
+        <td colspan="3">Читко име и презиме одговорног лица произвођача/власника отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Број мобилног телефона одговорног лица произвођача/власника отпада</td>
-        <td></td>
+        <td colspan="3">Број мобилног телефона одговорног лица произвођача/власника отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Потпис и овера</td>
-        <td></td>
+        <td colspan="3">Потпис и овера</td>
+        <td colspan="2"></td>
     </tr>
 </table>
 <br>
 <table>
     <tr>
-        <th colspan="3">ДЕО Ц – ПОДАЦИ О ПРЕВОЗНИКУ ОТПАДА</th>
+        <th colspan="5">ДЕО Ц – ПОДАЦИ О ПРЕВОЗНИКУ ОТПАДА</th>
     </tr>
     <tr>
-        <td>ПИБ произвођача/власника </td>
-        <td  colspan="2">{{firmaTransport.pib}}</td>
+        <td style="width: 35%;" colspan="2">ПИБ произвођача/власника</td>
+        <td style="width: 75%;" colspan="3">{{firmaTransport.pib}}</td>
     </tr>
     <tr>
-        <td>Матични број произвођача/власника</td>
-        <td  colspan="2">{{firmaTransport.mat}}</td>
+        <td colspan="2">Матични број произвођача/власника</td>
+        <td colspan="3">{{firmaTransport.mat}}</td>
     </tr>
     <tr>
-        <td>Назив произвођача/власника</td>
-        <td  colspan="2">{{firmaTransport.naziv}}</td>
+        <td colspan="2">Назив произвођача/власника</td>
+        <td colspan="3">{{firmaTransport.naziv}}</td>
     </tr>
     <tr>
-        <td rowspan="7">Адреса произвођача/
+        <td style="width: 20%;" rowspan="7">Адреса произвођача/
             власника
         </td>
-        <td>Општина</td>
-        <td>{{firmaTransport.adresa.mesto.opstinaNaziv}}</td>
+        <td style="width: 15%">Општина</td>
+        <td colspan="3">{{firmaTransport.adresa.mesto.opstinaNaziv}}</td>
     </tr>
     <tr>
         <td>Место</td>
-        <td>{{firmaTransport.adresa.mesto.mestoNaziv}}</td>
+        <td colspan="3">{{firmaTransport.adresa.mesto.mestoNaziv}}</td>
     </tr>
     <tr>
         <td>Поштански број</td>
-        <td>{{firmaTransport.adresa.mesto.postanskiBroj}}</td>
+        <td colspan="3">{{firmaTransport.adresa.mesto.postanskiBroj}}</td>
     </tr>
     <tr>
         <td>Улица и број</td>
-        <td>{{firmaTransport.adresa.uluca}}</td>
+        <td colspan="3">{{firmaTransport.adresa.uluca}}</td>
     </tr>
     <tr>
         <td>Телефон</td>
-        <td>{{firmaTransport.telefon}}</td>
+        <td colspan="3">{{firmaTransport.telefon}}</td>
     </tr>
     <tr>
         <td>Телефакс</td>
-        <td>{{firmaTransport.faks}}</td>
+        <td colspan="3">{{firmaTransport.faks}}</td>
     </tr>
     <tr>
         <td>Е mail</td>
-        <td>{{firmaTransport.email}}</td>
+        <td colspan="3">{{firmaTransport.email}}</td>
     </tr>
     <tr>
-        <td>Врста превозног средства</td>
-        <td colspan="2">{{vrstaVozila}}</td>
+        <td colspan="2">Врста превозног средства</td>
+        <td colspan="3">{{vrstaVozila}}</td>
     </tr>
     <tr>
-        <td>Регистарски број превозног средства</td>
-        <td colspan="2">{{registarskiBroj}}</td>
+        <td colspan="2">Регистарски број превозног средства</td>
+        <td colspan="3">{{registarskiBroj}}</td>
     </tr>
     {{/with}}
     <tr>
-        <td rowspan="5">Рута кретања отпада</td>
-        <td>Локација утовара</td>
-        <td>{{pocetak}}</td>
+        <td colspan="2" rowspan="5">Рута кретања отпада</td>
+        <td style="width:15%;">Локација утовара</td>
+        <td colspan="2">{{pocetak}}</td>
     </tr>
     <tr>
         <td>Преко (via)</td>
-        <td>{{lokacija1}}</td>
+        <td colspan="2">{{lokacija1}}</td>
     </tr>
     <tr>
         <td>Преко (via)</td>
-        <td>{{lokacija2}}</td>
+        <td colspan="2">{{lokacija2}}</td>
     </tr>
     <tr>
         <td>Преко (via)</td>
-        <td>{{lokacija3}}</td>
+        <td colspan="2">{{lokacija3}}</td>
     </tr>
     <tr>
         <td>Локација истовара</td>
-        <td>{{odrediste}}</td>
+        <td colspan="2">{{odrediste}}</td>
     </tr>
     {{#with dko}}
     <tr>
-        <td colspan="3"  style="text-align: center">Изјава превозника отпада:<br><br>
+        <td colspan="5" style="text-align: center">Изјава превозника отпада:<br><br>
 
             „Потврђујем да је отпад у стању које одговара опису и да су тачни подаци дати у делу А.”
         </td>
     </tr>
     <tr>
-        <td rowspan="2">Дозвола за управљање отпадом</td>
-        <td>Број</td>
-        <td>{{sifraDozvoleTransport}}</td>
+        <td colspan="2" rowspan="2">Дозвола за управљање отпадом</td>
+        <td style="width:10%;">Број</td>
+        <td colspan="2">{{sifraDozvoleTransport}}</td>
     </tr>
     <tr>
         <td>Датум издавања</td>
-        <td>{{datumDozvoleTransport}}</td>
+        <td colspan="2">{{datumDozvoleTransport}}</td>
     </tr>
     <tr>
-        <td  colspan="2">Датум предаје отпада</td>
-        <td></td>
+        <td colspan="3">Датум предаје отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Читко име и презиме одговорног лица превозника отпада</td>
-        <td></td>
+        <td colspan="3">Читко име и презиме одговорног лица превозника отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Број мобилног телефона одговорног лица превозника отпада</td>
-        <td></td>
+        <td colspan="3">Број мобилног телефона одговорног лица превозника отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Потпис и овера</td>
-        <td></td>
+        <td colspan="3">Потпис и овера</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Датум предаје отпада</td>
-        <td></td>
+        <td colspan="3">Датум предаје отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Читко име и презиме одговорног лица превозника отпада</td>
-        <td></td>
+        <td colspan="3">Читко име и презиме одговорног лица превозника отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Број мобилног телефона одговорног лица превозника отпада</td>
-        <td></td>
+        <td colspan="3">Број мобилног телефона одговорног лица превозника отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Потпис и овера</td>
-        <td></td>
+        <td colspan="3">Потпис и овера</td>
+        <td colspan="2"></td>
     </tr>
 </table>
 <br>
 <table>
     <tr>
-        <th colspan="3">ДЕО Д – ПОДАЦИ О ПРИМАОЦУ ОТПАДА</th>
+        <th colspan="5">ДЕО Д – ПОДАЦИ О ПРИМАОЦУ ОТПАДА</th>
     </tr>
     <tr>
-        <td>ПИБ произвођача/власника </td>
-        <td  colspan="2">{{firmaPrimalac.pib}}</td>
+        <td style="width: 35%" colspan="2">ПИБ произвођача/власника</td>
+        <td style="width: 75%;" colspan="3">{{firmaPrimalac.pib}}</td>
     </tr>
     <tr>
-        <td>Матични број произвођача/власника</td>
-        <td  colspan="2">{{firmaPrimalac.mat}}</td>
+        <td colspan="2">Матични број произвођача/власника</td>
+        <td colspan="3">{{firmaPrimalac.mat}}</td>
     </tr>
     <tr>
-        <td>Назив произвођача/власника</td>
-        <td  colspan="2">{{firmaPrimalac.naziv}}</td>
+        <td colspan="2">Назив произвођача/власника</td>
+        <td colspan="3">{{firmaPrimalac.naziv}}</td>
     </tr>
     <tr>
-        <td rowspan="7">Адреса произвођача/
-            власника
-        </td>
-        <td>Општина</td>
-        <td>{{firmaPrimalac.adresa.mesto.opstinaNaziv}}</td>
+        <td rowspan="7" style="width: 20%">Адреса произвођача/власника</td>
+        <td style="width: 15%">Општина</td>
+        <td colspan="3">{{firmaPrimalac.adresa.mesto.opstinaNaziv}}</td>
     </tr>
     <tr>
         <td>Место</td>
-        <td>{{firmaPrimalac.adresa.mesto.mestoNaziv}}</td>
+        <td colspan="3">{{firmaPrimalac.adresa.mesto.mestoNaziv}}</td>
     </tr>
     <tr>
         <td>Поштански број</td>
-        <td>{{firmaPrimalac.adresa.mesto.postanskiBroj}}</td>
+        <td colspan="3">{{firmaPrimalac.adresa.mesto.postanskiBroj}}</td>
     </tr>
     <tr>
         <td>Улица и број</td>
-        <td>{{firmaPrimalac.adresa.ulica}}</td>
+        <td colspan="3">{{firmaPrimalac.adresa.ulica}}</td>
     </tr>
     <tr>
         <td>Телефон</td>
-        <td>{{firmaPrimalac.telefon}}</td>
+        <td colspan="3">{{firmaPrimalac.telefon}}</td>
     </tr>
     <tr>
         <td>Телефакс</td>
-        <td>{{firmaPrimalac.faks}}</td>
+        <td colspan="3">{{firmaPrimalac.faks}}</td>
     </tr>
     <tr>
         <td>Е mail</td>
-        <td>{{firmaPrimalac.email}}</td>
+        <td colspan="3">{{firmaPrimalac.email}}</td>
+    </tr>
+    {{/with}}
+    <tr>
+        <td colspan="2" rowspan="3">Прималац (означити са „x”)</td>
+        <td colspan="2">Постројење за складиштење отпада</td>
+        <td>{{skladistenjePrimalac}}</td>
     </tr>
     <tr>
-        <td rowspan="3">Прималац
-            (означити са „x”)
-        </td>
-        <td>Постројење за складиштење отпада</td>
-        <td></td>
+        <td colspan="2">Постројење за третман отпада</td>
+        <td>{{tretmanPrimalac}}</td>
     </tr>
     <tr>
-        <td>Постројење за третман отпада</td>
-        <td>X</td>
+        <td colspan="2">Постројење за одлагање отпада</td>
+        <td>{{odlaganjePrimalac}}</td>
     </tr>
+    {{#with dko}}
     <tr>
-        <td>Постројење за одлагање отпада</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td rowspan="2">Дозвола за управљање отпадом</td>
-        <td>Број</td>
+        <td colspan="2" rowspan="2">Дозвола за управљање отпадом</td>
+        <td colspan="2">Број</td>
         <td>{{sifraDozvolePrimalac}}</td>
     </tr>
     <tr>
-        <td>Датум издавања</td>
+        <td colspan="2">Датум издавања</td>
         <td>{{datumDozvolePrimalac}}</td>
     </tr>
     <tr>
-        <td colspan="3" style="text-align: center">
+        <td colspan="5" style="text-align: center">
             Изјава примаоца отпада<br><br>
             „Потврђујем да је отпад описан у делу А испоручен превозним средством типа {{vrstaVozila}},
             регистарски броj {{registarskiBroj}}, као и да одговара условима за прихватање.”
         </td>
     </tr>
     <tr>
-        <td  colspan="2">Датум пријема отпада</td>
-        <td></td>
+        <td colspan="3">Датум пријема отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Читко име и презиме одговорног лица примаоца отпада</td>
-        <td></td>
+        <td colspan="3">Читко име и презиме одговорног лица примаоца отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Број мобилног телефона одговорног лица примаоца отпада</td>
-        <td></td>
+        <td colspan="3">Број мобилног телефона одговорног лица примаоца отпада</td>
+        <td colspan="2"></td>
     </tr>
     <tr>
-        <td  colspan="2">Потпис и овера</td>
-        <td></td>
+        <td colspan="3">Потпис и овера</td>
+        <td colspan="2"></td>
     </tr>
 </table>
 {{/with}}

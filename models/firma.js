@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const firmaKomitentSchema = Schema({
     pib: {type: String, required: true, unique: true},
@@ -13,7 +13,7 @@ const firmaKomitentSchema = Schema({
         mesto: {type: Schema.Types.ObjectId, ref: 'Mesto', required: true},
         ulica: {type: String, required: true},
     },
-})
+});
 
 const firmaSchema = Schema({
     menadzer: {type: String},
@@ -31,4 +31,7 @@ const firmaSchema = Schema({
 const FirmaKomitent = mongoose.model('FirmaKomitent', firmaKomitentSchema);
 const Firma = FirmaKomitent.discriminator('Firma', firmaSchema);
 
-module.exports = Firma;
+module.exports = {
+    Firma: Firma,
+    FirmaKomitent: FirmaKomitent,
+};
