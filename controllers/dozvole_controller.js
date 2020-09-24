@@ -1,5 +1,5 @@
 const Dozvola = require('../models/dozvola');
-const Firma = require('../models/firma');
+const Firma = require('../models/firma').Firma;
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -13,7 +13,7 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.createMethod = async (data) => {
     try {
@@ -23,7 +23,7 @@ exports.createMethod = async (data) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
     // WIP
@@ -34,7 +34,7 @@ exports.readMany = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
@@ -44,7 +44,7 @@ exports.readManyMethod = async (query) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -58,7 +58,7 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
@@ -69,7 +69,7 @@ exports.readOneMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.findOneMethod = async (value, type) => {
     let query = {};
@@ -81,7 +81,7 @@ exports.findOneMethod = async (value, type) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -96,7 +96,7 @@ exports.update = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
@@ -106,7 +106,7 @@ exports.updateMethod = async (_id, updatingData) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
@@ -120,7 +120,7 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
@@ -130,7 +130,7 @@ exports.deleteMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.getDozvolaFirme = async (req, res) => {
     if (!req.params) {
@@ -149,5 +149,5 @@ exports.getDozvolaFirme = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
