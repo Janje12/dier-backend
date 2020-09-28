@@ -74,7 +74,7 @@ exports.createTransportReport = async (dko) => {
             lokacija1: dko.rutaKretanja[1],
             lokacija2: dko.rutaKretanja[2],
             lokacija3: dko.rutaKretanja[3],
-            odrediste: dko.rutaKretanja[4],
+            odrediste: dko.rutaKretanja[dko.rutaKretanja.length - 1],
             proizvodjac: vrstaProizvodjaca[0],
             tretman: vrstaProizvodjaca[1],
             vlasnik: vrstaProizvodjaca[2],
