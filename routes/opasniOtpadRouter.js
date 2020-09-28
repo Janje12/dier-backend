@@ -26,7 +26,7 @@ router.use(async (req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-            await trashLogs.trashMethod(req, JSON.parse(resBody), storageID, prevTrash);
+            await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
         });
         oldEnd.apply(res, restArgs);
     };

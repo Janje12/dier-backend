@@ -22,7 +22,7 @@ exports.create = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
 exports.createMethod = async (data) => {
     try {
@@ -32,7 +32,7 @@ exports.createMethod = async (data) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
     // WIP
@@ -43,7 +43,7 @@ exports.readMany = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
@@ -53,7 +53,7 @@ exports.readManyMethod = async (query) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -67,7 +67,7 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
@@ -77,7 +77,7 @@ exports.readOneMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -94,12 +94,16 @@ exports.update = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData, updatingStorageID) => {
     try {
         const skladiste = await skladiste_controller.readOneMethod(updatingStorageID);
-        const previousAmount = skladiste.neopasniOtpad.filter(x => x._id.toString() === _id)[0].kolicina;
+        let previousAmount = 0;
+        if (!updatingData.indeksniBroj.endsWith('*'))
+            previousAmount = skladiste.neopasniOtpad.filter(x => x._id.toString() === _id)[0].kolicina;
+        else
+            previousAmount = skladiste.opasniOtpad.filter(x => x._id.toString() === _id)[0].kolicina;
         skladiste.kolicina = skladiste.kolicina + (updatingData.kolicina - previousAmount);
         await skladiste_controller.updateMethod(updatingStorageID, skladiste);
 
@@ -109,7 +113,7 @@ exports.updateMethod = async (_id, updatingData, updatingStorageID) => {
         console.log(err);
         return err;
     }
-}
+};
 
 /* Trash has to be removed in the storage refrence as well */
 exports.delete = async (req, res) => {
@@ -130,7 +134,7 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
@@ -140,4 +144,4 @@ exports.deleteMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};

@@ -98,40 +98,45 @@ exports.create = async (req, res) => {
     const dko = req.body.dko;
     try {
         const trash = await trashController.readOneMethod(dko.otpad._id);
-        dko.firmaTransport._id = '5f6cb758eb23a91294fbbc65';
-        dko.firmaPrimalac._id = '5f6cb758eb23a91294fbbc67';
         if (!trash)
             res.sendStatus(401);
         const companySender = await companyController.readOneMethod(dko.firmaProizvodjac._id);
         if (!companySender)
             res.sendStatus(401);
-        const companyTransport = await companyController.readOneKomitentMethod(dko.firmaTransport._id);
+        const companyTransport = await companyController.findKomitentOneMethod(dko.firmaTransport.pib, 'pib');
         if (!companyTransport) {
             dko.firmaTransport._id = mongoose.Types.ObjectId();
             dko.firmaTransport.adresa.mesto
                 = await addressController.findOneMethod(dko.firmaTransport.adresa.mesto.mestoNaziv, 'mestoNaziv');
             dko.firmaTransport = await companyController.createKomitentMethod(dko.firmaTransport);
+        } else {
+            dko.firmaTransport = companyTransport;
         }
-        const companyReceiver = await companyController.readOneKomitentMethod(dko.firmaPrimalac._id);
+        const companyReceiver = await companyController.findKomitentOneMethod(dko.firmaPrimalac.pib, 'pib');
         if (!companyReceiver) {
             dko.firmaPrimalac._id = mongoose.Types.ObjectId();
             dko.firmaPrimalac.adresa.mesto =
                 await addressController.findOneMethod(dko.firmaPrimalac.adresa.mesto.mestoNaziv, 'mestoNaziv');
             dko.firmaPrimalac = await companyController.createKomitentMethod(dko.firmaPrimalac);
+        } else {
+            dko.firmaPrimalac = companyReceiver;
         }
+        if (!trash.indeksniBroj.endsWith('*')) {
+            const document = await this.createTransportReport(dko);
+            await pdf.create(document, PDF_OPTIONS)
+                .then(res => {
+                    console.log(res);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
 
-
-        const document = await this.createTransportReport(dko);
-        await pdf.create(document, PDF_OPTIONS)
-            .then(res => {
-                console.log(res);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-
-        const today = new Date();
-        res.sendFile(path.join(__dirname, '../tmp/DKO/' + 'DKO_' + dko.otpad._id + '_' + today.getMonth() + '.pdf'));
+            const today = new Date();
+            res.sendFile(path.join(__dirname, '../tmp/DKO/' + 'DKO_' + dko.otpad._id + '_' + today.getMonth() + '.pdf'));
+        } else {
+            await this.createMethod(dko);
+            res.sendStatus(200);
+        }
     } catch (err) {
         console.log(err);
         res.sendStatus(500);

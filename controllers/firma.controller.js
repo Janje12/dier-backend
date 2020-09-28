@@ -121,6 +121,19 @@ exports.findOneMethod = async (value, type) => {
     }
 };
 
+exports.findKomitentOneMethod = async (value, type) => {
+    let query = {};
+    query[type] = value;
+    try {
+        const foundData = await FirmaKomitent.findOne(query);
+        return foundData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+
 exports.findMany = async (req, res) => {
     if (!req.params) {
         res.sendStatus(400);
