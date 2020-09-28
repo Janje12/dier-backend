@@ -42,7 +42,7 @@ exports.readMany = async (req, res) => {
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await Transakcija.find(query);
+        const foundData = await Transakcija.find(query).populate('dko').populate('dko.firmaPrimalac');
         return foundData;
     } catch (err) {
         console.log(err);

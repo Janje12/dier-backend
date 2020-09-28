@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const skladisteTretman_controller = require('../controllers/skladiste-tretman.controller');
 
-// POST Otpad
+// POST Skladiste
 router.post('/', skladisteTretman_controller.create);
 
-// GET Skladiste
+// GET Skladiste[]
 router.get('/', skladisteTretman_controller.readMany);
 
 // GET Skladiste

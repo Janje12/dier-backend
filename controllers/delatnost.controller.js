@@ -15,7 +15,7 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.createMethod = async (data) => {
     try {
@@ -25,7 +25,7 @@ exports.createMethod = async (data) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
     // WIP
@@ -36,7 +36,7 @@ exports.readMany = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
@@ -46,21 +46,21 @@ exports.readManyMethod = async (query) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.readOneMethod(_id);
+        const data = await this.readOneMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
@@ -70,7 +70,7 @@ exports.readOneMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.findOneMethod = async (value, type) => {
     let query = {};
@@ -82,22 +82,22 @@ exports.findOneMethod = async (value, type) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
-    updatingData = req.body;
+    const _id = req.params.id;
+    const updatingData = req.body;
     try {
-        data = await this.updateMethod(_id, updatingData);
+        const data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
@@ -107,21 +107,21 @@ exports.updateMethod = async (_id, updatingData) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.deleteMethod(_id);
+        const data = await this.deleteMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
@@ -131,6 +131,6 @@ exports.deleteMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 

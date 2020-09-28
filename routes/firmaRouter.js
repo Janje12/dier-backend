@@ -14,6 +14,9 @@ router.get('/:id', firma_controller.readOne);
 // GET (FIND) ONE Firma
 router.get('/admin/:type/:value', firma_controller.findOne);
 
+// GET (FIND) ONE Firma
+router.get('/admin/many/:type/:value', firma_controller.findMany);
+
 // PATCH Firma
 router.patch('/:id', firma_controller.update);
 

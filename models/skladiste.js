@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const skladisteSchema = Schema({
     naziv: {type: String, required: true},
@@ -23,7 +23,7 @@ const skladisteTretmanSchema = Schema({
 
 const skladisteDeponijaSchema = Schema({
     vrstaDeponije: {type: String, required: true},
-})
+});
 
 const Skladiste = mongoose.model('Skladiste', skladisteSchema);
 const SkladisteTretman = Skladiste.discriminator('SkladisteTretman', skladisteTretmanSchema);

@@ -12,6 +12,14 @@ const dnevniIzvestajSchema = mongoose.Schema({
         ukupnoProizvodnja: {type: Number, required: true},
         ukupnoTransport: {type: Number, required: true},
         ukupnoStanje: {type: Number, required: true},
+        dko: {type: Schema.Types.ObjectId, ref: 'DKO', required: false},
+        rLista: {type: String, required: false},
+        dlista: {type: String, required: false},
+        sakupljac: {type: String, required: false},
+        tretman: {type: String, required: false},
+        odlagac: {type: String, required: false},
+        brojDozvole: {type: String, required: false},
+        nazivFirme: {type: String, required: false},
     }
 );
 

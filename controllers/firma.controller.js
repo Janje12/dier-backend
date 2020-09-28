@@ -37,7 +37,7 @@ exports.createMethod = async (data) => {
 
 exports.readMany = async (req, res) => {
     // WIP
-    query = {};
+    query = req.params.query ? req.params.query : {};
     try {
         const data = await this.readManyMethod(query);
         res.status(200).json(data);
@@ -61,9 +61,9 @@ exports.readOne = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.readOneMethod(_id);
+        const data = await this.readOneMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
@@ -121,15 +121,43 @@ exports.findOneMethod = async (value, type) => {
     }
 };
 
+exports.findMany = async (req, res) => {
+    if (!req.params) {
+        res.sendStatus(400);
+        return;
+    }
+    const type = req.params.type;
+    const value = req.params.value;
+    try {
+        const data = await this.findManyMethod(value, type);
+        res.status(200).json(data);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+};
+
+exports.findManyMethod = async (value, type) => {
+    let query = {};
+    query[type] = value;
+    console.log(query);
+    try {
+        const foundData = await FirmaKomitent.find(query).populate('adresa.mesto').populate('delatnost');
+        return foundData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
-    updatingData = req.body;
+    const _id = req.params.id;
+    const updatingData = req.body;
     try {
-        data = await this.updateMethod(_id, updatingData);
+        const data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);
@@ -151,9 +179,9 @@ exports.delete = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
+    const _id = req.params.id;
     try {
-        data = await this.deleteMethod(_id);
+        const data = await this.deleteMethod(_id);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);

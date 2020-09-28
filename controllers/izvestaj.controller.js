@@ -1,10 +1,66 @@
 const MesecniIzvestaj = require('../models/mesecniIzvestaj');
 const logsController = require('../controllers/transakcije.controller');
 const dayLogsController = require('../controllers/dnevniIzvestaj.controller');
+const Firma = require('../models/firma').FirmaKomitent;
 const pdf = require('pdf-creator-node');
 const fs = require('fs');
 const path = require('path');
 const PDF_OPTIONS = require('../pdf_templates/pdf_options').PDF_OPTIONS;
+
+exports.fillDailyReport = async (productions, transports) => {
+    const dailyReport = new Array(31);
+    productions.forEach(dp => {
+        const i = dp.datum.getDate();
+        if (!dailyReport[i]) {
+            dailyReport[i] = {};
+            dailyReport[i].godina = dp.datum.getFullYear();
+            dailyReport[i].mesec = dp.datum.getMonth();
+            dailyReport[i].dan = dp.datum.getDate();
+            dailyReport[i].otpad = dp.otpad;
+            dailyReport[i].skladiste = dp.skladiste;
+            dailyReport[i].akcijaProizvodnja = [];
+            dailyReport[i].akcijaProizvodnja.push(dp);
+            dailyReport[i].akcijaTransport = [];
+            dailyReport[i].ukupnoProizvodnja = dp.kolicinaOtpada;
+            dailyReport[i].ukupnoTransport = 0;
+            dailyReport[i].ukupnoStanje = dp.kolicinaOtpada;
+        } else {
+            dailyReport[i].akcijaProizvodnja.push(dp);
+            dailyReport[i].ukupnoProizvodnja += dp.kolicinaOtpada;
+            dailyReport[i].ukupnoStanje += dp.kolicinaOtpada;
+        }
+    });
+    transports.forEach(dt => {
+        const i = dt.datum.getDate();
+        if (!dailyReport[i]) {
+            dailyReport[i] = {};
+            dailyReport[i].godina = dt.datum.getFullYear();
+            dailyReport[i].mesec = dt.datum.getMonth();
+            dailyReport[i].dan = dt.datum.getDate();
+            dailyReport[i].otpad = dt.otpad;
+            dailyReport[i].skladiste = dt.skladiste;
+            dailyReport[i].akcijaProizvodnja = [];
+            dailyReport[i].akcijaTransport = [];
+            dailyReport[i].akcijaTransport.push(dt);
+            dailyReport[i].ukupnoProizvodnja = 0;
+            dailyReport[i].ukupnoTransport = -dt.kolicinaOtpada;
+            dailyReport[i].ukupnoStanje = dt.kolicinaOtpada;
+        } else {
+            dailyReport[i].akcijaTransport.push(dt);
+            dailyReport[i].ukupnoTransport -= dt.kolicinaOtpada;
+            dailyReport[i].ukupnoStanje += dt.kolicinaOtpada;
+        }
+        dailyReport[i].dko = dt.dko;
+        dailyReport[i].rLista = dt.dko.nacinPostupanja.startsWith('R') ? dt.dko.nacinPostupanja : '';
+        dailyReport[i].dLista = dt.dko.nacinPostupanja.startsWith('D') ? dt.dko.nacinPostupanja : '';
+        dailyReport[i].sakupljac = dt.dko.vrstaPrimalaca === 'storage' ? 'X' : '';
+        dailyReport[i].tretman = dt.dko.vrstaPrimalaca === 'treatment' ? 'X' : '';
+        dailyReport[i].odlagac = dt.dko.vrstaPrimalaca === 'dump' ? 'X' : '';
+        dailyReport[i].brojDozvole = dt.dko.sifraDozvolePrimalac;
+        dailyReport[i].nazivFirme = dt.dko.firmaPrimalac.naziv;
+    });
+    return dailyReport;
+};
 
 exports.createProductionReport = async (trash, storageID) => {
     const html = fs.readFileSync('pdf_templates/DEO1.html', 'utf8');
@@ -19,46 +75,34 @@ exports.createProductionReport = async (trash, storageID) => {
     query['otpad'] = trash._id;
     query['kolicinaOtpada'] = {$gt: 0};
     const akcijaProizvodnje = await logsController.readManyMethod(query);
-    let ukupnoProizvodnja = 0, ukupnoStanje = 0;
-    let dnevniIzvestaj = new Array(31);
+    query['kolicinaOtpada'] = {$lt: 0};
+    const akcijaTransporta = await logsController.readManyMethod(query);
 
-    akcijaProizvodnje.forEach(x => {
-        let i = x.datum.getDate();
-        if (!dnevniIzvestaj[i]) {
-            dnevniIzvestaj[i] = {};
-            dnevniIzvestaj[i].otpad = x.otpad;
-            dnevniIzvestaj[i].godina = x.datum.getFullYear();
-            dnevniIzvestaj[i].mesec = x.datum.getMonth() + 1; // Month starts at 0 >.<
-            dnevniIzvestaj[i].dan = x.datum.getDate();
-            dnevniIzvestaj[i].skladiste = x.skladiste;
-            dnevniIzvestaj[i].akcijaProizvodnja = [];
-            dnevniIzvestaj[i].akcijaProizvodnja.push(x);
-            dnevniIzvestaj[i].ukupnoProizvodnja = x.kolicinaOtpada;
-            dnevniIzvestaj[i].ukupnoTransport = 0;
-            dnevniIzvestaj[i].ukupnoStanje = x.kolicinaOtpada;
-        } else {
-            dnevniIzvestaj[i].akcijaProizvodnja.push(x);
-            dnevniIzvestaj[i].ukupnoProizvodnja += x.kolicinaOtpada;
-            dnevniIzvestaj[i].ukupnoStanje += x.kolicinaOtpada;
-        }
-        ukupnoProizvodnja += x.kolicinaOtpada;
-    });
-    const count = [];
-    for (let i = 0; i < 31; i++) {
-        if (!dnevniIzvestaj[i])
-            count.push(i);
-    }
-    const tmp = []
+    let ukupnoProizvodnja = 0, ukupnoStanje = 0, ukupnoTransport = 0;
+
+    let dnevniIzvestaj = await this.fillDailyReport(akcijaProizvodnje, akcijaTransporta);
+
+    const tmp = [];
     let lastAmmount = 0;
     for (let i = 0; i < dnevniIzvestaj.length; i++) {
         if (dnevniIzvestaj[i]) {
+            ukupnoProizvodnja += dnevniIzvestaj[i].ukupnoProizvodnja;
+            ukupnoTransport += dnevniIzvestaj[i].ukupnoTransport;
             ukupnoStanje += dnevniIzvestaj[i].ukupnoStanje;
             dnevniIzvestaj[i].ukupnoStanje += lastAmmount;
+            if (dnevniIzvestaj[i].dko) {
+                dnevniIzvestaj[i].nazivFirme = (await Firma.findById(dnevniIzvestaj[i].dko.firmaPrimalac)).naziv;
+            }
             tmp.push(await dayLogsController.createMethod(dnevniIzvestaj[i]));
             lastAmmount = dnevniIzvestaj[i].ukupnoStanje;
         }
     }
     dnevniIzvestaj = tmp;
+    const count = [];
+    for (let i = 0; i < 31; i++) {
+        if (!dnevniIzvestaj[i])
+            count.push(i);
+    }
 
     const document = {
         html: html,
@@ -68,9 +112,9 @@ exports.createProductionReport = async (trash, storageID) => {
             otpad: trash,
             dnevniIzvestaj: dnevniIzvestaj,
             ukupnoProizvodnja: ukupnoProizvodnja,
-            ukupnoTransport: 0,
+            ukupnoTransport: ukupnoTransport,
             ukupnoStanje: ukupnoStanje,
-            count: count
+            count: count,
         },
         path: path,
     };
@@ -81,7 +125,7 @@ exports.createProductionReport = async (trash, storageID) => {
         skladiste: storageID,
         dnevniIzvestaj: dnevniIzvestaj,
         ukupnoProizvodnja: ukupnoProizvodnja,
-        ukupnoTransport: 0,
+        ukupnoTransport: ukupnoTransport,
         ukupnoStanje: ukupnoStanje,
     };
     await this.createMethod(newData);
