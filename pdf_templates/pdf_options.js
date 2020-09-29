@@ -1,3 +1,3 @@
 exports.PDF_OPTIONS = {
-    'format': 'A4',
+    'format': 'A5',
 };
