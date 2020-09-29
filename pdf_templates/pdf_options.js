@@ -1,5 +1,4 @@
 exports.PDF_OPTIONS = {
-    format: 'A4',
-    orientation: 'portrait',
-    border: '10mm',
+    'height': '10.5in',
+    'width': '8in',
 };
