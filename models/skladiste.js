@@ -16,6 +16,7 @@ const skladisteSchema = Schema({
     posebniTokoviOtpada: [{type: Schema.Types.ObjectId, ref: 'PosebniTokoviOtpada', required: false}],
     ambalazniOtpad: [{type: Schema.Types.ObjectId, ref: 'AmbalazniOtpad', required: false}],
     ambalaze: [{type: Schema.Types.ObjectId, ref: 'Ambalaza', required: false}],
+    skladistenje: {type: Boolean, required: false},
 });
 const skladisteTretmanSchema = Schema({
     tretman: {type: Boolean, required: false},

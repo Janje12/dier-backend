@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const otpadSchema = Schema({
         indeksniBroj: {type: String, required: true},
@@ -9,7 +9,6 @@ const otpadSchema = Schema({
         fizickoStanje: {type: String, required: false},
         qLista: {type: String},
         nacinPakovanja: {type: String},
-        tretman: {type: Boolean, required: false},
         rOznaka: {type: String, required: false},
         dOznaka: {type: String, required: false},
         sifraIspitivanja: {type: String, required: false},

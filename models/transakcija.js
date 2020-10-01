@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const transkacijaSchema = Schema({
         datum: {type: Date, required: true, default: Date.now()},
@@ -13,6 +13,9 @@ const transkacijaSchema = Schema({
         prethodnaKolicina: {type: Number, required: false},
         trenutnaKolicina: {type: Number, required: false},
         dko: {type: Schema.Types.ObjectId, ref: 'DKO', required: false},
+        nazivFirme: {type: String, required: false},
+        brojDKO: {type: String, required: false},
+        nacinPostupanja: {type: String, required: false},
     },
 );
 

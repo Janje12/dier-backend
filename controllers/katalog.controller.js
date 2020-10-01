@@ -15,7 +15,7 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.createMethod = async (data) => {
     try {
@@ -25,7 +25,7 @@ exports.createMethod = async (data) => {
         console.log(err);
         return err;
     }
-}
+};
 /*
     When calling readMany specify which type of Otpad (Opasni/Neopasni) you will need.
  */
@@ -42,11 +42,11 @@ exports.readMany = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (type) => {
     let query = {};
-    if (typeof type === "string") {
+    if (typeof type === 'string') {
         if (type.localeCompare('neopasniOtpad')) {
             query = {'indeksniBroj': {$regex: /\*$/, $options: 'm'}};
         } else if (type.localeCompare('opasniOtpad')) {
@@ -60,7 +60,7 @@ exports.readManyMethod = async (type) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -74,7 +74,7 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
@@ -84,7 +84,7 @@ exports.readOneMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -99,7 +99,7 @@ exports.update = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
@@ -109,7 +109,7 @@ exports.updateMethod = async (_id, updatingData) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
@@ -123,7 +123,7 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
@@ -133,15 +133,15 @@ exports.deleteMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 
 exports.getNeopasniKatalog = async (req, res) => {
     katalog = await Katalog.find({'indeksniBroj': {$regex: /[^\*]$/, $options: 'm'}});
     res.status(200).json(katalog);
-}
+};
 
 exports.getOpasaniKatalog = async (req, res) => {
     katalog = await Katalog.find({'indeksniBroj': {$regex: /\*$/, $options: 'm'}});
     res.status(200).json(katalog);
-}
+};

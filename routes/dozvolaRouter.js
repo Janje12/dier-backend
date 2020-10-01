@@ -19,6 +19,6 @@ router.delete('/:id', dozvola_controller.delete);
 
 // FIX THIS
 // GET Skladista
-router.get('/firma/:id', dozvola_controller.getDozvolaFirme);
+router.get('/firma/:id/:type', dozvola_controller.getDozvolaFirme);
 
 module.exports = router;

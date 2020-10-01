@@ -138,12 +138,18 @@ exports.getDozvolaFirme = async (req, res) => {
         return;
     }
     const firmaID = req.params.id;
+    const licenseType = req.params.type;
     try {
         const firma = await Firma.findById(firmaID).populate('dozvola');
         let dozvola = firma.dozvola;
-        for (let i = 0; i < dozvola.length; i++) {
+        if (licenseType === 'treatment')
+            dozvola = dozvola.filter(d => d.skladistaTretman !== undefined);
+        else if (licenseType === 'storage')
+            dozvola = dozvola.filter(d => d.skladistaSkladistenje !== undefined);
+        else if (licenseType === 'dump')
+            dozvola = dozvola.filter(d => d.skladistaDeponija !== undefined);
+        for (let i = 0; i < dozvola.length; i++)
             dozvola[i] = await this.readOneMethod(dozvola[i]._id);
-        }
         res.status(200).json(dozvola);
     } catch (err) {
         console.log(err);

@@ -202,8 +202,8 @@ exports.getSkladistaSkladistenjeFirme = async (req, res) => {
     const firmaID = req.params.id;
     try {
         const firma = await Firma.findById(firmaID).populate('skladistaSkladistenje');
-        const skladistaSkladistenje = firma.skladistaSkladistenje;
-        console.log(skladistaSkladistenje);
+        let skladistaSkladistenje = firma.skladistaSkladistenje;
+        skladistaSkladistenje = skladistaSkladistenje.filter(x => x.skladistenje);
         for (let i = 0; i < skladistaSkladistenje.length; i++) {
             skladistaSkladistenje[i] = await this.readOneMethod(skladistaSkladistenje[i]._id);
         }

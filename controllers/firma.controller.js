@@ -152,7 +152,6 @@ exports.findMany = async (req, res) => {
 exports.findManyMethod = async (value, type) => {
     let query = {};
     query[type] = value;
-    console.log(query);
     try {
         const foundData = await FirmaKomitent.find(query).populate('adresa.mesto').populate('delatnost');
         return foundData;
