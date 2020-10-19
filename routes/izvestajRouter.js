@@ -17,4 +17,7 @@ router.patch('/:id', izvestaj_controller.update);
 // DELETE
 router.delete('/:id', izvestaj_controller.delete);
 
+// FIND ALL FIRMA
+router.get('/firma/:pib', izvestaj_controller.findByFirma);
+
 module.exports = router;

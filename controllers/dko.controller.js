@@ -15,10 +15,12 @@ exports.convertToCyrilic = (obj) => {
         // eslint-disable-next-line no-prototype-builtins
         if (obj.hasOwnProperty(key)) {
             if (typeof obj[key] === 'string' && key !== '_id' && key !== 'email' && key !== 'emailPrijem' && key !== 'nacinPostupanja'
-                && key !== 'qLista')
+                && key !== 'qLista') {
                 result[key] = cyr_converter(obj[key]);
-            else if (typeof obj[key] === 'object')
+            } else if (typeof obj[key] === 'object' && key !== 'isNew' && key !== 'errors' &&
+            key !== '$locals' && key !== '$op' && key !== '$init' && key !== '$__') {
                 result[key] = this.convertToCyrilic(obj[key]);
+            }
         }
     }
     return result;
@@ -61,9 +63,7 @@ exports.createTransportReport = async (dko) => {
     dko.datumDozvolePrimalac = dko.datumDozvolePrimalac.replace(/-/g, '.');
     tmp = dko.datumDozvolePrimalac.split('.');
     dko.datumDozvolePrimalac = tmp[2] + '.' + tmp[1] + '.' + tmp[0];
-    console.log(dko.datumDozvolePrimalac);
     const tmpDKO = this.convertToCyrilic(dko);
-
 
     const document = {
         html: html,

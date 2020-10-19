@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <mate charest="utf-8"/>
+</head>
+<style>
+    * {
+        font-family: Calibri;
+        font-size: 10px;
+    }
+
+    table, th, td {
+        border: 1pt solid black;
+        text-align: center;
+        border-collapse: collapse;
+    }
+
+    .blue {
+        background-color: #BDD6EE;
+    }
+
+    .left {
+        text-align: left;
+    }
+</style>
+<body style="width: 80%; margin: auto;">
+<h2 style="text-align: center; font-size: 12px;">DNEVNA EVIDENCIJA O OTPADU PROIZVOĐAČA OTPADA</h2>
+
+<table style="border-bottom: none;" width="75%">
+    <tr>
+        <td class="blue left" width="66.7%">Godina</td>
+        <td>{{godina}}</td>
+    </tr>
+    <tr>
+        <td class="blue left">Mesec</td>
+        <td>{{mesec}}</td>
+    </tr>
+    <tr>
+        <td class="blue left" style="border-bottom: none;">Indeksni broj otpada iz Kataloga otpada</td>
+        <td style="border-bottom: none;">{{otpad.indeksniBroj}}</td>
+    </tr>
+</table>
+<table width="100%">
+    <tr>
+        <td class="blue left" width="50%">Naziv otpada</td>
+        <td>{{otpad.naziv}}</td>
+    </tr>
+    <tr>
+        <td class="blue left">Opis otpada</td>
+        <td>{{otpad.opis}}</td>
+    </tr>
+    <tr>
+        <td class="blue left">Evidenciju vodi (Ime i prezime)</td>
+        <td>Nenad Janković</td>
+    </tr>
+</table>
+
+<table width="100%" style="margin-top: 5%; border-top: none;">
+    <tr>
+        <th class="blue" colspan="3">PREUZETE KOLIČINE OTPADA</th>
+        <th class="blue" colspan="4 ">ODLAGANJE OTPADA</th>
+    </tr>
+    <tr>
+        <td class="blue">Datum</td>
+        <td class="blue">Naziv preduzeća od kojeg je otpad preuzet</td>
+        <td class="blue">Broj dokumnta o kretanju otpada</td>
+        <td class="blue">Preuzeta količina ove vrste otpada (t)</td>
+        <td class="blue">Ponovno iskorišćena količina otpada (t)</td>
+        <td class="blue">Postupak ponovnog iskorišćenja R oznaka</td>
+        <td class="blue">Stanje na skladištu (t)</td>
+    </tr>
+    {{#each dnevniIzvestaj}}
+    <tr>
+        <td>{{this.dan}}.{{this.mesec}}</td>
+        <td>{{this.nazivFirme}}</td>
+        <td>{{this.brojDozvole}}</td>
+        <td>{{this.ukupnoTransport}}</td>
+        <td>{{this.ukupnoProizvodnja}}</td>
+        <td>{{this.rLista}}</td>
+        <td>{{this.ukupnoStanje}}</td>
+    </tr>
+    {{/each}}
+    {{#each count}}
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    {{/each}}
+    <tr>
+        <td class="blue">Ukupno</td>
+        <td colspan="2"></td>
+        <td>{{ukupnoTransport}}</td>
+        <td>{{ukupnoProizvodnja}}</td>
+        <td></td>
+        <td>{{ukupnoStanje}}</td>
+    </tr>
+</table>
+</body>
+</html>

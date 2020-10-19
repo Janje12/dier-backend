@@ -125,7 +125,7 @@ exports.findKomitentOneMethod = async (value, type) => {
     let query = {};
     query[type] = value;
     try {
-        const foundData = await FirmaKomitent.findOne(query);
+        const foundData = await FirmaKomitent.findOne(query).populate('adresa.mesto');
         return foundData;
     } catch (err) {
         console.log(err);

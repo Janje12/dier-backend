@@ -12,13 +12,16 @@ exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTra
     if (!currTrash)
         currTrash = resBody.otpad ? resBody.otpad : resBody;
     const prevTrashAmount = prevTrash !== undefined ? prevTrash.kolicina : 0;
+    const nazivFirme = req.body.nazivFirme;
+    const brDokumenta = req.body.brDokumenta;
 
     switch (method) {
         case 'POST':
             await this.createTrashMethod(method, 'TRASH_CREATE', userID, companyID, storage, prevTrashAmount, currTrash);
             break;
         case 'PATCH':
-            await this.createTrashMethod(method, 'TRASH_UPDATE', userID, companyID, storage, prevTrashAmount, currTrash, dko);
+            await this.createTrashMethod(method, 'TRASH_UPDATE',
+                userID, companyID, storage, prevTrashAmount, currTrash, dko, nazivFirme, brDokumenta);
             break;
         case 'DELETE':
             await this.createTrashMethod(method, 'TRASH_DELETE', userID, companyID, storage, prevTrashAmount, currTrash);
@@ -28,7 +31,7 @@ exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTra
     }
 };
 
-exports.createTrashMethod = async (method, type, userID, companyID, storage, prevTrashAmount, currTrash, dko) => {
+exports.createTrashMethod = async (method, type, userID, companyID, storage, prevTrashAmount, currTrash, dko, nazivFirme, brDokumenta) => {
     const data = {
         metoda: method,
         vrstaTransakcije: type,
@@ -39,7 +42,10 @@ exports.createTrashMethod = async (method, type, userID, companyID, storage, pre
         prethodnaKolicina: storage.kolicina - (currTrash.kolicina - prevTrashAmount),
         trenutnaKolicina: storage.kolicina,
         kolicinaOtpada: currTrash.kolicina - prevTrashAmount,
-        dko: dko ? dko : null,
+        dko: dko,
+        nacinPostupanja: currTrash.rOznaka ? currTrash.rOznaka : currTrash.dOznaka,
+        nazivFirme: nazivFirme,
+        brojDKO: brDokumenta,
     };
     await logsController.createMethod(data);
 };

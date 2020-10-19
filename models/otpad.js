@@ -13,6 +13,7 @@ const otpadSchema = Schema({
         dOznaka: {type: String, required: false},
         sifraIspitivanja: {type: String, required: false},
         datumIspitivanja: {type: Date, required: false},
+        otpadKojiNastaje: [{type: String, required: false}],
     },
 );
 const opasniOtpadSchema = Schema({

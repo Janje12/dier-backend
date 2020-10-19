@@ -7,7 +7,7 @@ router.use(async (req, res, next) => {
     const oldWrite = res.write;
     const oldEnd = res.end;
     const chunks = [];
-    let storageID, prevTrash, currTrash;
+    let storageID, prevTrash;
 
     if (req.method === 'PATCH' || req.method === 'DELETE') {
         let id = req.url.split('/')[1];

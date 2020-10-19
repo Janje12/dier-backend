@@ -152,9 +152,19 @@ exports.getAllSkladistaFirme = async (req, res) => {
         res.sendStatus(404);
         return;
     }
-    const firmaID = req.params.id;
+    const companyID = req.params.id;
     try {
-        const firma = await Firma.findById(firmaID).populate('skladista').populate('skladistaTretman').populate('skladistaDeponija')
+        const storages = findCompaniesStorage(companyID);
+        res.status(200).json(storages);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+};
+
+exports.findCompaniesStorage = async (id) => {
+    try {
+        const firma = await Firma.findById(id).populate('skladista').populate('skladistaTretman').populate('skladistaDeponija')
             .populate('skladistaSkladistenje');
         let skladista = [];
         if (firma.skladista.length > 0)
@@ -168,10 +178,10 @@ exports.getAllSkladistaFirme = async (req, res) => {
         for (let i = 0; i < skladista.length; i++) {
             skladista[i] = await this.readOneMethod(skladista[i]._id);
         }
-        res.status(200).json(skladista);
+        return skladista;
     } catch (err) {
         console.log(err);
-        res.sendStatus(500);
+        throw new Error(err);
     }
 };
 
