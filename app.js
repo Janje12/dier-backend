@@ -48,6 +48,7 @@ const skladisteTretmanRouter = require('./routes/skladisteTretmanRouter');
 const skladisteDeponijaRouter = require('./routes/skladisteDeponijaRouter');
 const skladisteSkladistenjeRouter = require('./routes/skladisteSkladistenje');
 const izvestajRouter = require('./routes/izvestajRouter');
+const godisnjiIzvestajRouter = require('./routes/godisnjiIzvestajRouter');
 const authRouter = require('./routes/authRouter');
 const app = express();
 
@@ -68,6 +69,7 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/mesecniizvestaj', izvestajRouter);
+app.use('/api/godisnjiizvestaj', godisnjiIzvestajRouter);
 app.use('/api/korisnik', korisnikRouter);
 app.use('/api/prevoznosredstvo', prevoznoSredstvoRouter);
 app.use('/api/firma', firmaRouter);

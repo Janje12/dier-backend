@@ -153,6 +153,7 @@ exports.createDumpReport = async (trash, storageID) => {
         path: path,
     };
     const newData = {
+        vrsta: 'DEO3',
         godina: today.getFullYear(),
         mesec: today.getMonth(),
         otpad: trash,
@@ -223,6 +224,7 @@ exports.createTreatmentReport = async (trash, storageID) => {
         path: path,
     };
     const newData = {
+        vrsta: 'DEO2',
         godina: today.getFullYear(),
         mesec: today.getMonth(),
         otpad: trash,
@@ -293,6 +295,7 @@ exports.createProductionReport = async (trash, storageID) => {
         path: path,
     };
     const newData = {
+        vrsta: 'DEO1',
         godina: today.getFullYear(),
         mesec: today.getMonth(),
         otpad: trash,
@@ -412,7 +415,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await MesecniIzvestaj.findById(_id);
+        const foundData = await MesecniIzvestaj.findById(_id).populate('otpad').populate('skladiste').populate('dnevniIzvestaj');
         return foundData;
     } catch (err) {
         console.log(err);
