@@ -56,9 +56,10 @@
 <h5 style="text-align: center; margin-bottom: 0;">ГОДИШЊИ ИЗВЕШТАЈ О ОТПАДУ ПРОИЗВОЂАЧА ОТПАДА</h5>
 <span><table class="table-clear">
     <tr><td style="border: none;">Извештај за </td>
-        <td class="year-cell"></td><td class="year-cell"></td>
-        <td class="year-cell"></td>
-        <td class="year-cell"></td>
+        <td class="year-cell">2</td>
+        <td class="year-cell">0</td>
+        <td class="year-cell">2</td>
+        <td class="year-cell">{{godina}}</td>
         <td style="border: none;">годину</td>
     </tr>
 </table></span>
@@ -67,59 +68,61 @@
     <tr>
         <th colspan="5">ПОДАЦИ О ПРЕДУЗЕЋУ</th>
     </tr>
+    {{#with firma}}
     <tr>
         <td class="grey" style="width: 35%;" colspan="2">Порески индентификациони број (ПИБ)</td>
-        <td style="width: 65%;" colspan="3"></td>
+        <td style="width: 65%;" colspan="3">{{this.pib}}</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Матични број предузећа</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.mat}}</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Пун назив предузећа</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.naziv}}</td>
     </tr>
     <tr>
         <td class="grey" style="width: 20%;" rowspan="7">Адреса</td>
         <td class="grey" style="width: 15%;">Место</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.adresa.mesto.mestoNaziv}}</td>
     </tr>
     <tr>
         <td class="grey">Шифра места</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.adresa.mesto.mestoSifra}}</td>
     </tr>
     <tr>
         <td class="grey">Поштански број</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.adresa.mesto.postanskiBroj}}</td>
     </tr>
     <tr>
         <td class="grey">Улица и број</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.adresa.ulica}}</td>
     </tr>
     <tr>
         <td class="grey" style="border-top: 1px solid black">Телефон</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.telefon}}</td>
     </tr>
     <tr>
         <td class="grey">Телефакс</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.faks}}</td>
     </tr>
     <tr>
         <td class="grey">Е mail</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.email}}</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Општина</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.adresa.mesto.opstinaNaziv}}</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Шифра општине</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.adresa.mesto.opstinaSifra}}</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Шифра претежне делатности</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.delatnost.sifra}}</td>
     </tr>
+
 </table>
 <table width="100%" style="margin-top: 2px;">
     <tr>
@@ -127,16 +130,17 @@
     </tr>
     <tr>
         <td class="grey" colspan="2">Име и презиме</td>
-        <td colspan="3"></td>
+        <td colspan="3">{{this.zakonskiZastupnik}}</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Функција</td>
-        <td colspan="3"></td>
+        <td colspan="3">Direktor?</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Телефон</td>
         <td width="65%" colspan="3"></td>
     </tr>
+    {{/with}}
 </table>
 <table width="100%" style="margin-top: 2px;">
     <tr>
@@ -144,19 +148,19 @@
     </tr>
     <tr>
         <td class="grey" colspan="2">Име и презиме</td>
-        <td width="65%" colspan="3"></td>
+        <td width="65%" colspan="3">Ненад Јанковић</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Функција</td>
-        <td colspan="3"></td>
+        <td colspan="3">?</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">Телефон</td>
-        <td colspan="3"></td>
+        <td colspan="3">064616884</td>
     </tr>
     <tr>
         <td class="grey" colspan="2">E mail</td>
-        <td colspan="3"></td>
+        <td colspan="3">dier@gmail.com</td>
     </tr>
 </table>
 <p>
@@ -191,80 +195,83 @@
 </table>
 <br>
 <table width="100%">
+    {{#with skladiste}}
     <tr>
         <th class="grey" colspan="23">ВРСТЕ И КЛАСИФИКАЦИЈА ОТПАДА</th>
     </tr>
     <tr>
         <td colspan="8" class="grey">Место настанка отпада</td>
-        <td colspan="15" width="55%"></td>
+        <td colspan="15" width="55%">{{this.adresa.mesto.mestoNaziv}}</td>
     </tr>
     <tr>
         <td colspan="5" class="grey" rowspan="2">Географске координате локације отпада</td>
         <td colspan="3" class="grey">Н</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+        <td>12</td>
+        <td>32</td>
+        <td>32</td>
         <td>°</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+        <td>14</td>
+        <td>52</td>
         <td>'</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+        <td>64</td>
+        <td>23</td>
         <td>,</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
+        <td>51</td>
+        <td>23</td>
+        <td>12</td>
         <td>"</td>
         <td width="50%" class="grey"></td>
     </tr>
     <tr>
         <td colspan="3" class="grey">Е0</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>12</td>
+        <td>32</td>
+        <td>32</td>
         <td>°</td>
-        <td></td>
-        <td></td>
+        <td>14</td>
+        <td>52</td>
         <td>'</td>
-        <td></td>
-        <td></td>
+        <td>64</td>
+        <td>23</td>
         <td>,</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>51</td>
+        <td>23</td>
+        <td>12</td>
         <td>"</td>
         <td class="grey"></td>
     </tr>
+    {{/with}}
     <tr>
+
         <td colspan="8" class="grey">Врста отпада</td>
-        <td colspan="15"></td>
+        <td colspan="15">{{vrstaOtpada}}</td>
     </tr>
     <tr>
+        {{#with otpad}}
         <td colspan="8" class="grey">Опис отпада</td>
-        <td colspan="15"></td>
+        <td colspan="15">{{this.opis}}</td>
     </tr>
     <tr>
         <td colspan="8" class="grey">Назив отпада</td>
-        <td colspan="15"></td>
+        <td colspan="15">{{this.naziv}}</td>
     </tr>
 </table>
+{{/with}}
 <br>
 <table width="100%">
     <tr>
-        <td colspan="2" class="grey">Категорија отпада - Q листа <sup>1.</sup></td>
-        <td>Q</td>
-        <td></td>
-        <td></td>
+        <td colspan="2" class="grey" width="50%">Категорија отпада - Q листа <sup>1.</sup></td>
+        <td width="2%">Q</td>
+        {{#each qLista}}
+        <td width="2%">{{this}}</td>
+        {{/each}}
         <td colspan="5" class="grey"></td>
     </tr>
     <tr>
         <td colspan="2" class="grey">Индексни број отпада из Каталога отпада<sup>1.</sup></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        {{#each indeksniBroj}}
+        <td width="2%">{{this}}</td>
+        {{/each}}
         <td class="grey"></td>
     </tr>
     <tr>
@@ -275,25 +282,27 @@
     </tr>
     <tr>
         <td class="grey">Неопасан</td>
-        <td></td>
+        <td>{{neopasan}}</td>
         <td class="grey" colspan="6"></td>
     </tr>
     <tr>
         <td class="grey">Опасан</td>
-        <td></td>
+        <td>{{opasan}}</td>
         <td class="grey" colspan="6"></td>
     </tr>
     <tr>
+        {{#with otpad}}
         <td class="grey" rowspan="2">Извештај о испитивању отпада</td>
         <td class="grey">Број:</td>
-        <td></td>
+        <td>{{this.sifraIspitivanja}}</td>
         <td colspan="6" class="grey"></td>
     </tr>
     <tr>
         <td class="grey">Датум издавања:</td>
-        <td></td>
+        <td>{{this.datumIspitivanja}}</td>
         <td class="grey" colspan="6"></td>
     </tr>
+    {{/with}}
 </table>
 <table width="100%">
     <tr>
@@ -331,7 +340,7 @@
     <tr>
         <td class="grey" rowspan="5">Физичко стање отпада<sup>2</sup></td>
         <td class="grey">Чврста материја - прах</td>
-        <td></td>
+        <td width="3%">X</td>
         <td class="grey" width="30%"></td>
     </tr>
     <tr>
@@ -410,7 +419,7 @@
     </tr>
     <tr>
         <td class="grey" colspan="2">Количина произведеног отпада у извештајној години (т)</td>
-        <td width="15%"></td>
+        <td width="15%">{{ukupnoProizvodnja}}</td>
         <td class="grey" width="40%"></td>
     </tr>
     <tr>
@@ -421,7 +430,7 @@
     </tr>
     <tr>
         <td style="text-align: center;" class="grey">31.12.</td>
-        <td></td>
+        <td>{{ukupnoStanje}}</td>
         <td class="grey"></td>
     </tr>
     <tr>

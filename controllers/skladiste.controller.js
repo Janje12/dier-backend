@@ -154,7 +154,7 @@ exports.getAllSkladistaFirme = async (req, res) => {
     }
     const companyID = req.params.id;
     try {
-        const storages = findCompaniesStorage(companyID);
+        const storages = await this.findCompaniesStorage(companyID);
         res.status(200).json(storages);
     } catch (err) {
         console.log(err);

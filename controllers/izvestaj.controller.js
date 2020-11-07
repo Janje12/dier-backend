@@ -492,28 +492,33 @@ exports.findByFirma = async (req, res) => {
         const company = await companyController.findOneMethod(companyPIB, 'pib');
         let result = [];
         let query = {};
+        let report;
         if (company.skladista) {
             for (let i = 0; i < company.skladista.length; i++) {
                 query['skladiste'] = company.skladista[i];
-                result.push(await this.findOneMethod(query));
+                report = await this.findOneMethod(query);
+                if (report) result.push(report);
             }
         }
         if (company.skladistaTretman) {
             for (let i = 0; i < company.skladistaTretman.length; i++) {
                 query['skladiste'] = company.skladistaTretman[i];
-                result.push(await this.findOneMethod(query));
+                report = await this.findOneMethod(query);
+                if (report) result.push(report);
             }
         }
         if (company.skladistaSkladistenje) {
             for (let i = 0; i < company.skladistaSkladistenje.length; i++) {
                 query['skladiste'] = company.skladistaSkladistenje[i];
-                result.push(await this.findOneMethod(query));
+                report = await this.findOneMethod(query);
+                if (report) result.push(report);
             }
         }
         if (company.skladistaDeponija) {
             for (let i = 0; i < company.skladistaDeponija.length; i++) {
                 query['skladiste'] = company.skladistaDeponija[i];
-                result.push(await this.findOneMethod(query));
+                report = await this.findOneMethod(query);
+                if (report) result.push(report);
             }
         }
         //console.log(result);

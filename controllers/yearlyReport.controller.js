@@ -2,10 +2,28 @@ const YearlyReport = require('../models/godisnjiIzvestaj');
 const monthlyReportController = require('../controllers/izvestaj.controller');
 const storageController = require('../controllers/skladiste.controller');
 const companyController = require('../controllers/firma.controller');
+const cyr_converter = require('../lib/cyr-converter');
 const pdf = require('pdf-creator-node');
 const fs = require('fs');
 const path = require('path');
 const PDF_OPTIONS = require('../pdf_templates/pdf_options').PDF_OPTIONS;
+
+exports.convertToCyrilic = (obj) => {
+    let result = obj;
+    for (let key in obj) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (obj.hasOwnProperty(key)) {
+            if (typeof obj[key] === 'string' && key !== '_id' && key !== 'email' && key !== 'emailPrijem' && key !== 'nacinPostupanja'
+                && key !== 'qLista') {
+                result[key] = cyr_converter(obj[key]);
+            } else if (typeof obj[key] === 'object' && key !== 'isNew' && key !== 'errors' &&
+                key !== '$locals' && key !== '$op' && key !== '$init' && key !== '$__') {
+                result[key] = this.convertToCyrilic(obj[key]);
+            }
+        }
+    }
+    return result;
+};
 
 exports.createYearlyProductionReport = async (trash, company) => {
     const html = fs.readFileSync('pdf_templates/GIO1.html', 'utf8');
@@ -19,14 +37,28 @@ exports.createYearlyProductionReport = async (trash, company) => {
         totalProduction += mr.ukupnoProizvodnja;
     });
     currentAmmount = monthlyReports[monthlyReports.length - 1].ukupnoStanje;
+    const trashType = trash.indeksniBroj.endsWith('*') ? 'опасни' : 'неопасни';
+    const storage = await storageController.readOneMethod(monthlyReports[0].skladiste._id);
+    const qLista = [(trash.qLista / 10).toFixed(0), trash.qLista % 10];
+    const indeksniBroj = trash.indeksniBroj.replace(/\s/g,'').split('');
+    const opasan = trash.indeksniBroj.endsWith('*') ? 'X' : '';
+    const neopasan = trash.indeksniBroj.endsWith('*') ? '' : 'X';
+    const tmpCompany = this.convertToCyrilic(company);
+    const tmpTrash = this.convertToCyrilic(trash);
+    const tmpStorage = this.convertToCyrilic(storage);
     const document = {
         html: html,
         data: {
             vrsta: 'GIO1',
-            godina: today.getFullYear(),
+            godina: today.getFullYear() % 2020,
             firma: company,
-            skladiste: monthlyReports[0].skladiste,
-            otpad: trash,
+            skladiste: tmpStorage,
+            vrstaOtpada: trashType,
+            indeksniBroj: indeksniBroj,
+            qLista: qLista,
+            otpad: tmpTrash,
+            neopasan: neopasan,
+            opasan: opasan,
             mesecniIzvestaj: monthlyReports,
             ukupnoProizvodnja: totalProduction,
             ukupnoStanje: currentAmmount,
