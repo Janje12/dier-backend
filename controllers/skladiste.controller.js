@@ -90,7 +90,8 @@ exports.findOneMethod = async (value, type) => {
     let query = {};
     query[type] = value;
     try {
-        const foundData = await Skladiste.findOne(query).populate('adresa.mesto');
+        const foundData = await Skladiste.findOne(query).populate('adresa.mesto')
+            .populate('neopasniOtpad').populate('opasniOtpad');
         return foundData;
     } catch (err) {
         console.log(err);
@@ -103,8 +104,8 @@ exports.update = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    _id = req.params.id;
-    updatingData = req.body;
+    const _id = req.params.id;
+    const updatingData = req.body;
     try {
         data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
@@ -217,6 +218,7 @@ exports.getSkladistaSkladistenjeFirme = async (req, res) => {
         for (let i = 0; i < skladistaSkladistenje.length; i++) {
             skladistaSkladistenje[i] = await this.readOneMethod(skladistaSkladistenje[i]._id);
         }
+        console.log(skladistaSkladistenje);
         res.status(200).json(skladistaSkladistenje);
     } catch (err) {
         console.log(err);

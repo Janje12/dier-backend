@@ -50,6 +50,7 @@ const skladisteSkladistenjeRouter = require('./routes/skladisteSkladistenje');
 const izvestajRouter = require('./routes/izvestajRouter');
 const godisnjiIzvestajRouter = require('./routes/godisnjiIzvestajRouter');
 const authRouter = require('./routes/authRouter');
+const transactionRouter = require('./routes/transactionRouter');
 const app = express();
 
 // view engine setup
@@ -74,6 +75,7 @@ app.use('/api/korisnik', korisnikRouter);
 app.use('/api/prevoznosredstvo', prevoznoSredstvoRouter);
 app.use('/api/firma', firmaRouter);
 app.use('/api/mesto', mestoRouter);
+app.use('/api/transaction', transactionRouter);
 app.use('/api/otpad', otpadRouter);
 app.use('/api/opasniotpad', opasniOtpadRouter);
 app.use('/api/dozvola', dozvolaRouter);

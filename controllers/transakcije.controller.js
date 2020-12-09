@@ -17,7 +17,8 @@ exports.create = async (req, res) => {
 /* Before creating a new log check if there is already a made one and if there is update it instead */
 exports.createMethod = async (data) => {
     try {
-        const savedData = await Transakcija.create(data);
+        data = new Transakcija(data);
+        const savedData = await data.save();
         return savedData;
     } catch (err) {
         console.log(err);
@@ -30,9 +31,12 @@ exports.readMany = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    const type = req.params.type || {};
+    const type = req.params.type || '';
+    const value = req.params.value || '';
+    const query = {};
+    query[type] = value;
     try {
-        const data = await this.readManyMethod(type);
+        const data = await this.readManyMethod(query);
         res.status(200).json(data);
     } catch (err) {
         console.log(err);
@@ -127,6 +131,33 @@ exports.deleteMethod = async (_id) => {
     try {
         const deletedData = await Transakcija.findByIdAndDelete(_id);
         return deletedData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+exports.findTransports = async (req, res) => {
+    if (!req.body) {
+        res.sendStatus(400);
+        return;
+    }
+    const trashID = req.params.trashID;
+    try {
+        const data = await this.findTransportsMethod(trashID);
+        res.status(200).json(data);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+};
+
+exports.findTransportsMethod = async (trashID) => {
+    const query = {};
+    query['otpad'] = trashID;
+    query['vrstaTransakcije'] = 'TRASH_UPDATE';
+    try {
+        const foundData = await Transakcija.find(query);
+        return foundData;
     } catch (err) {
         console.log(err);
         return err;

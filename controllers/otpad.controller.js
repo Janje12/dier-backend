@@ -26,7 +26,8 @@ exports.create = async (req, res) => {
 
 exports.createMethod = async (data) => {
     try {
-        const savedData = await Otpad.create(data);
+        data = new Otpad(data);
+        const savedData = await data.save();
         return savedData;
     } catch (err) {
         console.log(err);
