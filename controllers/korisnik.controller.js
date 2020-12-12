@@ -14,7 +14,7 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 /*
     When creating a new user the password needs to be hashed for safer storage.
@@ -29,7 +29,7 @@ exports.createMethod = async (data) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readMany = async (req, res) => {
     let query = {};
@@ -41,7 +41,7 @@ exports.readMany = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readManyMethod = async (query) => {
     try {
@@ -51,7 +51,7 @@ exports.readManyMethod = async (query) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.readOne = async (req, res) => {
     if (!req.params) {
@@ -65,7 +65,7 @@ exports.readOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.readOneMethod = async (_id) => {
     try {
@@ -75,7 +75,7 @@ exports.readOneMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.findOne = async (req, res) => {
     if (!req.params) {
@@ -90,7 +90,7 @@ exports.findOne = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.findOneMethod = async (value, type) => {
     let query = {};
@@ -102,7 +102,7 @@ exports.findOneMethod = async (value, type) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.update = async (req, res) => {
     if (!req.params && !req.body) {
@@ -117,7 +117,7 @@ exports.update = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
@@ -127,7 +127,7 @@ exports.updateMethod = async (_id, updatingData) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.delete = async (req, res) => {
     if (!req.body) {
@@ -141,7 +141,7 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.sendStatus(500);
     }
-}
+};
 
 exports.deleteMethod = async (_id) => {
     try {
@@ -151,7 +151,7 @@ exports.deleteMethod = async (_id) => {
         console.log(err);
         return err;
     }
-}
+};
 
 exports.getProfileKorisnik = async (req, res) => {
     if (!req.params) {

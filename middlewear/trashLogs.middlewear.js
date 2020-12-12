@@ -46,6 +46,7 @@ exports.createTrashMethod = async (method, type, userID, companyID, storage, pre
         nacinPostupanja: currTrash.rOznaka ? currTrash.rOznaka : currTrash.dOznaka,
         nazivFirme: nazivFirme,
         brojDKO: brDokumenta,
+        finished: nazivFirme ? false : true,
     };
     await logsController.createMethod(data);
 };

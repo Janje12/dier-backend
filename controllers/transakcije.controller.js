@@ -94,7 +94,7 @@ exports.update = async (req, res) => {
         return;
     }
     const _id = req.params.id;
-    const updatingData = req.body;
+    const updatingData = req.body.transaction;
     try {
         const data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
@@ -105,7 +105,8 @@ exports.update = async (req, res) => {
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
-        const updatedData = await Transakcija.findByIdAndUpdate(_id, updatingData, {returnOriginal: false});
+        console.log(updatingData);
+        const updatedData = await Transakcija.findByIdAndUpdate(_id, updatingData);
         return updatedData;
     } catch (err) {
         console.log(err);
@@ -155,6 +156,37 @@ exports.findTransportsMethod = async (trashID) => {
     const query = {};
     query['otpad'] = trashID;
     query['vrstaTransakcije'] = 'TRASH_UPDATE';
+    query['kolicinaOtpada'] = {$gt: 0};
+    query['finished'] = false;
+    try {
+        const foundData = await Transakcija.find(query);
+        return foundData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+exports.findUnifinishedDump = async (req, res) => {
+    if (!req.body) {
+        res.sendStatus(400);
+        return;
+    }
+    const trashID = req.params.trashID;
+    try {
+        const data = await this.findUnifinishedDumpMethod(trashID);
+        res.status(200).json(data);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+};
+
+exports.findUnifinishedDumpMethod = async (trashID) => {
+    const query = {};
+    query['otpad'] = trashID;
+    query['vrstaTransakcije'] = 'TRASH_UPDATE';
+    query['kolicinaOtpada'] = {$lt: 0};
+    query['nazivFirme'] = {$ne: null};
     try {
         const foundData = await Transakcija.find(query);
         return foundData;

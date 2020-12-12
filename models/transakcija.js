@@ -16,6 +16,7 @@ const transkacijaSchema = Schema({
         nazivFirme: {type: String, required: false},
         brojDKO: {type: String, required: false},
         nacinPostupanja: {type: String, required: false},
+        finished: {type: Boolean, required: false},
     },
 );
 
