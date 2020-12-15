@@ -26,7 +26,8 @@ router.use(async (req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-            await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
+            if (res.statusCode >= 200 && res.statusCode < 300)
+                await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
         });
         oldEnd.apply(res, restArgs);
     };
@@ -46,6 +47,6 @@ router.get('/:id', opasniOtpad_controller.readOne);
 router.patch('/:id', opasniOtpad_controller.update);
 
 // DELETE Otpad
-router.delete('/:id/:skladiste', opasniOtpad_controller.delete);
+router.delete('/:trashID/:storageID', opasniOtpad_controller.delete);
 
 module.exports = router;

@@ -61,6 +61,7 @@ exports.refresh = async (req, res) => {
         res.sendStatus(401);
         return;
     }
+    console.log(req.connection);
     let accessToken = req.body.token;
     const data = jwt.decode(accessToken).data;
     const refreshToken = data.korisnik.token;

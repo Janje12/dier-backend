@@ -11,7 +11,9 @@ exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTra
     const storage = await skladiste_controller.readOneMethod(storageID);
     if (!currTrash)
         currTrash = resBody.otpad ? resBody.otpad : resBody;
-    const prevTrashAmount = prevTrash !== undefined ? prevTrash.kolicina : 0;
+    let prevTrashAmount = 0;
+    if (prevTrash)
+        prevTrashAmount = prevTrash.kolicina !== undefined ? prevTrash.kolicina : 0;
     const nazivFirme = req.body.nazivFirme;
     const brDokumenta = req.body.brDokumenta;
 
@@ -46,7 +48,7 @@ exports.createTrashMethod = async (method, type, userID, companyID, storage, pre
         nacinPostupanja: currTrash.rOznaka ? currTrash.rOznaka : currTrash.dOznaka,
         nazivFirme: nazivFirme,
         brojDKO: brDokumenta,
-        finished: nazivFirme ? false : true,
+        finished: nazivFirme === undefined,
     };
     await logsController.createMethod(data);
 };

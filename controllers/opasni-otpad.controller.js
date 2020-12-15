@@ -1,5 +1,5 @@
-const Otpad = require('../models/otpad');
-const OpasniOtpad = Otpad.OpasniOtpad;
+const Otpad = require('../models/otpad').Otpad;
+const OpasniOtpad = require('../models/otpad').OpasniOtpad;
 const skladiste_controller = require('../controllers/skladiste.controller');
 
 /*
@@ -26,7 +26,7 @@ exports.create = async (req, res) => {
 
 exports.createMethod = async (data) => {
     try {
-        const savedData = await OpasniOtpad.create(data);
+        const savedData = await Otpad.create(data);
         return savedData;
     } catch (err) {
         console.log(err);
@@ -47,7 +47,7 @@ exports.readMany = async (req, res) => {
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await OpasniOtpad.find(query);
+        const foundData = await Otpad.find(query);
         return foundData;
     } catch (err) {
         console.log(err);
@@ -71,7 +71,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await OpasniOtpad.findById(_id);
+        const foundData = await Otpad.findById(_id);
         return foundData;
     } catch (err) {
         console.log(err);
@@ -101,7 +101,7 @@ exports.update = async (req, res) => {
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
-        const updatedData = await OpasniOtpad.findByIdAndUpdate(_id, updatingData, {new: true});
+        const updatedData = await Otpad.findByIdAndUpdate(_id, updatingData, {new: true});
         return updatedData;
     } catch (err) {
         console.log(err);
@@ -114,8 +114,8 @@ exports.delete = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    const _id = req.params.id;
-    const storageID = req.params.skladiste;
+    const _id = req.params.trashID;
+    const storageID = req.params.storageID;
     try {
         const storage = await skladiste_controller.readOneMethod(storageID);
         const data = await this.deleteMethod(_id);
@@ -125,13 +125,14 @@ exports.delete = async (req, res) => {
         await skladiste_controller.updateMethod(storage._id, storage);
         res.status(200).json(data);
     } catch (err) {
+        console.log(err);
         res.sendStatus(500);
     }
 };
 
 exports.deleteMethod = async (_id) => {
     try {
-        const deletedData = await OpasniOtpad.findByIdAndDelete(_id);
+        const deletedData = await Otpad.findOneAndDelete({_id: _id});
         return deletedData;
     } catch (err) {
         console.log(err);

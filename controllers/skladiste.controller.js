@@ -107,7 +107,7 @@ exports.update = async (req, res) => {
     const _id = req.params.id;
     const updatingData = req.body;
     try {
-        data = await this.updateMethod(_id, updatingData);
+        const data = await this.updateMethod(_id, updatingData);
         res.status(200).json(data);
     } catch (err) {
         res.sendStatus(500);

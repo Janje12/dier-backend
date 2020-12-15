@@ -105,7 +105,6 @@ exports.update = async (req, res) => {
 
 exports.updateMethod = async (_id, updatingData) => {
     try {
-        console.log(updatingData);
         const updatedData = await Transakcija.findByIdAndUpdate(_id, updatingData);
         return updatedData;
     } catch (err) {

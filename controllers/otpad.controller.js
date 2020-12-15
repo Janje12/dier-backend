@@ -127,8 +127,8 @@ exports.delete = async (req, res) => {
     try {
         const storage = await skladiste_controller.readOneMethod(storageID);
         const data = await this.deleteMethod(_id);
-        const index = storage.opasniOtpad.indexOf(data);
-        storage.opasniOtpad.splice(index, 1);
+        const index = storage.neopasniOtpad.indexOf(data);
+        storage.neopasniOtpad.splice(index, 1);
         storage.kolicina = storage.kolicina - data.kolicina;
         await skladiste_controller.updateMethod(storage._id, storage);
         res.status(200).json(data);
