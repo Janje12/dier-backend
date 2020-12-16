@@ -1,4 +1,6 @@
 const Transakcija = require('../models/transakcija');
+const storageController = require('../controllers/skladiste.controller');
+const jwt = require('jsonwebtoken');
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -70,7 +72,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (_id) => {
     try {
-        const foundData = await Transakcija.findById(_id);
+        const foundData = await Transakcija.findById(_id).populate('otpad');
         return foundData;
     } catch (err) {
         console.log(err);
@@ -188,6 +190,97 @@ exports.findUnifinishedDumpMethod = async (trashID) => {
     query['nazivFirme'] = {$ne: null};
     try {
         const foundData = await Transakcija.find(query);
+        return foundData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+exports.getMostUsedTrash = async (req, res) => {
+    if (!req.body) {
+        res.sendStatus(400);
+        return;
+    }
+    const type = req.params.type;
+    const token = req.headers['authorization'].split(' ')[1];
+    const data = jwt.decode(token).data;
+    const userID = data.korisnik._id;
+    const companyID = data.firma._id;
+    try {
+        const data = await this.getMostUsedTrashMethod(type, userID, companyID);
+        res.status(200).json(data);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+};
+
+exports.getMostUsedTrashMethod = async (type, userID, companyID) => {
+    const query = {};
+    let storage;
+    if (type === 'production')
+        storage = await storageController.findCompaniesStorageProduction(companyID);
+    const storageIDs = storage.map(x => x._id);
+    query['skladiste'] = {$all: storageIDs};
+    query['firma'] = companyID;
+    query['korisnik'] = userID;
+    try {
+        let foundData = await Transakcija.find(query).populate('otpad');
+        foundData = foundData.filter(x => x.otpad !== null);
+        let result = this.count(foundData);
+        result = result.slice(0, 3);
+        result = result.map(x => x.id);
+        foundData = foundData.filter(
+            (thing, i, arr) => arr.findIndex(t => t.otpad._id === thing.otpad._id) === i
+        );
+        foundData = foundData.filter(y => result.includes(y.otpad._id + ''));
+        return foundData;
+    } catch (err) {
+        console.log(err);
+        return err;
+    }
+};
+
+
+exports.count = (arr) => {
+    let counts = {};
+
+    for (let i = 0; i < arr.length; i++) {
+        let id = arr[i].otpad._id;
+        counts[id] = counts[id] ? counts[id] + 1 : 1;
+    }
+    const keys = Object.keys(counts);
+
+    let countsArr = [];
+    for (let i = 0; i < keys.length; i++) {
+        countsArr[i] = {id: keys[i], count:counts[keys[i]]};
+    }
+    countsArr.sort(function(a, b) {
+        return b.count - a.count;
+    });
+
+    return countsArr;
+};
+
+exports.getTransactionsByTrash = async (req, res) => {
+    if (!req.body) {
+        res.sendStatus(400);
+        return;
+    }
+    const trashID = req.params.trashID;
+    try {
+        const data = await this.getTransactionsByTrashMethod(trashID);
+        res.status(200).json(data);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+};
+
+exports.getTransactionsByTrashMethod = async (trashID) => {
+    try {
+        const foundData = await Transakcija.find({otpad: trashID}).populate('otpad');
         return foundData;
     } catch (err) {
         console.log(err);

@@ -191,18 +191,23 @@ exports.getSkladistaFirme = async (req, res) => {
         res.sendStatus(404);
         return;
     }
-    const firmaID = req.params.id;
+    const companyID = req.params.id;
     try {
-        const firma = await Firma.findById(firmaID).populate('skladista');
-        const skladista = firma.skladista;
-        for (let i = 0; i < skladista.length; i++) {
-            skladista[i] = await this.readOneMethod(skladista[i]._id);
-        }
-        res.status(200).json(skladista);
+        const storage = await this.findCompaniesStorageProduction(companyID);
+        res.status(200).json(storage);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
+};
+
+exports.findCompaniesStorageProduction = async (companyID) => {
+    const firma = await Firma.findById(companyID).populate('skladista');
+    const storage = firma.skladista;
+    for (let i = 0; i < storage.length; i++) {
+        storage[i] = await this.readOneMethod(storage[i]._id);
+    }
+    return storage;
 };
 
 exports.getSkladistaSkladistenjeFirme = async (req, res) => {
