@@ -124,17 +124,22 @@ exports.getSkladistaFirme = async (req, res) => {
         res.sendStatus(404);
         return;
     }
-    const firmaID = req.params.id;
+    const companyID = req.params.id;
     try {
-        const firma = await Firma.findById(firmaID).populate('skladistaTretman');
-        const skladistaTretman = firma.skladistaTretman;
-        for (let i = 0; i < skladistaTretman.length; i++) {
-            skladistaTretman[i] = await this.readOneMethod(skladistaTretman[i]._id);
-        }
-        res.status(200).json(skladistaTretman);
+        const storageTreatment = await this.getCompaniesStorageTreatment(companyID);
+        res.status(200).json(storageTreatment);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
 
+};
+
+exports.getCompaniesStorageTreatment = async (companyID) => {
+    const company = await Firma.findById(companyID).populate('skladistaTretman');
+    const storageTreatment = company.skladistaTretman;
+    for (let i = 0; i < storageTreatment.length; i++) {
+        storageTreatment[i] = await this.readOneMethod(storageTreatment[i]._id);
+    }
+    return storageTreatment;
 };

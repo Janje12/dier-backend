@@ -10,7 +10,7 @@ router.get('/one/:id', transactionController.readOne);
 router.get('/:trashID', transactionController.findTransports);
 
 // GET Transactions[]
-router.get('/unfinished/:trashID', transactionController.findUnifinishedDump);
+router.get('/unfinished/:trashID', transactionController.getUnfinishedOperations);
 
 // PATCH Transaction
 router.patch('/:id', transactionController.update);

@@ -124,17 +124,22 @@ exports.getSkladistaFirme = async (req, res) => {
         res.sendStatus(404);
         return;
     }
-    const firmaID = req.params.id;
+    const companyID = req.params.id;
     try {
-        const firma = await Firma.findById(firmaID).populate('skladistaDeponija');
-        const skladistaDeponija = firma.skladistaDeponija;
-        for (let i = 0; i < skladistaDeponija.length; i++) {
-            skladistaDeponija[i] = await this.readOneMethod(skladistaDeponija[i]._id);
-        }
+       const storageDisposal = await this.getCompaniesStorageDisposal(companyID);
         res.status(200).json(skladistaDeponija);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
 
+};
+
+exports.getCompaniesStorageDisposal = async (companyID) => {
+    const company = await Firma.findById(companyID).populate('skladistaDeponija');
+    const storageDisposal = company.skladistaDeponija;
+    for (let i = 0; i < storageDisposal.length; i++) {
+        storageDisposal[i] = await this.readOneMethod(storageDisposal[i]._id);
+    }
+    return storageDisposal;
 };

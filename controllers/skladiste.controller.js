@@ -193,7 +193,7 @@ exports.getSkladistaFirme = async (req, res) => {
     }
     const companyID = req.params.id;
     try {
-        const storage = await this.findCompaniesStorageProduction(companyID);
+        const storage = await this.getCompaniesStorageProduction(companyID);
         res.status(200).json(storage);
     } catch (err) {
         console.log(err);
@@ -201,7 +201,7 @@ exports.getSkladistaFirme = async (req, res) => {
     }
 };
 
-exports.findCompaniesStorageProduction = async (companyID) => {
+exports.getCompaniesStorageProduction = async (companyID) => {
     const firma = await Firma.findById(companyID).populate('skladista');
     const storage = firma.skladista;
     for (let i = 0; i < storage.length; i++) {
@@ -215,18 +215,21 @@ exports.getSkladistaSkladistenjeFirme = async (req, res) => {
         res.sendStatus(404);
         return;
     }
-    const firmaID = req.params.id;
+    const companyID = req.params.id;
     try {
-        const firma = await Firma.findById(firmaID).populate('skladistaSkladistenje');
-        let skladistaSkladistenje = firma.skladistaSkladistenje;
-        skladistaSkladistenje = skladistaSkladistenje.filter(x => x.skladistenje);
-        for (let i = 0; i < skladistaSkladistenje.length; i++) {
-            skladistaSkladistenje[i] = await this.readOneMethod(skladistaSkladistenje[i]._id);
-        }
-        console.log(skladistaSkladistenje);
-        res.status(200).json(skladistaSkladistenje);
+       const storageCache = await this.getCompaniesStorageCache(companyID);
+        res.status(200).json(storageCache);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
+};
+
+exports.getCompaniesStorageCache = async (companyID) => {
+    const firma = await Firma.findById(companyID).populate('skladistaSkladistenje');
+    const storageCache = firma.skladistaSkladistenje;
+    for (let i = 0; i < storageCache.length; i++) {
+        storageCache[i] = await this.readOneMethod(storageCache[i]._id);
+    }
+    return storageCache;
 };

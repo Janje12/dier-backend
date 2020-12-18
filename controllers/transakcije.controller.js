@@ -1,5 +1,7 @@
 const Transakcija = require('../models/transakcija');
 const storageController = require('../controllers/skladiste.controller');
+const storageTreatmentController = require('../controllers/skladiste-tretman.controller');
+const storageDisposalController = require('../controllers/skladiste-deponija.controller');
 const jwt = require('jsonwebtoken');
 
 exports.create = async (req, res) => {
@@ -168,28 +170,45 @@ exports.findTransportsMethod = async (trashID) => {
     }
 };
 
-exports.findUnifinishedDump = async (req, res) => {
+exports.getUnfinishedOperations = async (req, res) => {
     if (!req.body) {
         res.sendStatus(400);
         return;
     }
     const trashID = req.params.trashID;
+    let companyID = '';
+    if (trashID === 'treatment' || trashID === 'disposal') {
+        const token = req.headers['authorization'].split(' ')[1];
+        const data = jwt.decode(token).data;
+        companyID = data.firma._id;
+    }
     try {
-        const data = await this.findUnifinishedDumpMethod(trashID);
+        const data = await this.getUnfinishedOperationsMethod(trashID, companyID);
         res.status(200).json(data);
     } catch (err) {
+        console.log(err);
         res.sendStatus(500);
     }
 };
 
-exports.findUnifinishedDumpMethod = async (trashID) => {
+exports.getUnfinishedOperationsMethod = async (trashID, companyID) => {
     const query = {};
-    query['otpad'] = trashID;
+    let storage = undefined;
+    if (trashID === 'treatment')
+        storage = await storageTreatmentController.getCompaniesStorageTreatment(companyID);
+    else if (trashID === 'disposal')
+        storage = await storageDisposalController.getCompaniesStorageDisposal(companyID);
+    else
+        query['otpad'] = trashID;
+    if (storage !== undefined) {
+        const storageIDs = storage.map(x => x._id);
+        query['skladiste'] = {$all: storageIDs};
+    }
     query['vrstaTransakcije'] = 'TRASH_UPDATE';
     query['kolicinaOtpada'] = {$lt: 0};
     query['nazivFirme'] = {$ne: null};
     try {
-        const foundData = await Transakcija.find(query);
+        const foundData = await Transakcija.find(query).populate('otpad').populate('korisnik');
         return foundData;
     } catch (err) {
         console.log(err);
@@ -220,7 +239,13 @@ exports.getMostUsedTrashMethod = async (type, userID, companyID) => {
     const query = {};
     let storage;
     if (type === 'production')
-        storage = await storageController.findCompaniesStorageProduction(companyID);
+        storage = await storageController.getCompaniesStorageProduction(companyID);
+    else if (type === 'treatment')
+        storage = await storageTreatmentController.getCompaniesStorageTreatment(companyID);
+    else if (type === 'disposal')
+        storage = await storageDisposalController.getCompaniesStorageDisposal(companyID);
+    else if (type === 'cache')
+        storage = await storageController.getCompaniesStorageCache(companyID);
     const storageIDs = storage.map(x => x._id);
     query['skladiste'] = {$all: storageIDs};
     query['firma'] = companyID;
@@ -254,9 +279,9 @@ exports.count = (arr) => {
 
     let countsArr = [];
     for (let i = 0; i < keys.length; i++) {
-        countsArr[i] = {id: keys[i], count:counts[keys[i]]};
+        countsArr[i] = {id: keys[i], count: counts[keys[i]]};
     }
-    countsArr.sort(function(a, b) {
+    countsArr.sort(function (a, b) {
         return b.count - a.count;
     });
 
