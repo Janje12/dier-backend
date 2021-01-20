@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const logsController = require('../controllers/transakcije.controller');
+const logsController = require('../controllers/transaction.controller');
 
 exports.extractUserInfo = async (token) => {
     const data = jwt.decode(token).data;

@@ -1,6 +1,6 @@
-const skladiste_controller = require('../controllers/skladiste.controller');
+const skladiste_controller = require('../controllers/storage.controller');
 const authLogs = require('./authLogs.middlewear');
-const logsController = require('../controllers/transakcije.controller');
+const logsController = require('../controllers/transaction.controller');
 
 exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTrash, dko) => {
     const token = req.headers['authorization'].split(' ')[1];
