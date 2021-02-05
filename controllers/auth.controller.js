@@ -19,14 +19,14 @@ exports.login = async (req, res) => {
         let foundUser;
         // Disallow @ in the usernames!
         if (user.email.includes('@'))
-            foundUser = await userController.readOneMethod(user.email, 'email');
+            foundUser = await userController.readOneMethod({email: user.email});
         else
-            foundUser = await userController.readOneMethod(user.email, 'username');
+            foundUser = await userController.readOneMethod({username: user.email});
         if (!foundUser) {
             res.sendStatus(403);
             return;
         }
-        const company = await companyController.readOneMethod(foundUser.firma);
+        const company = await companyController.readOneMethod(foundUser.company);
         if (!company) {
             res.sendStatus(403);
             return;
@@ -142,17 +142,18 @@ exports.register = async (req, res) => {
     }
     // Initalize the values to save
     let user = req.body;
-    let company = req.body.firma;
+    delete user._id;
+    let company = req.body.company;
     let vehicles = company.vehicles;
     let permits = company.permits;
     let storages = company.storages;
 
-    company.address.place = await
-        locationController.readOneMethod({'placeName': company.address.place.placeName});
+    company.address.location = await
+        locationController.readOneMethod({'placeName': company.address.location.placeName});
     if (storages !== undefined) {
         for (let s of storages) {
-            s.address.place = await locationController
-                .readOneMethod({'placeName': s.address.place.placeName});
+            s.address.location = await locationController
+                .readOneMethod({'placeName': s.address.location.placeName});
         }
     }
 
@@ -161,36 +162,40 @@ exports.register = async (req, res) => {
         for (let p of permits) {
             if (p.address !== undefined) {
                 p.address.place = await locationController
-                    .readOneMethod({'placeName': p.address.place.placeName});
+                    .readOneMethod({'placeName': p.address.location.placeName});
             }
         }
     }
 
     // Initialize the companies activity
     company.occupation = await occupationController.readOneMethod({'name': company.occupation.name});
-
     // Save the objects in the DB
     try {
-        await userController.createMethod(user);
+        for (let i = 0; i < storages.length; i++)
+            storages[i] = await storageController.createMethod(storages[i]);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
     }
+    company.storages = storages;
     try {
-        await companyController.createMethod(company);
+        company = await companyController.createMethod(company);
+    } catch (err) {
+        //console.log(err);
+        res.sendStatus(500);
+        return;
+    }
+    user.company = company;
+    try {
+        user = await userController.createMethod(user);
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
+        return;
     }
-
     // Check which of the entities you CAN save in DB
-    try {
-        for (const s of storages)
-            await storageController.createMethod(s);
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(500);
-    }
+
     if (permits !== undefined) {
         try {
             for (const p of permits)
@@ -198,6 +203,7 @@ exports.register = async (req, res) => {
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
+            return;
         }
     }
     if (vehicles !== undefined) {
@@ -207,22 +213,19 @@ exports.register = async (req, res) => {
         } catch (err) {
             console.log(err);
             res.sendStatus(500);
+            return;
         }
     }
     try {
-        /*
-            sLogin the user
+            // Login the user
             const refreshToken = generateRefreshToken(user, company);
             const accessToken = generateAccessToken(user, company);
             user.token = refreshToken;
-            await korisnik_controller.updateMethod(user._id, user);
-            res.status(200).json({token: accessToken, korisnik: user});
-        */
-        res.status(200).json();
+            await userController.updateOneMethod({'_id': user._id}, user);
+            res.status(200).json({token: accessToken, user: user});
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
     }
 
-}
-;
+};

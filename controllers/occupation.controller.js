@@ -57,7 +57,7 @@ exports.readOneMethod = async (query) => {
 
 exports.readMany = async (req, res) => {
     let query = {};
-    if (req.params.type && req.params.value) {
+    if (req.params.type && req.params.value && req.params.value !== 'all') {
         const type = req.params.type;
         const value = req.params.value;
         query[type] = value;

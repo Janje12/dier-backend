@@ -14,13 +14,13 @@ exports.authMethod = async (req, resBody) => {
     if (method === 'DELETE') {
         token = req.headers['authorization'].split(' ')[1];
         data = await this.extractUserInfo(token);
-        userID = data.korisnik._id;
-        companyID = data.firma._id;
+        userID = data.user._id;
+        companyID = data.company._id;
     } else {
         token = resBody.token;
         data = await this.extractUserInfo(token);
-        userID = data.korisnik._id;
-        companyID = data.firma._id;
+        userID = data.user._id;
+        companyID = data.company._id;
     }
 
     switch (method) {

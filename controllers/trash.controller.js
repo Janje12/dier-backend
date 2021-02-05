@@ -1,4 +1,4 @@
-const TrashModel = require('../models/trash.model').Otpad;
+const TrashModel = require('../models/trash.model').Trash;
 const storageController = require('./storage.controller');
 
 exports.create = async (req, res) => {
@@ -6,8 +6,8 @@ exports.create = async (req, res) => {
         res.sendStatus(400);
         return;
     }
-    const newData = req.body.otpad;
-    const storageID = req.body.skladiste;
+    const newData = req.body.trash;
+    const storageID = req.body.storageID;
     try {
         let data = await this.createMethod(newData, storageID);
         res.status(201).json(data);
@@ -23,10 +23,11 @@ exports.createMethod = async (data, storageID) => {
     try {
         data = new TrashModel(data);
         const savedData = await data.save();
-        const storage = await storageController.readOneMethod(storageID);
+        const storage = await storageController.readOneMethod({'_id': storageID});
+        console.log(storage);
         storage.trashes.push(data);
         storage.amount += data.amount;
-        await storageController.updateMethod(storageID, storage);
+        await storageController.updateOneMethod({'_id': storageID}, storage);
         return savedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -92,7 +93,7 @@ exports.updateOne = async (req, res) => {
         return;
     }
     const updatingStorageID = req.body.storageID;
-    const updatingData = req.body;
+    const updatingData = req.body.trash;
     const type = req.params.type;
     const value = req.params.value;
     let query = {};

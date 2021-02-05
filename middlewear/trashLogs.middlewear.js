@@ -5,17 +5,17 @@ const logsController = require('../controllers/transaction.controller');
 exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTrash, dko) => {
     const token = req.headers['authorization'].split(' ')[1];
     const data = await authLogs.extractUserInfo(token);
-    const userID = data.korisnik._id;
-    const companyID = data.firma._id;
-    storageID = req.body.skladiste !== undefined ? req.body.skladiste : storageID;
+    const userID = data.user._id;
+    const companyID = data.company._id;
+    storageID = req.body.storage !== undefined ? req.body.storage : storageID;
     const storage = await skladiste_controller.readOneMethod(storageID);
     if (!currTrash)
-        currTrash = resBody.otpad ? resBody.otpad : resBody;
+        currTrash = resBody.trash ? resBody.trash : resBody;
     let prevTrashAmount = 0;
     if (prevTrash)
-        prevTrashAmount = prevTrash.kolicina !== undefined ? prevTrash.kolicina : 0;
-    const nazivFirme = req.body.nazivFirme;
-    const brDokumenta = req.body.brDokumenta;
+        prevTrashAmount = prevTrash.amount !== undefined ? prevTrash.amount : 0;
+    const nazivFirme = req.body.companyName;
+    const brDokumenta = req.body.documentNo;
 
     switch (method) {
         case 'POST':

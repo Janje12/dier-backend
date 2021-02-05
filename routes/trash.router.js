@@ -26,8 +26,8 @@ router.use(async (req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-            if (res.statusCode >= 200 && res.statusCode < 300)
-                await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
+            if (res.statusCode >= 200 && res.statusCode < 300);
+                //await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
         });
         oldEnd.apply(res, restArgs);
     };

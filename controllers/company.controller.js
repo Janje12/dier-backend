@@ -1,4 +1,4 @@
-const CompanyModel = require('../models/company.model').CompanyClient;
+const CompanyModel = require('../models/company.model').Company;
 // Use CompanyClient because its the top level class
 const permitController = require('./permit.controller.js');
 // const vehicleController = require('vehicle.controller');

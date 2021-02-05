@@ -197,7 +197,7 @@ exports.deleteManyMethod = async (query) => {
         throw new Error(err);
     }
 };
-
+// Get the users 'profile' information
 exports.getUserProfile = async (req, res) => {
     if (!req.params.username) {
         res.sendStatus(400);
