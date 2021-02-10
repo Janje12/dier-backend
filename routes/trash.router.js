@@ -9,10 +9,16 @@ router.use(async (req, res, next) => {
     const chunks = [];
     let storageID, prevTrash;
 
-    if (req.method === 'PATCH' || req.method === 'DELETE') {
-        let id = req.url.split('/')[1];
-        storageID = req.url.split('/')[2];
-        prevTrash = await trashController.readOneMethod(id);
+    if (req.method === 'PATCH') {
+        const type = req.url.split('/')[2];
+        const value = req.url.split('/')[3];
+        let query = {};
+        query[type] = value;
+        prevTrash = await trashController.readOneMethod(query);
+    }
+
+    if (req.method === 'DELETE') {
+        storageID = req.url.split('/')[4];
     }
 
     res.write = (...restArgs) => {
@@ -26,8 +32,8 @@ router.use(async (req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-            if (res.statusCode >= 200 && res.statusCode < 300);
-                //await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
+            if (res.statusCode >= 200 && res.statusCode < 300)
+                await trashLogs.trashMethod(req, req.method, JSON.parse(resBody), storageID, prevTrash);
         });
         oldEnd.apply(res, restArgs);
     };

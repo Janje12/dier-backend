@@ -40,10 +40,10 @@ exports.authMethod = async (req, resBody) => {
 
 exports.createAuthMethod = async (method, type, userID, companyID) => {
     const data = {
-        metoda: method,
-        vrstaTransakcije: type,
-        korisnik: userID,
-        firma: companyID,
+        method: method,
+        transactionType: type,
+        user: userID,
+        company: companyID,
     };
     await logsController.createMethod(data);
 };

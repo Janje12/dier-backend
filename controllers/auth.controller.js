@@ -62,7 +62,7 @@ exports.refresh = async (req, res) => {
     }
     let accessToken = req.body.token;
     const data = jwt.decode(accessToken).data;
-    const refreshToken = data.korisnik.token;
+    const refreshToken = data.user.token;
     try {
         const user = await userController.readOneMethod({'token': refreshToken});
         if (!user) {
@@ -161,7 +161,7 @@ exports.register = async (req, res) => {
     if (permits !== undefined) {
         for (let p of permits) {
             if (p.address !== undefined) {
-                p.address.place = await locationController
+                p.address.location = await locationController
                     .readOneMethod({'placeName': p.address.location.placeName});
             }
         }
@@ -178,7 +178,34 @@ exports.register = async (req, res) => {
         res.sendStatus(500);
         return;
     }
+    if (permits !== undefined) {
+        try {
+            for (let i = 0; i < permits.length; i++) {
+                storages.forEach(x => {
+                    if (x.name === permits[i].storage.name)
+                        permits[i].storage = x;
+                });
+                permits[i] = await permitController.createMethod(permits[i]);
+            }
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+    }
+    if (vehicles !== undefined) {
+        try {
+            for (let i = 0; i < vehicles.length; i++)
+                vehicles[i] = await vehicleController.createMethod(vehicles[i]);
+        } catch (err) {
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        }
+    }
     company.storages = storages;
+    company.permits = permits;
+    company.vehicles = vehicles;
     try {
         company = await companyController.createMethod(company);
     } catch (err) {
@@ -195,34 +222,13 @@ exports.register = async (req, res) => {
         return;
     }
     // Check which of the entities you CAN save in DB
-
-    if (permits !== undefined) {
-        try {
-            for (const p of permits)
-                await permitController.createMethod(p);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-            return;
-        }
-    }
-    if (vehicles !== undefined) {
-        try {
-            for (const v of vehicles)
-                await vehicleController.createMethod(v);
-        } catch (err) {
-            console.log(err);
-            res.sendStatus(500);
-            return;
-        }
-    }
     try {
-            // Login the user
-            const refreshToken = generateRefreshToken(user, company);
-            const accessToken = generateAccessToken(user, company);
-            user.token = refreshToken;
-            await userController.updateOneMethod({'_id': user._id}, user);
-            res.status(200).json({token: accessToken, user: user});
+        // Login the user
+        const refreshToken = generateRefreshToken(user, company);
+        const accessToken = generateAccessToken(user, company);
+        user.token = refreshToken;
+        await userController.updateOneMethod({'_id': user._id}, user);
+        res.status(200).json({token: accessToken, user: user});
     } catch (err) {
         console.log(err);
         res.sendStatus(500);

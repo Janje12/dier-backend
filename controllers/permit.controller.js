@@ -44,7 +44,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (query) => {
     try {
-        const foundData = await PermitModel.findOne(query);
+        const foundData = await PermitModel.findOne(query).populate('trashList').populate('storage');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -89,7 +89,7 @@ exports.updateOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateOneMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);

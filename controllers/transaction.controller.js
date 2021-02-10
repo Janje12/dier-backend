@@ -46,7 +46,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (query) => {
     try {
-        const foundData = await TransactionModel.findOne(query);
+        const foundData = await TransactionModel.findOne(query).populate('trash').populate('user');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -72,7 +72,7 @@ exports.readMany = async (req, res) => {
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await TransactionModel.find(query);
+        const foundData = await TransactionModel.find(query).populate('trash').populate('user');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -91,7 +91,7 @@ exports.updateOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateOneMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -256,10 +256,10 @@ exports.readUnifinshedTransactionsMethod = async (trashID, companyID) => {
         query['storage'] = {$all: storageIDs};
     }
     query['transactionType'] = 'TRASH_UPDATE';
-    query['trashAmount'] = {$lt: 0};
+    query['finished'] = false;
     query['companyName'] = {$ne: null};
     try {
-        const foundData = await TransactionModel.find(query);
+        const foundData = await this.readManyMethod(query);
         return foundData;
     } catch (err) {
         console.log(err);
@@ -273,12 +273,13 @@ exports.readMostUsedTrash = async (req, res) => {
         return;
     }
     const type = req.params.operationType;
+    const count = req.params.count ? req.params.count : 5;
     const token = req.headers['authorization'].split(' ')[1];
     const data = jwt.decode(token).data;
     const userID = data.user._id;
     const companyID = data.company._id;
     try {
-        const data = await this.readMostUsedTrashMethod(type, userID, companyID);
+        const data = await this.readMostUsedTrashMethod(type, userID, companyID, count);
         res.status(200).json(data);
     } catch (err) {
         console.log(err);
@@ -286,7 +287,7 @@ exports.readMostUsedTrash = async (req, res) => {
     }
 };
 // FML fix this
-exports.readMostUsedTrashMethod = async (type, userID, companyID) => {
+exports.readMostUsedTrashMethod = async (type, userID, companyID, count) => {
     const query = {};
     const storage = await companyController.readCompaniesStoragesMethod(companyID, type);
     const storageIDs = storage.map(x => x._id);
@@ -297,7 +298,7 @@ exports.readMostUsedTrashMethod = async (type, userID, companyID) => {
         let foundData = await this.readManyMethod(query);
         foundData = foundData.filter(x => x.trash !== null);
         let result = this.count(foundData);
-        result = result.slice(0, 3);
+        result = result.slice(0, count);
         result = result.map(x => x.id);
         foundData = foundData.filter(
             (thing, i, arr) => arr.findIndex(t => t.trash._id === thing.trash._id) === i

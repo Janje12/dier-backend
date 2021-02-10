@@ -1,4 +1,5 @@
 const TrashModel = require('../models/trash.model').Trash;
+const UnsafeTrashModel = require('../models/trash.model').UnsafeTrash;
 const storageController = require('./storage.controller');
 
 exports.create = async (req, res) => {
@@ -21,10 +22,12 @@ exports.create = async (req, res) => {
  */
 exports.createMethod = async (data, storageID) => {
     try {
-        data = new TrashModel(data);
+        if (data.hList !== undefined)
+            data = new UnsafeTrashModel(data);
+        else
+            data = new TrashModel(data);
         const savedData = await data.save();
         const storage = await storageController.readOneMethod({'_id': storageID});
-        console.log(storage);
         storage.trashes.push(data);
         storage.amount += data.amount;
         await storageController.updateOneMethod({'_id': storageID}, storage);
@@ -88,18 +91,19 @@ exports.readManyMethod = async (query) => {
 };
 
 exports.updateOne = async (req, res) => {
-    if (!req.body || !req.params.type || !req.params.value || !req.params.storageID) {
+    if (!req.body || !req.params.type || !req.params.value || !req.body.storageID) {
         res.sendStatus(400);
         return;
     }
     const updatingStorageID = req.body.storageID;
     const updatingData = req.body.trash;
+    const increment = req.body.inc;
     const type = req.params.type;
     const value = req.params.value;
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData, updatingStorageID);
+        const data = await this.updateOneMethod(query, updatingData, updatingStorageID, increment);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -107,15 +111,25 @@ exports.updateOne = async (req, res) => {
     }
 };
 
-/* Trash has to be added/subtraced from storage as well */
-exports.updateOneMethod = async (query, updatingData, updatingStorageID) => {
+/* Trash has to be added/subtraced from storage as well */ // MAKE BETTER!
+exports.updateOneMethod = async (query, updatingData, updatingStorageID, increment = false) => {
     try {
-        const updatedData = await TrashModel.findOneAndUpdate(query, updatingData, {new: true});
-        const storage = await storageController.readOneMethod(updatingStorageID);
-        let previousAmount = 0;
-        previousAmount = storage.trashes.filter(x => x._id.toString() === _id)[0].amount;
-        storage.amount += (updatingData.amount - previousAmount);
-        await storageController.updateMethod(updatingStorageID, storage);
+        const storage = await storageController.readOneMethod({'_id': updatingStorageID});
+        const previousTrash = await this.readOneMethod(query);
+        console.log(query);
+        let updatedData = null;
+        if (previousTrash === null) {
+            updatedData = await this.createMethod(updatingData, updatingStorageID);
+        } else {
+            // Update by incrementing the trash amount or update everything!
+            if (increment) {
+                updatedData = await TrashModel.findOneAndUpdate(query, {$inc: {amount: updatingData.amount}}, {new: true});
+            } else {
+                updatedData = await TrashModel.findOneAndUpdate(query, updatingData, {new: true});
+            }
+            storage.amount += updatedData.amount - previousTrash.amount;
+            await storageController.updateOneMethod({'_id': updatingStorageID}, storage);
+        }
         return updatedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -135,7 +149,7 @@ exports.deleteOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.deleteMethod(query, storageID);
+        const data = await this.deleteOneMethod(query, storageID);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -146,7 +160,7 @@ exports.deleteOne = async (req, res) => {
 exports.deleteOneMethod = async (query, storageID) => {
     try {
         const deletedData = await TrashModel.findOneAndDelete(query);
-        const storage = await storageController.readOneMethod(storageID);
+        const storage = await storageController.readOneMethod({'_id': storageID});
         const index = storage.trashes.map(function (e) {
             return e._id;
         }).indexOf(deletedData._id);

@@ -1,4 +1,7 @@
 const StorageModel = require('../models/storage.model').Storage;
+const StorageTreatmentModel = require('../models/storage.model').StorageTreatment;
+const StorageDumpModel = require('../models/storage.model').StorageDump;
+const StorageCacheModel = require('../models/storage.model').StorageCache;
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -17,7 +20,14 @@ exports.create = async (req, res) => {
 
 exports.createMethod = async (data) => {
     try {
-        data = new StorageModel(data);
+        if (data.treatment !== undefined)
+            data = new StorageTreatmentModel(data);
+        else if (data.dumpType !== undefined)
+            data = new StorageDumpModel(data);
+        else if (data.cache !== undefined)
+            data = new StorageCacheModel(data);
+        else
+            data = new StorageModel(data);
         const savedData = await data.save();
         return savedData;
     } catch (err) {
@@ -44,7 +54,6 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (query) => {
     try {
-        console.log(query);
         const foundData = await StorageModel.findOne(query).populate('trashes');
         return foundData;
     } catch (err) {
@@ -90,7 +99,7 @@ exports.updateOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateOneMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -119,7 +128,7 @@ exports.updateMany = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateManyMethod    (query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);

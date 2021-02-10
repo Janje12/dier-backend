@@ -19,8 +19,8 @@ router.use((req, res, next) => {
         }
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
-           /* if (res.statusCode >= 200 && res.statusCode < 300)
-                await authLogs.authMethod(req, JSON.parse(resBody));*/
+            if (res.statusCode >= 200 && res.statusCode < 300)
+                await authLogs.authMethod(req, JSON.parse(resBody));
         });
         oldEnd.apply(res, restArgs);
     };

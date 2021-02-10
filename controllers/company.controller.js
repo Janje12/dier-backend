@@ -38,9 +38,7 @@ exports.readOne = async (req, res) => {
         query[type] = value;
     }
     try {
-        console.log(query);
         const data = await this.readOneMethod(query);
-        console.log(data);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -50,7 +48,8 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (query) => {
     try {
-        const foundData = await CompanyModel.findOne(query);
+        const foundData = await CompanyModel.findOne(query).populate('permits')
+            .populate('vehicles').populate('storages');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -212,13 +211,14 @@ exports.readCompaniesPermits = async (req, res) => {
         if (permitType === 'treatment')
             permits = permits.filter(d => d.type === 'treatment');
         else if (permitType === 'cache')
-            permits = permits.filter(d => d.type !== 'cache');
+            permits = permits.filter(d => d.type === 'cache');
         else if (permitType === 'dump')
-            permits = permits.filter(d => d.type !== 'dump');
+            permits = permits.filter(d => d.type === 'dump');
         else if (permitType === 'transport')
-            permits = permits.filter(d => d.type !== 'transport');
-        for (let i = 0; i <= permits.length; i++)
-            permits[i] = await permitController.readOneMethod(permits[i]._id);
+            permits = permits.filter(d => d.type === 'transport');
+        for (let i = 0; i < permits.length; i++) {
+            permits[i] = await permitController.readOneMethod({'_id': permits[i]._id});
+        }
         res.status(200).json(permits);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);

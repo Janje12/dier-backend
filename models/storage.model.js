@@ -16,13 +16,13 @@ const storageSchema = new Schema({
 
 });
 const storageTreatmentSchema = new Schema({
-    treatment: {type: Boolean, required: true},
+    treatment: {type: String, required: true},
 });
 const storageDumpSchema = new Schema({
     dumpType: {type: String, required: true},
 });
 const storageCacheSchema = new Schema({
-    cache: {type: Boolean, required: true},
+    cache: {type: String, required: true},
 });
 
 const Storage = mongoose.model('Storage', storageSchema);
