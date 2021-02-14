@@ -2,8 +2,8 @@
   "name": "dier-backend",
   "author": "janje12",
   "author-email": "serbiansolutions@gmail.com",
-  "version": "0.3.0",
-  "description": "Backend API server for the frontend DIER APP.",
+  "version": "0.7.0",
+  "description": "Backend REST API server for the frontend DIER APP.",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",

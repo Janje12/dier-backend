@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const trashController = require('../controllers/trash.controller');
-const trashLogs = require('../middlewear/trashLogs.middlewear');
+const trashLogs = require('../middlewear/trashLogs.middleware');
 
 router.use(async (req, res, next) => {
     const oldWrite = res.write;

@@ -23,6 +23,7 @@ const companySchema = new Schema({
     permits: [{type: Schema.Types.ObjectId, ref: 'Permit', required: false}],
     vehicles: [{type: Schema.Types.ObjectId, ref: 'Vehicle', required: false}],
     storages: [{type: Schema.Types.ObjectId, ref: 'Storage', required: false}],
+    specialWastes: [{type: Schema.Types.ObjectId, ref: 'SpecialWaste', required: false}],
 });
 
 const CompanyClient = mongoose.model('CompanyClient', companyClientSchema);

@@ -1,5 +1,5 @@
 const storageController = require('../controllers/storage.controller');
-const authLogs = require('./authLogs.middlewear');
+const authLogs = require('./authLogs.middleware');
 const logsController = require('../controllers/transaction.controller');
 
 exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTrash, wmd) => {

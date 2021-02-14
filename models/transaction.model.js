@@ -8,6 +8,8 @@ const transactionSchema = new Schema({
         transactionType: {type: String, required: true},
         method: {type: String, required: true},
         trash: {type: Schema.Types.ObjectId, ref: 'Trash', required: false},
+        specialWaste: {type: Schema.Types.ObjectId, ref: 'SpecialWaste', required: false},
+        specialWasteType: {type: String, required: false},
         storage: {type: Schema.Types.ObjectId, ref: 'Storage', required: false},
         trashAmount: {type: Number, required: false},
         previousAmount: {type: Number, required: false},

@@ -48,9 +48,9 @@ exports.readOne = async (req, res) => {
     }
 };
 
-exports.readOneMethod = async (query) => {
+exports.readOneMethod = async (query, options = {}) => {
     try {
-        const foundData = await UserModel.findOne(query);
+        const foundData = await UserModel.findOne(query).select(options);
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

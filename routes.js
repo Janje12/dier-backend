@@ -5,7 +5,7 @@ exports.routesInit = (app) => {
     const companyRouter = require('./routes/company.router');
     const vehicleRouter = require('./routes/vehicle.router');
     const locationRouter = require('./routes/location.router');
-    const transactionRouter = require('./routes/transactionRouter');
+    const transactionRouter = require('./routes/transaction.router');
     const permitRouter = require('./routes/permit.router');
     const trashRouter = require('./routes/trash.router');
     const catalogRouter = require('./routes/catalog.router');
@@ -31,8 +31,5 @@ exports.routesInit = (app) => {
     app.use('/api/monthlyreport', monthlyReportRouter);
     app.use('/api/yearlyreport', yearlyReportRouter);*/
 
-    /* app.use('/api/opasniotpad', opasniOtpadRouter);
-     app.use('/api/skladistetretman', skladisteTretmanRouter);
-     app.use('/api/skladistedeponija', skladisteDeponijaRouter);
-     app.use('/api/skladisteskladistenje', skladisteSkladistenjeRouter);*/
+    console.log('[SERVER] Routes initialized');
 };

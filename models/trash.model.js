@@ -32,6 +32,7 @@ const specialWasteSchema = new Schema({
         name: {type: String, required: true},
         desc: {type: String, required: true},
         amount: {type: Number, required: true, default: 0.0},
+        operationTypes: [{type: String, required: false}],
         mass: {type: Number, required: true},
         unitOfMeasure: {type: String, required: true},
     },

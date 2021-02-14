@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const userController = require('./user.controller');
@@ -15,13 +14,14 @@ exports.login = async (req, res) => {
         return;
     }
     const user = req.body;
+
     try {
         let foundUser;
         // Disallow @ in the usernames!
         if (user.email.includes('@'))
-            foundUser = await userController.readOneMethod({email: user.email});
+            foundUser = await userController.readOneMethod({email: user.email}, '+password');
         else
-            foundUser = await userController.readOneMethod({username: user.email});
+            foundUser = await userController.readOneMethod({username: user.email}, '+password');
         if (!foundUser) {
             res.sendStatus(403);
             return;
@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
 };
 
 exports.refresh = async (req, res) => {
-    if (!req.body) {
+    if (!req.body.token) {
         res.sendStatus(401);
         return;
     }
@@ -125,7 +125,7 @@ exports.logout = async (req, res) => {
     }
     try {
         const data = jwt.decode(token).data;
-        const user = await userController.readOneMethod({'username': data.user.username});
+        const user = await userController.readOneMethod({'_id': data.user._id});
         user.token = '';
         await userController.updateOneMethod({'_id': user._id}, user);
         res.status(200).json(user);
@@ -141,8 +141,9 @@ exports.register = async (req, res) => {
         return;
     }
     // Initalize the values to save
+    // TRANSACTIONS AND SESSIONS
     let user = req.body;
-    delete user._id;
+    delete user._id; // obrisi
     let company = req.body.company;
     let vehicles = company.vehicles;
     let permits = company.permits;
@@ -228,6 +229,7 @@ exports.register = async (req, res) => {
         const accessToken = generateAccessToken(user, company);
         user.token = refreshToken;
         await userController.updateOneMethod({'_id': user._id}, user);
+        // vracas password
         res.status(200).json({token: accessToken, user: user});
     } catch (err) {
         console.log(err);
