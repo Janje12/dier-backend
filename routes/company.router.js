@@ -16,5 +16,7 @@ router.get('/permits/:companyID/:permitType', companyController.readCompaniesPer
 router.get('/vehicles/:companyID', companyController.readCompaniesVehicles);
 // Get all of specific type storages or all storages if type isn't defined
 router.get('/storages/:companyID/:storageType', companyController.readCompaniesStorages);
+// Get all of specific type specialWastes or all specialWastes if type isn't defined
+router.get('/specialwastes/:companyID/:specialWasteType', companyController.readCompaniesSpecialWastes);
 
 module.exports = router;

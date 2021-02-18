@@ -6,15 +6,16 @@ exports.specialWasteMethod = async (req, method, resBody) => {
     const data = await authLogs.extractUserInfo(token);
     const userID = data.user._id;
     const companyID = data.company._id;
-    const specialWaste = req.specialWaste;
+    const specialWaste = resBody;
     const specialWasteType = req.body.specialWasteType;
+    const amount = req.body.amount;
     switch (method) {
         case 'POST':
             await this.createSpecialWasteMethod(method, 'SPECIAL_WASTE_CREATE', userID, companyID, specialWaste);
             break;
         case 'PATCH':
             await this.createSpecialWasteMethod(method, 'SPECIAL_WASTE_UPDATE',
-                userID, companyID, specialWaste, specialWasteType);
+                userID, companyID, specialWaste, specialWasteType, amount);
             break;
         case 'DELETE':
             await this.createSpecialWasteMethod(method, 'SPECIAL_WASTE_DELETE', userID, companyID, specialWaste);
@@ -24,7 +25,7 @@ exports.specialWasteMethod = async (req, method, resBody) => {
     }
 };
 
-exports.createSpecialWasteMethod = async (method, type, userID, companyID, specialWaste, specialWasteType = undefined) => {
+exports.createSpecialWasteMethod = async (method, type, userID, companyID, specialWaste, specialWasteType = undefined, amount = 0) => {
     const data = {
         method: method,
         transactionType: type,
@@ -32,7 +33,7 @@ exports.createSpecialWasteMethod = async (method, type, userID, companyID, speci
         company: companyID,
         specialWaste: specialWaste,
         specialWasteType: specialWasteType,
-        trashAmount: specialWaste.amount,
+        trashAmount: amount,
     };
     await logsController.createMethod(data);
 };

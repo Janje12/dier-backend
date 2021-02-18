@@ -1,5 +1,5 @@
-const CatalogModel = require('../models/catalog.model');
-
+const CatalogModel = require('../models/catalog.model').Catalog;
+const SpecialWasteCatalogModel = require('../models/catalog.model').SpecialWasteCatalog;
 /*
     Technically none of this should ever be used except the readOne and readMany as its a static never changing table.
  */
@@ -209,6 +209,16 @@ exports.getSafeCatalog = async (req, res) => {
 exports.getUnsafeCatalog = async (req, res) => {
     try {
         const data = await CatalogModel.find({'indexNumber': {$regex: /\*$/, $options: 'm'}});
+        res.status(200).json(data);
+    } catch (err) {
+        console.log('[REQUEST-ERROR]: ', err);
+        res.sendStatus(500);
+    }
+};
+// Get only special waste catalog[]
+exports.getSpecialWasteCatalog = async (req, res) => {
+    try {
+        const data = await SpecialWasteCatalogModel.find();
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);

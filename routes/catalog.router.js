@@ -13,6 +13,7 @@ router.delete('/many/:type/:value', catalogController.deleteMany);
 // Get only safe or unsafe trash from catalog
 router.get('/safe', catalogController.getSafeCatalog);
 router.get('/unsafe', catalogController.getUnsafeCatalog);
+router.get('/specialwaste', catalogController.getSpecialWasteCatalog);
 
 module.exports = router;
 

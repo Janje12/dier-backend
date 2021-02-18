@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const specialWasteController = require('../controllers/specialWaste.controller.controller');
+const specialWasteController = require('../controllers/specialWaste.controller');
 const specialWasteLogs = require('../middlewear/specialWasteLogs.middleware');
 
 router.use(async (req, res, next) => {
@@ -20,7 +20,7 @@ router.use(async (req, res, next) => {
         const resBody = Buffer.concat(chunks).toString('utf8');
         res.on('finish', async function () {
             if (res.statusCode >= 200 && res.statusCode < 300)
-                await specialWasteLogs.specialWasteMethod(req, req.method, JSONparse(resBody));
+                await specialWasteLogs.specialWasteMethod(req, req.method, JSON.parse(resBody));
         });
         oldEnd.apply(res, restArgs);
     };

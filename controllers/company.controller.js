@@ -49,7 +49,7 @@ exports.readOne = async (req, res) => {
 exports.readOneMethod = async (query) => {
     try {
         const foundData = await CompanyModel.findOne(query).populate('permits')
-            .populate('vehicles').populate('storages');
+            .populate('vehicles').populate('storages').populate('specialWastes');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -214,6 +214,8 @@ exports.readCompaniesPermits = async (req, res) => {
             permits = permits.filter(d => d.type === 'cache');
         else if (permitType === 'dump')
             permits = permits.filter(d => d.type === 'dump');
+        else if (permitType === 'collector')
+            permits = permits.filter(d => d.type === 'collector');
         else if (permitType === 'transport')
             permits = permits.filter(d => d.type === 'transport');
         for (let i = 0; i < permits.length; i++) {
@@ -274,6 +276,39 @@ exports.readCompaniesStoragesMethod = async (companyID, storageType) => {
             storages[i] = await storageController.readOneMethod(storages[i]._id);
         }
         return storages;
+    } catch (err) {
+        console.log('[METHOD-ERROR]: ', err);
+        throw new Error(err);
+    }
+};
+/* Get all the companies storages of storageType (if unspecified then all of them) */
+exports.readCompaniesSpecialWastes = async (req, res) => {
+    if (!req.params.companyID) {
+        res.sendStatus(404);
+        return;
+    }
+    const companyID = req.params.companyID;
+    const specialWasteType = req.params.specialWasteType ? req.params.specialWasteType : '';
+    try {
+        const storages = await this.readCompaniesSpecialWastesMethod(companyID, specialWasteType);
+        res.status(200).json(storages);
+    } catch (err) {
+        console.log('[REQUEST-ERROR]: ', err);
+        res.sendStatus(500);
+    }
+};
+
+exports.readCompaniesSpecialWastesMethod = async (companyID, specialWasteType) => {
+    try {
+        const company = await this.readOneMethod({'_id': companyID});
+        let specialWastes = company.specialWastes;
+        if (specialWasteType === 'production')
+            specialWastes = specialWastes.filter(s => s.operationTypes.includes('Proizvodnja'));
+        else if (specialWasteType === 'import')
+            specialWastes = specialWastes.filter(s => s.operationTypes.includes('Uvoz'));
+        else if (specialWasteType === 'export')
+            specialWastes = specialWastes.filter(s => s.operationTypes.includes('Izvoz'));
+        return specialWastes;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
         throw new Error(err);

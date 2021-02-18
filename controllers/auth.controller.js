@@ -196,6 +196,7 @@ exports.register = async (req, res) => {
     }
     if (vehicles !== undefined) {
         try {
+            console.log(vehicles);
             for (let i = 0; i < vehicles.length; i++)
                 vehicles[i] = await vehicleController.createMethod(vehicles[i]);
         } catch (err) {

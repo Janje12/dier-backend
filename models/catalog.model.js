@@ -6,4 +6,16 @@ const catalogSchema = new Schema({
     name: {type: String, required: true},
 });
 
-module.exports = mongoose.model('Catalog', catalogSchema);
+const specialWasteCatalogSchema = new Schema({
+    name: {type: String, required: true},
+    desc: {type: String, required: true},
+    class: {type: String, required: true},
+});
+
+const Catalog = mongoose.model('Catalog', catalogSchema);
+const SpecialWasteCatalog = mongoose.model('specialWasteCatalog', specialWasteCatalogSchema);
+
+module.exports = {
+    Catalog: Catalog,
+    SpecialWasteCatalog: SpecialWasteCatalog,
+};

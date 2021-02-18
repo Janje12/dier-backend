@@ -8,6 +8,7 @@ exports.routesInit = (app) => {
     const transactionRouter = require('./routes/transaction.router');
     const permitRouter = require('./routes/permit.router');
     const trashRouter = require('./routes/trash.router');
+    const specialWasteRouter = require('./routes/specialWaste.router');
     const catalogRouter = require('./routes/catalog.router');
     const occupationRouter = require('./routes/occupation.router');
     const storageRouter = require('./routes/storage.router');/*
@@ -26,6 +27,7 @@ exports.routesInit = (app) => {
     app.use('/api/storage', storageRouter);
     app.use('/api/catalog', catalogRouter);
     app.use('/api/trash', trashRouter);
+    app.use('/api/specialwaste', specialWasteRouter);
     app.use('/api/transaction', transactionRouter);/*
     app.use('/api/wmd', wmdRouter);
     app.use('/api/monthlyreport', monthlyReportRouter);
