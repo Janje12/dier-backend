@@ -11,6 +11,7 @@ const storageSchema = new Schema({
     geolocationEast: {required: false, type: Number},
     amount: {type: Number, required: true, default: 0.0},
     maxAmount: {type: Number, required: true},
+    storageUnit: {type: String, required: true, default: 'KG'},
     trashes: [{type: Schema.Types.ObjectId, ref: 'Trash', required: false}],
     packages: [{type: Schema.Types.ObjectId, ref: 'Package', required: false}],
 
