@@ -95,7 +95,7 @@ exports.updateOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateOneMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -124,7 +124,7 @@ exports.updateMany = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateManyMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -152,7 +152,7 @@ exports.deleteOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.deleteMethod(query);
+        const data = await this.deleteOneMethod(query);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -180,7 +180,7 @@ exports.deleteMany = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.deleteMethod(query);
+        const data = await this.deleteManyMethod(query);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);

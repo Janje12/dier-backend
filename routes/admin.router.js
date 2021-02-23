@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
-// GET (FIND) ONE Firma
-router.get('/admin/:type/:value', companyController.findOne);
+const adminController = require('../controllers/admin.controller');
 
-// GET (FIND) ONE Firma
-router.get('/admin/many/:type/:value', companyController.findMany);
-
-router.get('/admin/:type/:value', skladiste_controller.findOne);
-// GET (FIND) ONE Korisnik
-router.get('/admin/:type/:value', userController.findOne);
-
+router.get('/users/one/:type/:value', adminController.getOneUser);
+router.get('/users/many/:type/:value', adminController.getManyUsers);
+router.get('/companies/one/:type/:value', adminController.getOneCompany);
+router.get('/companies/many/:type/:value', adminController.getManyCompanies);
+router.get('/companies/storages/:value', adminController.getCompanyNames);
+router.get('/storages/one/:type/:value', adminController.getOneStorage);
+router.get('/storages/many/:type/:value', adminController.getManyStorages);
+router.get('/permits/one/:type/:value', adminController.getOnePermit);
+router.get('/permits/many/:type/:value', adminController.getManyPermits);
 module.exports = router;

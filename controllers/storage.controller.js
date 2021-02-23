@@ -54,7 +54,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (query) => {
     try {
-        const foundData = await StorageModel.findOne(query).populate('trashes');
+        const foundData = await StorageModel.findOne(query).populate('trashes').populate('address.location');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -80,7 +80,7 @@ exports.readMany = async (req, res) => {
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await StorageModel.find(query).populate('trashes');
+        const foundData = await StorageModel.find(query).populate('trashes').populate('address.location');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

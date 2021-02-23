@@ -1,5 +1,6 @@
 exports.routesInit = (app) => {
     const indexRouter = require('./routes/index');
+    const adminRouter = require('./routes/admin.router');
     const authRouter = require('./routes/auth.router');
     const userRouter = require('./routes/user.router');
     const companyRouter = require('./routes/company.router');
@@ -17,6 +18,7 @@ exports.routesInit = (app) => {
     const yearlyReportRouter = require('./routes/yearlyReport.router');*/
 
     app.use('/', indexRouter);
+    app.use('/api/admin', adminRouter);
     app.use('/api/auth', authRouter);
     app.use('/api/user', userRouter);
     app.use('/api/company', companyRouter);

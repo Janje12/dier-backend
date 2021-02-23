@@ -44,7 +44,8 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (query) => {
     try {
-        const foundData = await PermitModel.findOne(query).populate('trashList').populate('storage');
+        const foundData = await PermitModel.findOne(query).populate('trashList')
+            .populate('storage').populate('address.location');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
@@ -70,7 +71,7 @@ exports.readMany = async (req, res) => {
 
 exports.readManyMethod = async (query) => {
     try {
-        const foundData = await PermitModel.find(query);
+        const foundData = await PermitModel.find(query).populate('address.location');
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

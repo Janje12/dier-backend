@@ -48,7 +48,7 @@ exports.readOne = async (req, res) => {
 
 exports.readOneMethod = async (query) => {
     try {
-        const foundData = await CompanyModel.findOne(query).populate('permits')
+        const foundData = await CompanyModel.findOne(query).populate('permits').populate('address.location')
             .populate('vehicles').populate('storages').populate('specialWastes');
         return foundData;
     } catch (err) {
@@ -83,6 +83,16 @@ exports.readManyMethod = async (query) => {
     }
 };
 
+exports.readOnlyNamesMethod = async (query) => {
+    try {
+        const foundData = await CompanyModel.find(query).select('name storages permits');
+        return foundData;
+    } catch (err) {
+        console.log('[METHOD-ERROR]: ', err);
+        throw new Error(err);
+    }
+};
+
 exports.updateOne = async (req, res) => {
     if (!req.body || !req.params.type || !req.params.value) {
         res.sendStatus(400);
@@ -94,7 +104,7 @@ exports.updateOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateOneMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
