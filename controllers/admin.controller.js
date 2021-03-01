@@ -141,7 +141,7 @@ exports.getCompanyNames = async (req, res) => {
     try {
         let foundData = await companyController.readOnlyNamesMethod(query);
         if (value === 'storages') {
-            foundData = foundData.filter(c => c.storages !== undefined || c.storages.length !== 0);
+            foundData = foundData.filter(c => c.storages.length !== 0);
         } else if (value === 'permits') {
             foundData = foundData.filter(c => c.permits.length !== 0);
         }
