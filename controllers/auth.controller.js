@@ -182,10 +182,11 @@ exports.register = async (req, res) => {
     if (permits !== undefined) {
         try {
             for (let i = 0; i < permits.length; i++) {
-                storages.forEach(x => {
-                    if (x.name === permits[i].storage.name)
-                        permits[i].storage = x;
-                });
+                if (permits[i].storage !== undefined)
+                    storages.forEach(x => {
+                        if (x.name === permits[i].storage.name)
+                            permits[i].storage = x;
+                    });
                 permits[i] = await permitController.createMethod(permits[i]);
             }
         } catch (err) {
