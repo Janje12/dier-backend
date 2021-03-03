@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const tokenController = require('./token.controller');
 const userController = require('./user.controller');
 const companyController = require('./company.controller');
 const storageController = require('./storage.controller');
@@ -39,16 +39,14 @@ exports.login = async (req, res) => {
             }
             if (!result) {
                 res.sendStatus(403);
-                return;
             }
-            const refreshToken = generateRefreshToken(foundUser, company);
-            foundUser.token = refreshToken;
-            const accessToken = generateAccessToken(foundUser, company);
-
-            userController.updateOneMethod({'_id': foundUser._id}, foundUser);
-
-            res.status(200).json({token: accessToken, user: foundUser});
         });
+        const refreshToken = await tokenController.generateRefreshToken(foundUser, company);
+        foundUser.token = refreshToken;
+        const accessToken = await tokenController.generateAccessToken(foundUser, company);
+
+        foundUser = await userController.updateOneMethod({'_id': foundUser._id}, foundUser);
+        res.status(200).json({token: accessToken, user: foundUser});
     } catch (err) {
         console.log('[REQUEST-ERROR] ', err);
         res.sendStatus(500);
@@ -61,7 +59,7 @@ exports.refresh = async (req, res) => {
         return;
     }
     let accessToken = req.body.token;
-    const data = jwt.decode(accessToken).data;
+    const data = await tokenController.extractUserInfo(undefined, accessToken);
     const refreshToken = data.user.token;
     try {
         const user = await userController.readOneMethod({'token': refreshToken});
@@ -74,7 +72,7 @@ exports.refresh = async (req, res) => {
             res.sendStatus(403);
             return;
         }
-        accessToken = generateAccessToken(user, company);
+        accessToken = await tokenController.generateAccessToken(user, company);
 
         res.status(200).json({token: accessToken, user: user});
     } catch (err) {
@@ -83,48 +81,13 @@ exports.refresh = async (req, res) => {
     }
 };
 
-function generateAccessToken(user, company) {
-    let expirePeriod = '30m';
-    if (user.rememberMe)
-        expirePeriod = '730h';
-    const accessToken = jwt.sign({
-        data: {
-            user: {
-                _id: user._id,
-                username: user.username,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                role: user.role,
-                token: user.token,
-            },
-            company: {
-                _id: company._id,
-                operations: company.operations,
-            },
-        }
-    }, process.env.ACCESS_TOKEN, {expiresIn: expirePeriod});
-    return accessToken;
-}
-
-function generateRefreshToken(user) {
-    const refreshToken = jwt.sign({
-        data: {
-            user: {
-                username: user.username, firstName: user.firstName, lastName: user.lastName,
-            },
-        }
-    }, process.env.REFERSH_TOKEN);
-    return refreshToken;
-}
-
 exports.logout = async (req, res) => {
-    const token = req.headers['authorization'].split(' ')[1];
-    if (token == null) {
+    const data = await tokenController.extractUserInfo(req.headers);
+    if (data == null) {
         res.sendStatus(401);
         return;
     }
     try {
-        const data = jwt.decode(token).data;
         const user = await userController.readOneMethod({'_id': data.user._id});
         user.token = '';
         await userController.updateOneMethod({'_id': user._id}, user);
@@ -228,11 +191,10 @@ exports.register = async (req, res) => {
     // Check which of the entities you CAN save in DB
     try {
         // Login the user
-        const refreshToken = generateRefreshToken(user, company);
-        const accessToken = generateAccessToken(user, company);
+        const refreshToken = await tokenController.generateRefreshToken(user, company);
+        const accessToken = await tokenController.generateAccessToken(user, company);
         user.token = refreshToken;
         await userController.updateOneMethod({'_id': user._id}, user);
-        // vracas password
         res.status(200).json({token: accessToken, user: user});
     } catch (err) {
         console.log(err);

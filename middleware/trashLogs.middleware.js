@@ -1,10 +1,9 @@
 const storageController = require('../controllers/storage.controller');
-const authLogs = require('./authLogs.middleware');
+const tokenController = require('../controllers/token.controller');
 const logsController = require('../controllers/transaction.controller');
 
 exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTrash, wmd) => {
-    const token = req.headers['authorization'].split(' ')[1];
-    const data = await authLogs.extractUserInfo(token);
+    const data = await tokenController.extractUserInfo( req.headers);
     const userID = data.user._id;
     const companyID = data.company._id;
     storageID = req.body.storageID !== undefined ? req.body.storageID : storageID;

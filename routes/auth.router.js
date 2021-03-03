@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/auth.controller');
-const authLogs = require('../middlewear/authLogs.middleware');
+const authLogs = require('../middleware/authLogs.middleware');
 
 router.use((req, res, next) => {
     const oldWrite = res.write;

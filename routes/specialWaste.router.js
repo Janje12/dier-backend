@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const specialWasteController = require('../controllers/specialWaste.controller');
-const specialWasteLogs = require('../middlewear/specialWasteLogs.middleware');
+const specialWasteLogs = require('../middleware/specialWasteLogs.middleware');
 
 router.use(async (req, res, next) => {
     const oldWrite = res.write;

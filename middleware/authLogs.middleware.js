@@ -1,10 +1,5 @@
-const jwt = require('jsonwebtoken');
 const logsController = require('../controllers/transaction.controller');
-
-exports.extractUserInfo = async (token) => {
-    const data = jwt.decode(token).data;
-    return data;
-};
+const tokenController = require('../controllers/token.controller');
 
 exports.authMethod = async (req, resBody) => {
     const method = req.method;
@@ -12,17 +7,13 @@ exports.authMethod = async (req, resBody) => {
     let token, data, userID, companyID;
 
     if (method === 'DELETE') {
-        token = req.headers['authorization'].split(' ')[1];
-        data = await this.extractUserInfo(token);
-        userID = data.user._id;
-        companyID = data.company._id;
+        data = await tokenController.extractUserInfo(req.headers);
     } else {
         token = resBody.token;
-        data = await this.extractUserInfo(token);
-        userID = data.user._id;
-        companyID = data.company._id;
+        data = await tokenController.extractUserInfo(undefined, token);
     }
-
+    userID = data.user._id;
+    companyID = data.company._id;
     switch (method) {
         case 'POST':
             if (type === '/login')

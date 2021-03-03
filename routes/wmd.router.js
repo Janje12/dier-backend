@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const wmdController = require('../controllers/wmd.controller');
-const trashLogs = require('../middlewear/trashLogs.middleware');
+const trashLogs = require('../middleware/trashLogs.middleware');
 const trashController = require('../controllers/trash.controller');
 
 
