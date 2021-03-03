@@ -21,9 +21,11 @@ exports.createMethod = async (data, companyID) => {
     try {
         data = new VehicleModel(data);
         const savedData = await data.save();
-        const company = await companyController.readOneMethod({'_id': companyID});
-        company.vehicles.push(savedData);
-        await companyController.updateOneMethod({'_id': companyID}, company);
+        if (companyID !== undefined) {
+            const company = await companyController.readOneMethod({'_id': companyID});
+            company.vehicles.push(savedData);
+            await companyController.updateOneMethod({'_id': companyID}, company);
+        }
         return savedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

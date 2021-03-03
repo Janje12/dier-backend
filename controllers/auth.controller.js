@@ -149,6 +149,7 @@ exports.register = async (req, res) => {
     let permits = company.permits;
     let storages = company.storages;
 
+    // Populate the locations for company and storages
     company.address.location = await
         locationController.readOneMethod({'placeName': company.address.location.placeName});
     if (storages !== undefined) {
@@ -168,7 +169,7 @@ exports.register = async (req, res) => {
         }
     }
 
-    // Initialize the companies activity
+    // Initialize the companies ocupation
     company.occupation = await occupationController.readOneMethod({'name': company.occupation.name});
     // Save the objects in the DB
     try {
