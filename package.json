@@ -23,7 +23,7 @@
     "mongoose": "^5.11.12",
     "morgan": "^1.10.0",
     "pdf-creator-node": "^1.4.2",
-    "pug": "^3.0.0"
+    "pug": "^3.0.1"
   },
   "devDependencies": {
     "eslint": "^7.18.0",
