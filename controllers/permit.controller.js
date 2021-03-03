@@ -1,13 +1,15 @@
 const PermitModel = require('../models/permit.model');
+const companyController = require('./company.controller');
 
 exports.create = async (req, res) => {
     if (!req.body) {
         res.sendStatus(400);
         return;
     }
-    const newData = req.body;
+    const newData = req.body.permit;
+    const companyID = req.body.companyID;
     try {
-        const data = await this.createMethod(newData);
+        const data = await this.createMethod(newData, companyID);
         res.status(201).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -15,10 +17,14 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.createMethod = async (data) => {
+exports.createMethod = async (data, companyID) => {
     try {
+        console.log(data);
         data = new PermitModel(data);
         const savedData = await data.save();
+        const company = await companyController.readOneMethod({'_id': companyID});
+        company.permits.push(savedData);
+        await companyController.updateOneMethod({'_id': companyID}, company);
         return savedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
