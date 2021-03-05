@@ -291,7 +291,7 @@ exports.readMostUsedTrashMethod = async (type, userID, companyID, count) => {
     const query = {};
     const storage = await companyController.readCompaniesStoragesMethod(companyID, type);
     const storageIDs = storage.map(x => x._id);
-    query['storage'] = {$all: storageIDs};
+    query['storage'] = {$in: storageIDs};
     query['company'] = companyID;
     query['user'] = userID;
     try {

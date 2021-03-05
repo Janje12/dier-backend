@@ -3,6 +3,7 @@ exports.routesInit = (app) => {
     const adminRouter = require('./routes/admin.router');
     const authRouter = require('./routes/auth.router');
     const userRouter = require('./routes/user.router');
+    const widgetSettingsRouter = require('./routes/widgetSettings.router');
     const companyRouter = require('./routes/company.router');
     const vehicleRouter = require('./routes/vehicle.router');
     const locationRouter = require('./routes/location.router');
@@ -21,6 +22,7 @@ exports.routesInit = (app) => {
     app.use('/api/admin', adminRouter);
     app.use('/api/auth', authRouter);
     app.use('/api/user', userRouter);
+    app.use('/api/widget', widgetSettingsRouter);
     app.use('/api/company', companyRouter);
     app.use('/api/occupation', occupationRouter);
     app.use('/api/location', locationRouter);

@@ -1,4 +1,28 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const iv = Buffer.from('7c833e67d604552s', 'binary');
+const salt = 'foobar';
+const hash = crypto.createHash('sha1');
+hash.update(salt);
+let key = Buffer.from(hash.digest('binary').substring(0, 16), 'binary');
+
+exports.encrypt = async (text) => {
+    console.log(key);
+    console.log(iv);
+    const cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
+    let crypted = cipher.update(text, 'utf8', 'hex');
+    crypted += cipher.final('hex');
+    console.log(crypted);
+    return crypted;
+};
+
+exports.decrypt = async (text) => {
+    const decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+    let dec = decipher.update(text, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+    console.log(dec);
+    return dec;
+};
 
 exports.extractUserInfo = async (headers, token = undefined) => {
     try {

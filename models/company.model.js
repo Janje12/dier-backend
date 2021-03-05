@@ -18,7 +18,14 @@ const companyClientSchema = new Schema({
 const companySchema = new Schema({
     manager: {type: String, required: true},
     emailReception: {type: String, required: true},
-    legalRep: {type: String, required: true},
+    legalRep: {
+        firstName: {type: String, required: true},
+        lastName: {type: String, required: true},
+    },
+    nriz: {
+        username: {type: String, required: true, default: '', unique: true, select: false},
+        password: {type: String, required: true, default: '', select: false},
+    },
     occupation: {type: Schema.Types.ObjectId, ref: 'Occupation', required: true},
     permits: [{type: Schema.Types.ObjectId, ref: 'Permit', required: false}],
     vehicles: [{type: Schema.Types.ObjectId, ref: 'Vehicle', required: false}],

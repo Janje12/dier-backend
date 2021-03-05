@@ -1,8 +1,9 @@
+require('dotenv').config();
 const CompanyModel = require('../models/company.model').Company;
 // Use CompanyClient because its the top level class
 const permitController = require('./permit.controller.js');
-// const vehicleController = require('vehicle.controller');
 const storageController = require('./storage.controller.js');
+const tokenController = require('./token.controller');
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -21,6 +22,8 @@ exports.create = async (req, res) => {
 
 exports.createMethod = async (data) => {
     try {
+        if (data.nriz.password !== '')
+            data.nriz.password = await tokenController.encrypt(data.nriz.password);
         data = new CompanyModel(data);
         const savedData = await data.save();
         return savedData;
@@ -46,10 +49,13 @@ exports.readOne = async (req, res) => {
     }
 };
 
-exports.readOneMethod = async (query) => {
+exports.readOneMethod = async (query, options = '') => {
     try {
-        const foundData = await CompanyModel.findOne(query).populate('permits').populate('address.location')
+        const foundData = await CompanyModel.findOne(query).select(options).populate('permits').populate('address.location')
             .populate('vehicles').populate('storages').populate('specialWastes');
+        if (options.includes('password')) {
+            foundData.nriz.password = await tokenController.decrypt(foundData.nriz.password);
+        }
         return foundData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

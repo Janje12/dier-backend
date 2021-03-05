@@ -46,7 +46,7 @@ exports.getOneCompany = async (req, res) => {
         query[type] = value;
     }
     try {
-        const foundData = await companyController.readOneMethod(query);
+        const foundData = await companyController.readOneMethod(query, '+nriz.username +nriz.password');
         res.status(200).json(foundData);
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
