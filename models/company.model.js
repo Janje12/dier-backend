@@ -26,6 +26,10 @@ const companySchema = new Schema({
         username: {type: String, required: true, default: '', unique: true, select: false},
         password: {type: String, required: true, default: '', select: false},
     },
+    wasteManager: {
+        firstName: {type: String, required: false, default: ''},
+        lastName: {type: String, required: false, default: ''},
+    },
     occupation: {type: Schema.Types.ObjectId, ref: 'Occupation', required: true},
     permits: [{type: Schema.Types.ObjectId, ref: 'Permit', required: false}],
     vehicles: [{type: Schema.Types.ObjectId, ref: 'Vehicle', required: false}],
