@@ -11,7 +11,7 @@ exports.sendMailVerification = async (user) => {
                 pass: process.env.MAIL_PASSWORD
             }
         });
-        const hostLink = process.env.ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
+        const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
             'http://localhost:3000/api/mail/verify/';
         const userLink = hostLink + user.verificationToken;
         const info = await transporter.sendMail({

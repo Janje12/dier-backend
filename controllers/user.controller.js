@@ -40,7 +40,6 @@ exports.readOne = async (req, res) => {
     }
     try {
         const data = await this.readOneMethod(query);
-        console.log(data);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
