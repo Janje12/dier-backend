@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 const crypto = require('crypto');
 const iv = Buffer.from(process.env.NRIZ_IV_TOKEN, 'binary');
@@ -76,9 +77,28 @@ exports.generateRefreshToken = (user) => {
     return refreshToken;
 };
 
+exports.generatePasswordResetToken = (email) => {
+    const passwordResetToken = jwt.sign({
+        data: {
+           email: email,
+        }
+    }, process.env.REFERSH_TOKEN, {expiresIn: '10m'});
+    return passwordResetToken;
+};
+
 exports.generateVerificationToken = (username) => {
     const token = crypto.createHash('sha256')
         .update(username)
         .digest('hex');
     return token;
+};
+
+exports.hashPassword = async(password) => {
+    try {
+        password = await bcrypt.hash(password, 5);
+        return password;
+    } catch(e) {
+        console.log(e);
+        throw new Error(e);
+    }
 };

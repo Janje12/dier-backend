@@ -10,6 +10,8 @@ exports.authMethod = async (req, resBody) => {
         data = await tokenController.extractUserInfo(req.headers);
     } else {
         token = resBody.token;
+        if (token === undefined)
+            return;
         data = await tokenController.extractUserInfo(undefined, token);
     }
     userID = data.user._id;

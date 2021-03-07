@@ -1,5 +1,5 @@
 const UserModel = require('../models/user.model');
-const bcrypt = require('bcrypt');
+const tokenController = require('./token.controller');
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -21,7 +21,7 @@ exports.create = async (req, res) => {
  */
 exports.createMethod = async (data) => {
     try {
-        data.password = await bcrypt.hash(data.password, 10);
+        data.password = await tokenController.hashPassword(data.password);
         data = new UserModel(data);
         const savedData = await data.save();
         return savedData;

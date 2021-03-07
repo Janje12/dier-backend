@@ -103,6 +103,58 @@ exports.logout = async (req, res) => {
     }
 };
 
+exports.forgotPassword = async (req, res) => {
+    if (!req.body.email) {
+        res.sendStatus(401);
+        return;
+    }
+    const email = req.body.email;
+    try {
+        const user = await userController.readOneMethod({'email': email}, '+password');
+        if (!user) {
+            res.sendStatus(401);
+            return;
+        }
+        const test = await mailController.sendMailResetPassword(user);
+        if (!test) {
+            res.sendStatus(500);
+            return;
+        } else {
+            const token = await tokenController.generatePasswordResetToken(email);
+            user.passResetToken = token;
+            await userController.updateOneMethod({'_id': user._id}, user, {$set: {'passResetToken': token}});
+            res.status(200).json({'message': 'success'});
+        }
+    } catch (err) {
+        console.log('[REQUEST-ERROR] ', err);
+        res.sendStatus(500);
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    if (!req.body.password) {
+        res.sendStatus(401);
+        return;
+    }
+    const password = req.body.password;
+    // FIX THIS FUCKIN ELL
+    const token = req.headers['referer'].split('token=')[1];
+    try {
+        const user = await userController.readOneMethod({'passResetToken': token});
+        if (!user) {
+            res.sendStatus(403);
+            return;
+        }
+        user.passResetToken = '';
+        user.password = await tokenController.hashPassword(password);
+        await userController.updateOneMethod({'_id': user._id}, user, {$unset: {'passResetToken': ''}});
+        res.status(201).json({'message': 'OK'});
+    } catch(e) {
+        console.log('[REQUEST-ERROR] ', err);
+        res.sendStatus(500);
+    }
+};
+
 exports.register = async (req, res) => {
     if (!req.body) {
         res.status(400).json({message: 'Korisnik ne postoji!'});

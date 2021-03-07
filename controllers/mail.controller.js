@@ -2,15 +2,20 @@ require('dotenv').config();
 const mailer = require('nodemailer');
 const userController = require('./user.controller');
 
+generateTransporter = () => {
+    const transporter = mailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: process.env.MAIL_USERNAME,
+            pass: process.env.MAIL_PASSWORD
+        }
+    });
+    return transporter;
+};
+
 exports.sendMailVerification = async (user) => {
     try {
-        let transporter = mailer.createTransport({
-            service: 'Gmail',
-            auth: {
-                user: process.env.MAIL_USERNAME,
-                pass: process.env.MAIL_PASSWORD
-            }
-        });
+        let transporter = this.generateTransporter();
         const hostLink = process.env.NODE_ENV ? 'https://dier-backend.herokuapp.com/api/mail/verify/' :
             'http://localhost:3000/api/mail/verify/';
         const userLink = hostLink + user.verificationToken;
@@ -28,6 +33,26 @@ exports.sendMailVerification = async (user) => {
     }
 };
 
+exports.sendMailResetPassword = async (user) => {
+    try {
+        let transporter = this.generateTransporter();
+        const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/reset-password?token=' :
+            'http://localhost:4200/auth/reset-password?token=';
+        const userLink = hostLink + user.passResetToken;
+        const info = await transporter.sendMail({
+            from: '"DIER APP" <abelink10@gmail.com>', // sender address
+            to: user.email, // list of receivers
+            subject: 'Zaboravljenja lozinka', // Subject line
+            text: 'Zaboravljnja lozinka', // plain text body
+            html: `Da bi ste promenili lozinu kliknite <a href="${userLink}">ovde</a>!`, // html body
+        });
+        return true;
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
+};
+
 exports.verify = async (req, res) => {
     if (!req.params.verificationToken)
         res.sendStatus(401);
@@ -36,7 +61,7 @@ exports.verify = async (req, res) => {
         const user = await userController.readOneMethod({'verificationToken': verificationToken});
         if (user !== null) {
             user.verified = true;
-            user.verificationToken = undefined;
+            user.verificationToken = '';
             await userController.updateOneMethod({'_id': user._id}, user, {$unset: {verificationToken: ''}});
             const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
                 'http://localhost:4200/auth/email-confirm';
