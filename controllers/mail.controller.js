@@ -11,7 +11,7 @@ exports.sendMailVerification = async (user) => {
                 pass: process.env.MAIL_PASSWORD
             }
         });
-        const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
+        const hostLink = process.env.NODE_ENV ? 'https://dier-backend.herokuapp.com/api/mail/verify/' :
             'http://localhost:3000/api/mail/verify/';
         const userLink = hostLink + user.verificationToken;
         const info = await transporter.sendMail({
@@ -38,7 +38,9 @@ exports.verify = async (req, res) => {
             user.verified = true;
             user.verificationToken = undefined;
             await userController.updateOneMethod({'_id': user._id}, user, {$unset: {verificationToken: ''}});
-            res.redirect('http://localhost:4200/auth/email-confirm');
+            const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
+                'http://localhost:4200/auth/email-confirm';
+            res.redirect(hostLink);
         } else {
             res.sendStatus(401);
         }
