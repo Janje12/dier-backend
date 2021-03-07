@@ -23,8 +23,8 @@ const companySchema = new Schema({
         lastName: {type: String, required: true},
     },
     nriz: {
-        username: {type: String, required: true, default: '', unique: true, select: false},
-        password: {type: String, required: true, default: '', select: false},
+        username: {type: String, default: '', required: false, select: false},
+        password: {type: String, default: '', required: false, select: false},
     },
     wasteManager: {
         firstName: {type: String, required: false, default: ''},

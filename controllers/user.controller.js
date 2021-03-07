@@ -1,4 +1,3 @@
-require('dotenv').config();
 const UserModel = require('../models/user.model');
 const bcrypt = require('bcrypt');
 
@@ -104,9 +103,9 @@ exports.updateOne = async (req, res) => {
     }
 };
 
-exports.updateOneMethod = async (query, updatingData) => {
+exports.updateOneMethod = async (query, updatingData, options = {}) => {
     try {
-        const updatedData = await UserModel.findOneAndUpdate(query, updatingData);
+        const updatedData = await UserModel.findOneAndUpdate(query, updatingData, options);
         return updatedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

@@ -2,6 +2,7 @@ exports.routesInit = (app) => {
     const indexRouter = require('./routes/index');
     const adminRouter = require('./routes/admin.router');
     const authRouter = require('./routes/auth.router');
+    const mailRouter = require('./routes/mail.router');
     const userRouter = require('./routes/user.router');
     const widgetSettingsRouter = require('./routes/widgetSettings.router');
     const companyRouter = require('./routes/company.router');
@@ -21,6 +22,7 @@ exports.routesInit = (app) => {
     app.use('/', indexRouter);
     app.use('/api/admin', adminRouter);
     app.use('/api/auth', authRouter);
+    app.use('/api/mail', mailRouter);
     app.use('/api/user', userRouter);
     app.use('/api/widget', widgetSettingsRouter);
     app.use('/api/company', companyRouter);

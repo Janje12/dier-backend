@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const tokenController = require('./token.controller');
 const userController = require('./user.controller');
+const mailController = require('./mail.controller');
 const companyController = require('./company.controller');
 const storageController = require('./storage.controller');
 const locationController = require('./location.controller');
@@ -28,6 +29,10 @@ exports.login = async (req, res) => {
         }
         const company = await companyController.readOneMethod(foundUser.company);
         if (!company) {
+            res.sendStatus(403);
+            return;
+        }
+        if (!foundUser.verified) {
             res.sendStatus(403);
             return;
         }
@@ -182,7 +187,17 @@ exports.register = async (req, res) => {
     }
     user.company = company;
     try {
+        user.verificationToken = tokenController.generateVerificationToken(user.username);
         user = await userController.createMethod(user);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+        return;
+    }
+    try {
+        const test = await mailController.sendMailVerification(user);
+        if (!test)
+            throw new Error();
     } catch (err) {
         console.log(err);
         res.sendStatus(500);

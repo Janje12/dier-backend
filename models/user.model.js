@@ -10,6 +10,8 @@ const userSchema = new Schema({
     phone: {type: String, required: true},
     role: {type: String, required: true},
     company: {type: Schema.Types.ObjectId, ref: 'Company', required: false},
+    verified: {type: Boolean, required: true, default: false},
+    verificationToken: {type: String, required: false},
     token: {type: String, required: false},
 });
 
