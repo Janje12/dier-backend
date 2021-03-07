@@ -32,10 +32,10 @@ exports.login = async (req, res) => {
             res.sendStatus(403);
             return;
         }
-        if (!foundUser.verified) {
+        /*if (!foundUser.verified) {
             res.sendStatus(403);
             return;
-        }
+        }*/
         bcrypt.compare(user.password, foundUser.password, (err, result) => {
             if (err) {
                 console.log('[METHOD-ERROR] ', err);
@@ -194,7 +194,7 @@ exports.register = async (req, res) => {
         res.sendStatus(500);
         return;
     }
-    try {
+    /*try {
         const test = await mailController.sendMailVerification(user);
         if (!test)
             throw new Error();
@@ -202,7 +202,7 @@ exports.register = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
         return;
-    }
+    }*/
     // Check which of the entities you CAN save in DB
     try {
         // Login the user
