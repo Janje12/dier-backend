@@ -29,7 +29,10 @@ exports.createMethod = async (data, storageID) => {
         const savedData = await data.save();
         const storage = await storageController.readOneMethod({'_id': storageID});
         storage.trashes.push(data);
-        storage.amount += data.amount;
+        if (storage.storageUnit === 'T')
+            storage.amount += data.amount / 1000;
+        else
+            storage.amount += data.amount;
         await storageController.updateOneMethod({'_id': storageID}, storage);
         return savedData;
     } catch (err) {

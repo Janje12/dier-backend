@@ -17,6 +17,9 @@ router.get('/transport/:trashID', transactionController.readTransportTransaction
 router.get('/unfinished/:trashID/:companyID', transactionController.readUnifinshedTransactions);
 
 // add /mostused
-router.get('/mostused/:operationType/:count', transactionController.readMostUsedTrash);
+router.get('/most-used/trash/:operationType/:count', transactionController.readMostUsedTrash);
+
+router.get('/most-used/special-waste/:operationType/:count', transactionController.readMostUsedSpecialWaste);
+
 
 module.exports = router;

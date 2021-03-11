@@ -33,5 +33,6 @@ router.delete('/logout', authController.logout);
 router.post('/refresh', authController.refresh);
 router.post('/forgot-password', authController.forgotPassword);
 router.put('/reset-password', authController.resetPassword);
+router.patch('/change-password', authController.changePassword);
 
 module.exports = router;

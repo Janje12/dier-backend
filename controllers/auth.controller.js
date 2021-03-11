@@ -36,7 +36,7 @@ exports.login = async (req, res) => {
             res.sendStatus(403);
             return;
         }*/
-        bcrypt.compare(user.password, foundUser.password, (err, result) => {
+        bcrypt.compare(user.password, foundUser.password, async (err, result) => {
             if (err) {
                 console.log('[METHOD-ERROR] ', err);
                 res.sendStatus(500);
@@ -44,14 +44,15 @@ exports.login = async (req, res) => {
             }
             if (!result) {
                 res.sendStatus(403);
+                return;
             }
-        });
-        const refreshToken = await tokenController.generateRefreshToken(foundUser, company);
-        foundUser.token = refreshToken;
-        const accessToken = await tokenController.generateAccessToken(foundUser, company);
+            const refreshToken = await tokenController.generateRefreshToken(foundUser, company);
+            foundUser.token = refreshToken;
+            const accessToken = await tokenController.generateAccessToken(foundUser, company);
 
-        foundUser = await userController.updateOneMethod({'_id': foundUser._id}, foundUser);
-        res.status(200).json({token: accessToken, user: foundUser});
+            foundUser = await userController.updateOneMethod({'_id': foundUser._id}, foundUser);
+            res.status(200).json({token: accessToken, user: foundUser});
+        });
     } catch (err) {
         console.log('[REQUEST-ERROR] ', err);
         res.sendStatus(500);
@@ -140,6 +141,7 @@ exports.resetPassword = async (req, res) => {
     // FIX THIS FUCKIN ELL
     const token = req.headers['referer'].split('token=')[1];
     try {
+        // Ne ovako konju ne treba ti token da cuvas samo ga izvuci i nadji po tome sto si izvukao konju
         const user = await userController.readOneMethod({'passResetToken': token});
         if (!user) {
             res.sendStatus(403);
@@ -152,6 +154,40 @@ exports.resetPassword = async (req, res) => {
     } catch(e) {
         console.log('[REQUEST-ERROR] ', err);
         res.sendStatus(500);
+    }
+};
+
+exports.changePassword = async (req, res) => {
+    if (!req.body.newPassword || !req.body.oldPassword || !req.body._id) {
+        res.status(401).json(false);
+        return;
+    }
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const _id = req.body._id;
+    try {
+        let foundUser = await userController.readOneMethod({'_id': _id}, '+password');
+        if (!foundUser) {
+            res.status(400).json(false);
+            return;
+        }
+        bcrypt.compare(oldPassword, foundUser.password, async (err, result) => {
+            if (err) {
+                console.log('[METHOD-ERROR] ', err);
+                res.status(500).json({error: result});
+                return;
+            }
+            if (!result) {
+                res.status(400).json({error: result});
+                return;
+            }
+            foundUser.password = await tokenController.hashPassword(newPassword);
+            foundUser = await userController.updateOneMethod({'_id': foundUser._id}, foundUser);
+            res.status(201).json(true);
+        });
+    } catch (e) {
+        console.log('[REQUEST-ERROR] ', e);
+        res.status(500).json(false);
     }
 };
 

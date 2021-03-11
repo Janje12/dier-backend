@@ -93,9 +93,9 @@ exports.generateVerificationToken = (username) => {
     return token;
 };
 
-exports.hashPassword = async(password) => {
+exports.hashPassword = async (password) => {
     try {
-        password = await bcrypt.hash(password, 5);
+        password = await bcrypt.hash(password, 10);
         return password;
     } catch(e) {
         console.log(e);
