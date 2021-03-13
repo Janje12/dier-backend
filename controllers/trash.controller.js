@@ -119,7 +119,6 @@ exports.updateOneMethod = async (query, updatingData, updatingStorageID, increme
     try {
         const storage = await storageController.readOneMethod({'_id': updatingStorageID});
         const previousTrash = await this.readOneMethod(query);
-        console.log(query);
         let updatedData = null;
         if (previousTrash === null) {
             updatedData = await this.createMethod(updatingData, updatingStorageID);
@@ -130,7 +129,10 @@ exports.updateOneMethod = async (query, updatingData, updatingStorageID, increme
             } else {
                 updatedData = await TrashModel.findOneAndUpdate(query, updatingData, {new: true});
             }
-            storage.amount += updatedData.amount - previousTrash.amount;
+            if (storage.storageUnit === 'T')
+                storage.amount += (updatedData.amount - previousTrash.amount) / 1000;
+            else
+                storage.amount += updatedData.amount - previousTrash.amount;
             await storageController.updateOneMethod({'_id': updatingStorageID}, storage);
         }
         return updatedData;
@@ -160,16 +162,21 @@ exports.deleteOne = async (req, res) => {
     }
 };
 
-exports.deleteOneMethod = async (query, storageID) => {
+exports.deleteOneMethod = async (query, storageID = undefined) => {
     try {
         const deletedData = await TrashModel.findOneAndDelete(query);
-        const storage = await storageController.readOneMethod({'_id': storageID});
-        const index = storage.trashes.map(function (e) {
-            return e._id;
-        }).indexOf(deletedData._id);
-        storage.trashes.splice(index, 1);
-        storage.amount -= deletedData.amount;
-        await storageController.updateOneMethod({'_id': storageID}, storage);
+        if (storageID) {
+            const storage = await storageController.readOneMethod({'_id': storageID});
+            const index = storage.trashes.map(function (e) {
+                return e._id;
+            }).indexOf(deletedData._id);
+            storage.trashes.splice(index, 1);
+            if (storage.storageUnit === 'T')
+                storage.amount -= deletedData.amount / 1000;
+            else
+                storage.amount -= deletedData.amount;
+            await storageController.updateOneMethod({'_id': storageID}, storage);
+        }
         return deletedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

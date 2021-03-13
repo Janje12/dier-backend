@@ -32,7 +32,7 @@ router.get('/one/:type/:value', specialWasteController.readOne);
 router.get('/many/:type/:value', specialWasteController.readMany);
 router.patch('/one/:type/:value', specialWasteController.updateOne);
 // router.patch('/many/:type/:value', trashController.updateMany); WIP
-router.delete('/one/:type/:value/:storageID', specialWasteController.deleteOne);
+router.delete('/one/:type/:value/:companyID', specialWasteController.deleteOne);
 // router.delete('/many/:type/:value/:storageID', trashController.deleteMany); WIP
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const UserModel = require('../models/user.model');
 const tokenController = require('./token.controller');
+const widgetSettingsController = require('./widgetSettings.controller');
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -159,9 +160,11 @@ exports.deleteOne = async (req, res) => {
     }
 };
 
+// delete widgetSettings
 exports.deleteOneMethod = async (query) => {
     try {
         const deletedData = await UserModel.findOneAndDelete(query);
+        await widgetSettingsController.deleteOneMethod({'username': deletedData.username});
         return deletedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

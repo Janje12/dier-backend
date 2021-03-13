@@ -3,6 +3,8 @@ const CompanyModel = require('../models/company.model').Company;
 // Use CompanyClient because its the top level class
 const permitController = require('./permit.controller.js');
 const storageController = require('./storage.controller.js');
+const vehicleController = require('./vehicle.controller');
+const specialWasteController = require('./specialWaste.controller');
 const tokenController = require('./token.controller');
 
 exports.create = async (req, res) => {
@@ -167,17 +169,25 @@ exports.deleteOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.deleteMethod(query);
+        const data = await this.deleteOneMethod(query);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
         res.sendStatus(500);
     }
 };
-
+// delete vehicles/permits/storages/specialwastes
 exports.deleteOneMethod = async (query) => {
     try {
         const deletedData = await CompanyModel.findOneAndDelete(query);
+        for (const storage of deletedData.storages)
+            await storageController.deleteOneMethod({'_id': storage});
+        for (const vehicle of deletedData.vehicles)
+            await vehicleController.deleteOneMethod({'_id': vehicle});
+        for (const permit of deletedData.permits)
+            await permitController.deleteOneMethod({'_id': permit});
+        for (const specialWaste of deletedData.specialWastes)
+            await specialWasteController.deleteOneMethod({'_id': specialWaste});
         return deletedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

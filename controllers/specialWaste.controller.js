@@ -113,16 +113,17 @@ exports.updateOneMethod = async (query, updatingData) => {
 };
 
 exports.deleteOne = async (req, res) => {
-    if (!req.params.type || !req.params.value) {
+    if (!req.params.type || !req.params.value || !req.params.companyID) {
         res.sendStatus(400);
         return;
     }
     const type = req.params.type;
     const value = req.params.value;
+    const companyID = req.params.companyID;
     let query = {};
     query[type] = value;
     try {
-        const data = await this.deleteOneMethod(query);
+        const data = await this.deleteOneMethod(query, companyID);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -130,9 +131,17 @@ exports.deleteOne = async (req, res) => {
     }
 };
 
-exports.deleteOneMethod = async (query) => {
+exports.deleteOneMethod = async (query, companyID = undefined) => {
     try {
         const deletedData = await SpecialWasteModel.findOneAndDelete(query);
+        if (companyID) {
+            const company = await companyController.readOneMethod({'_id': companyID});
+            const index = company.specialWastes.map(function (e) {
+                return e._id;
+            }).indexOf(deletedData._id);
+            company.specialWastes.splice(index, 1);
+            await companyController.updateOneMethod({'_id': companyID}, company);
+        }
         return deletedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);

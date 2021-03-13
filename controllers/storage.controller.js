@@ -2,6 +2,7 @@ const StorageModel = require('../models/storage.model').Storage;
 const StorageTreatmentModel = require('../models/storage.model').StorageTreatment;
 const StorageDumpModel = require('../models/storage.model').StorageDump;
 const StorageCacheModel = require('../models/storage.model').StorageCache;
+const trashController = require('./trash.controller');
 
 exports.create = async (req, res) => {
     if (!req.body) {
@@ -128,7 +129,7 @@ exports.updateMany = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateManyMethod    (query, updatingData);
+        const data = await this.updateManyMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -156,7 +157,7 @@ exports.deleteOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.deleteMethod(query);
+        const data = await this.deleteOneMethod(query);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -164,9 +165,14 @@ exports.deleteOne = async (req, res) => {
     }
 };
 
+// delete trashes
 exports.deleteOneMethod = async (query) => {
     try {
         const deletedData = await StorageModel.findOneAndDelete(query);
+        if (deletedData.trashes !== undefined) {
+            for (const trash of deletedData.trashes)
+                await trashController.deleteOneMethod({'_id': trash});
+        }
         return deletedData;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
