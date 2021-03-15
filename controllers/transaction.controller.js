@@ -312,6 +312,7 @@ exports.readMostUsedTrashMethod = async (type, userID, companyID, count) => {
     query['storage'] = {$in: storageIDs};
     query['company'] = companyID;
     query['user'] = userID;
+    query['transactionType'] = 'TRASH_UPDATE';
     try {
         let foundData = await this.readManyMethod(query);
         foundData = foundData.filter(x => x.trash !== null);

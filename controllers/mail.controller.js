@@ -2,7 +2,7 @@ require('dotenv').config();
 const mailer = require('nodemailer');
 const userController = require('./user.controller');
 
-generateTransporter = () => {
+exports.generateTransporter = function() {
     const transporter = mailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -54,8 +54,10 @@ exports.sendMailResetPassword = async (user) => {
 };
 
 exports.verify = async (req, res) => {
-    if (!req.params.verificationToken)
+    if (!req.params.verificationToken) {
         res.sendStatus(401);
+        return;
+    }
     const verificationToken = req.params.verificationToken;
     try {
         const user = await userController.readOneMethod({'verificationToken': verificationToken});
@@ -69,6 +71,30 @@ exports.verify = async (req, res) => {
         } else {
             res.sendStatus(401);
         }
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+};
+
+exports.contact = async (req, res) => {
+    if (!req.body.username || !req.body.email || !req.body.message || !req.body.title) {
+        res.sendStatus(400);
+        return;
+    }
+    const title = req.body.title;
+    const message = req.body.message;
+    const username = req.body.username;
+    const email = req.body.email;
+    try {
+        let transporter = this.generateTransporter();
+        const info = await transporter.sendMail({
+            from: '"DIER APP" <abelink10@gmail.com>', // sender address
+            to: 'serbiansolutions@gmail.com', // list of receivers
+            subject: '[BUG REPORT] ' + title, // Subject line
+            text: 'OD: ' + username + '\nPORUKA: ' + message + '\nEMAIL ZA KONTAKT: ' + email, // plain text body
+        });
+        res.send(200).json(true);
     } catch (e) {
         console.log(e);
         res.sendStatus(500);
