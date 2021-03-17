@@ -286,24 +286,7 @@ exports.readMostUsedTrash = async (req, res) => {
         res.sendStatus(500);
     }
 };
-exports.readMostUsedSpecialWaste = async (req, res) => {
-    if (!req.params.operationType) {
-        res.sendStatus(400);
-        return;
-    }
-    const type = req.params.operationType;
-    const count = req.params.count ? req.params.count : 5;
-    const data = await tokenController.extractUserInfo(req.headers);
-    const userID = data.user._id;
-    const companyID = data.company._id;
-    try {
-        const data = await this.readMostUsedSpecialWasteMethod(type, userID, companyID, count);
-        res.status(200).json(data);
-    } catch (err) {
-        console.log(err);
-        res.sendStatus(500);
-    }
-};
+
 // FML fix this
 exports.readMostUsedTrashMethod = async (type, userID, companyID, count) => {
     const query = {};
@@ -330,6 +313,24 @@ exports.readMostUsedTrashMethod = async (type, userID, companyID, count) => {
     }
 };
 
+exports.readMostUsedSpecialWaste = async (req, res) => {
+    if (!req.params.operationType) {
+        res.sendStatus(400);
+        return;
+    }
+    const type = req.params.operationType;
+    const count = req.params.count ? req.params.count : 5;
+    const data = await tokenController.extractUserInfo(req.headers);
+    const userID = data.user._id;
+    const companyID = data.company._id;
+    try {
+        const data = await this.readMostUsedSpecialWasteMethod(type, userID, companyID, count);
+        res.status(200).json(data);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+};
 // FML fix this
 exports.readMostUsedSpecialWasteMethod = async (type, userID, companyID, count) => {
     const query = {};

@@ -1,8 +1,10 @@
 require('dotenv').config();
+const fs = require('fs');
 const mailer = require('nodemailer');
 const userController = require('./user.controller');
+const handlebars = require('handlebars');
 
-exports.generateTransporter = function() {
+exports.generateTransporter = function () {
     const transporter = mailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -19,12 +21,19 @@ exports.sendMailVerification = async (user) => {
         const hostLink = process.env.NODE_ENV ? 'https://dier-backend.herokuapp.com/api/mail/verify/' :
             'http://localhost:3000/api/mail/verify/';
         const userLink = hostLink + user.verificationToken;
-        const info = await transporter.sendMail({
-            from: '"DIER APP" <abelink10@gmail.com>', // sender address
-            to: user.email, // list of receivers
-            subject: 'Verifikacija', // Subject line
-            text: 'Verifikujte se?', // plain text body
-            html: `<a href="${userLink}"><button>Verifikuj se!</button></a>`, // html body
+        fs.readFile('./mail_templates/verify-user.html', async (err, data) => {
+            if (err) {
+                throw err(err);
+            }
+            const template = handlebars.compile(data.toString());
+            const html = template({firstName: user.firstName, lastName: user.lastName, userLink: userLink});
+            const info = await transporter.sendMail({
+                from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Aktiviraj nalog', // Subject line
+                text: 'Aktiviraj nalog, link: ' + userLink, // plain text body
+                html: html, // html body
+            });
         });
         return true;
     } catch (e) {
@@ -39,12 +48,19 @@ exports.sendMailResetPassword = async (user) => {
         const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/reset-password?token=' :
             'http://localhost:4200/auth/reset-password?token=';
         const userLink = hostLink + user.passResetToken;
-        const info = await transporter.sendMail({
-            from: '"DIER APP" <abelink10@gmail.com>', // sender address
-            to: user.email, // list of receivers
-            subject: 'Zaboravljenja lozinka', // Subject line
-            text: 'Zaboravljnja lozinka', // plain text body
-            html: `Da bi ste promenili lozinu kliknite <a href="${userLink}">ovde</a>!`, // html body
+        fs.readFile('./mail_templates/reset-password.html', async (err, data) => {
+            if (err) {
+                throw err(err);
+            }
+            const template = handlebars.compile(data.toString());
+            const html = template({firstName: user.firstName, lastName: user.lastName, userLink: userLink});
+            const info = await transporter.sendMail({
+                from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Zaboravljenja lozinka', // Subject line
+                text: 'Zaboravljenja lozinka, link: ' + userLink, // plain text body
+                html: html, // html body
+            });
         });
         return true;
     } catch (e) {
