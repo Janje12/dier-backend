@@ -32,10 +32,10 @@ exports.login = async (req, res) => {
             res.sendStatus(403);
             return;
         }
-        if (!foundUser.verified) {
-            res.sendStatus(403);
-            return;
-        }
+        /* if (!foundUser.verified) {
+             res.sendStatus(403);
+             return;
+         }*/
         bcrypt.compare(user.password, foundUser.password, async (err, result) => {
             if (err) {
                 console.log('[METHOD-ERROR] ', err);
@@ -65,7 +65,7 @@ exports.refresh = async (req, res) => {
         return;
     }
     let accessToken = req.body.token;
-    const data = await tokenController.extractUserInfo(undefined, accessToken);
+    const {data, exp} = await tokenController.extractUserInfo(undefined, accessToken);
     const refreshToken = data.user.token;
     try {
         const user = await userController.readOneMethod({'token': refreshToken});
@@ -88,8 +88,8 @@ exports.refresh = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-    const data = await tokenController.extractUserInfo(req.headers);
-    if (data == null) {
+    const {data, exp} = await tokenController.extractUserInfo(req.headers);
+    if (data === null || Date.now() >= exp * 1000) {
         res.sendStatus(401);
         return;
     }
@@ -116,14 +116,12 @@ exports.forgotPassword = async (req, res) => {
             res.sendStatus(401);
             return;
         }
-        const test = await mailController.sendMailResetPassword(user);
+        const token = await tokenController.generatePasswordResetToken(email);
+        const test = await mailController.sendMailResetPassword(user, token);
         if (!test) {
             res.sendStatus(500);
             return;
         } else {
-            const token = await tokenController.generatePasswordResetToken(email);
-            user.passResetToken = token;
-            await userController.updateOneMethod({'_id': user._id}, user, {$set: {'passResetToken': token}});
             res.status(200).json({'message': 'success'});
         }
     } catch (err) {
@@ -141,8 +139,14 @@ exports.resetPassword = async (req, res) => {
     // FIX THIS FUCKIN ELL
     const token = req.headers['referer'].split('token=')[1];
     try {
-        // Ne ovako konju ne treba ti token da cuvas samo ga izvuci i nadji po tome sto si izvukao konju
-        const user = await userController.readOneMethod({'passResetToken': token});
+        const data = await tokenController.extractUserInfo(undefined, token);
+        const email = data.data.email;
+        console.log(data);
+        if (Date.now() >= data.exp * 1000) {
+            res.sendStatus(403);
+            return;
+        }
+        const user = await userController.readOneMethod({'email': email});
         if (!user) {
             res.sendStatus(403);
             return;
@@ -151,7 +155,7 @@ exports.resetPassword = async (req, res) => {
         user.password = await tokenController.hashPassword(password);
         await userController.updateOneMethod({'_id': user._id}, user, {$unset: {'passResetToken': ''}});
         res.status(201).json({'message': 'OK'});
-    } catch(e) {
+    } catch (err) {
         console.log('[REQUEST-ERROR] ', err);
         res.sendStatus(500);
     }
@@ -274,7 +278,7 @@ exports.register = async (req, res) => {
         return;
     }
     user.company = company;
-    try {
+    /*try {
         user.verificationToken = tokenController.generateVerificationToken(user.username);
         user = await userController.createMethod(user);
     } catch (err) {
@@ -290,7 +294,7 @@ exports.register = async (req, res) => {
         console.log(err);
         res.sendStatus(500);
         return;
-    }
+    }*/
     // Check which of the entities you CAN save in DB
     try {
         // Login the user

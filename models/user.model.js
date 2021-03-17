@@ -12,7 +12,6 @@ const userSchema = new Schema({
     company: {type: Schema.Types.ObjectId, ref: 'Company', required: false},
     verified: {type: Boolean, required: true, default: false},
     verificationToken: {type: String, required: false},
-    passResetToken: {type: String, required: false},
     token: {type: String, required: false},
 });
 

@@ -36,7 +36,7 @@ exports.extractUserInfo = async (headers, token = undefined) => {
     try {
         if (token === undefined)
             token = headers['authorization'].split(' ')[1];
-        return jwt.decode(token).data;
+        return jwt.decode(token);
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
         throw new Error(err);
@@ -82,7 +82,7 @@ exports.generatePasswordResetToken = (email) => {
         data: {
            email: email,
         }
-    }, process.env.REFERSH_TOKEN, {expiresIn: '10m'});
+    }, process.env.REFERSH_TOKEN, {expiresIn: '10s'});
     return passwordResetToken;
 };
 

@@ -42,12 +42,12 @@ exports.sendMailVerification = async (user) => {
     }
 };
 
-exports.sendMailResetPassword = async (user) => {
+exports.sendMailResetPassword = async (user, token) => {
     try {
         let transporter = this.generateTransporter();
         const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/reset-password?token=' :
             'http://localhost:4200/auth/reset-password?token=';
-        const userLink = hostLink + user.passResetToken;
+        const userLink = hostLink + token;
         fs.readFile('./mail_templates/reset-password.html', async (err, data) => {
             if (err) {
                 throw err(err);
