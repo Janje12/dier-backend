@@ -275,7 +275,7 @@ exports.readMostUsedTrash = async (req, res) => {
     }
     const type = req.params.operationType;
     const count = req.params.count ? req.params.count : 5;
-    const data = await tokenController.extractUserInfo(req.headers);
+    const {data, exp} = await tokenController.extractUserInfo(req.headers);
     const userID = data.user._id;
     const companyID = data.company._id;
     try {
