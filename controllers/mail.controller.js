@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const mailer = require('nodemailer');
 const userController = require('./user.controller');
+const permitController = require('./permit.controller');
 const handlebars = require('handlebars');
 
 exports.generateTransporter = function () {
@@ -69,6 +70,32 @@ exports.sendMailResetPassword = async (user, token) => {
     }
 };
 
+exports.sendMailPasswordChanged = async (user, token) => {
+    try {
+        let transporter = this.generateTransporter();
+        const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/reset-password?token=' :
+            'http://localhost:4200/auth/reset-password?token=';
+        const userLink = hostLink + token;
+        fs.readFile('./mail_templates/password-changed.html', async (err, data) => {
+            if (err) {
+                throw err(err);
+            }
+            const template = handlebars.compile(data.toString());
+            const html = template({firstName: user.firstName, lastName: user.lastName, userLink: userLink});
+            const info = await transporter.sendMail({
+                from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Lozinka promenjena', // Subject line
+                text: 'Uspešno ste promenili lozinuku!', // plain text body
+                html: html, // html body
+            });
+        });
+        return true;
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
+};
 exports.verify = async (req, res) => {
     if (!req.params.verificationToken) {
         res.sendStatus(401);
@@ -109,6 +136,40 @@ exports.contact = async (req, res) => {
             to: 'serbiansolutions@gmail.com', // list of receivers
             subject: '[BUG REPORT] ' + title, // Subject line
             text: 'OD: ' + username + '\nPORUKA: ' + message + '\nEMAIL ZA KONTAKT: ' + email, // plain text body
+        });
+        res.send(200).json(true);
+    } catch (e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+};
+
+exports.permitRequest = async (req, res) => {
+    if (!req.body.email || !req.body.message || !req.body.requestType) {
+        res.sendStatus(400);
+        return;
+    }
+    let permitID = '';
+    let permit = undefined;
+    if(req.body.requestType === 'renewal' && !req.body.permitID) {
+        res.sendStatus(400);
+        return;
+    } else {
+        permitID = req.body.permitID;
+        permit = await permitController.readOneMethod({'_id': permitID});
+    }
+    const email = req.body.email;
+    const message = req.body.message;
+    const requestType = req.body.requestType;
+    const user = await userController.readOneMethod({'email': email});
+    try {
+        let transporter = this.generateTransporter();
+        const info = await transporter.sendMail({
+            from: '"DIER APP" <abelink10@gmail.com>', // sender address
+            to: 'serbiansolutions@gmail.com', // list of receivers
+            subject: '[ZAHTEV ZA DOZVOLU] ' + user.username, // Subject line
+            text: 'OD: ' + user.username + '\nPORUKA: ' + message + '\nEMAIL ZA KONTAKT: ' + email + '\nVRSTA ZAHTEVA: '
+             + requestType + (permitID !== '' ? '\nKOD DOZVOLE: ' + permit.code : ''), // plain text body
         });
         res.send(200).json(true);
     } catch (e) {

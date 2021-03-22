@@ -19,7 +19,6 @@ exports.create = async (req, res) => {
 
 exports.createMethod = async (data, companyID) => {
     try {
-        console.log(data);
         data = new PermitModel(data);
         const savedData = await data.save();
         if (companyID !== undefined) {

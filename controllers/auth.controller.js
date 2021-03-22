@@ -32,10 +32,10 @@ exports.login = async (req, res) => {
             res.sendStatus(403);
             return;
         }
-        /* if (!foundUser.verified) {
+        if (!foundUser.verified) {
              res.sendStatus(403);
              return;
-         }*/
+         }
         bcrypt.compare(user.password, foundUser.password, async (err, result) => {
             if (err) {
                 console.log('[METHOD-ERROR] ', err);
@@ -187,6 +187,8 @@ exports.changePassword = async (req, res) => {
             }
             foundUser.password = await tokenController.hashPassword(newPassword);
             foundUser = await userController.updateOneMethod({'_id': foundUser._id}, foundUser);
+            const token = await tokenController.generatePasswordResetToken(foundUser.email);
+            await mailController.sendMailPasswordChanged(foundUser, token);
             res.status(201).json(true);
         });
     } catch (e) {
@@ -203,7 +205,6 @@ exports.register = async (req, res) => {
     // Initalize the values to save
     // TRANSACTIONS AND SESSIONS
     let user = req.body;
-    delete user._id; // obrisi
     let company = req.body.company;
     let vehicles = company.vehicles;
     let permits = company.permits;
@@ -278,7 +279,7 @@ exports.register = async (req, res) => {
         return;
     }
     user.company = company;
-    /*try {
+    try {
         user.verificationToken = tokenController.generateVerificationToken(user.username);
         user = await userController.createMethod(user);
     } catch (err) {
@@ -287,14 +288,14 @@ exports.register = async (req, res) => {
         return;
     }
     try {
-        const test = await mailController.sendMailVerification(user);
-        if (!test)
+        const mailSent = await mailController.sendMailVerification(user);
+        if (!mailSent)
             throw new Error();
     } catch (err) {
         console.log(err);
         res.sendStatus(500);
         return;
-    }*/
+    }
     // Check which of the entities you CAN save in DB
     try {
         // Login the user

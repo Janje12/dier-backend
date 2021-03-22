@@ -14,6 +14,7 @@ exports.authMethod = async (req, resBody) => {
             return;
         data = await tokenController.extractUserInfo(undefined, token);
     }
+    data = data.data;
     userID = data.user._id;
     companyID = data.company._id;
     switch (method) {
