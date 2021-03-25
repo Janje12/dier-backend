@@ -32,10 +32,10 @@ exports.login = async (req, res) => {
             res.sendStatus(403);
             return;
         }
-        if (!foundUser.verified) {
+        /*if (!foundUser.verified) {
              res.sendStatus(403);
              return;
-         }
+         }*/
         bcrypt.compare(user.password, foundUser.password, async (err, result) => {
             if (err) {
                 console.log('[METHOD-ERROR] ', err);

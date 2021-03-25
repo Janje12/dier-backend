@@ -135,9 +135,10 @@ exports.contact = async (req, res) => {
             from: '"DIER APP" <abelink10@gmail.com>', // sender address
             to: 'serbiansolutions@gmail.com', // list of receivers
             subject: '[BUG REPORT] ' + title, // Subject line
-            text: 'OD: ' + username + '\nPORUKA: ' + message + '\nEMAIL ZA KONTAKT: ' + email, // plain text body
+            text: 'OD: ' + username + '\nBROJ TELEFONA:' + user.phone + '\nPORUKA: '
+                + message + '\nEMAIL ZA KONTAKT: ' + email, // plain text body
         });
-        res.send(200).json(true);
+        res.status(200).json(true);
     } catch (e) {
         console.log(e);
         res.sendStatus(500);
@@ -145,18 +146,26 @@ exports.contact = async (req, res) => {
 };
 
 exports.permitRequest = async (req, res) => {
-    if (!req.body.email || !req.body.message || !req.body.requestType) {
+    if (!req.body.email || !req.body.requestType) {
         res.sendStatus(400);
         return;
     }
-    let permitID = '';
+    let permitID, trashType, permitType;
     let permit = undefined;
-    if(req.body.requestType === 'renewal' && !req.body.permitID) {
-        res.sendStatus(400);
-        return;
-    } else {
+    if (req.body.requestType === 'renewal') {
+        if (!req.body.permitID) {
+            res.sendStatus(400);
+            return;
+        }
         permitID = req.body.permitID;
         permit = await permitController.readOneMethod({'_id': permitID});
+    } else if (req.body.requestType === 'creation') {
+        if (!req.body.trashType || !req.body.permitType) {
+            res.sendStatus(400);
+            return;
+        }
+        permitType = req.body.permitType;
+        trashType = req.body.trashType;
     }
     const email = req.body.email;
     const message = req.body.message;
@@ -169,9 +178,10 @@ exports.permitRequest = async (req, res) => {
             to: 'serbiansolutions@gmail.com', // list of receivers
             subject: '[ZAHTEV ZA DOZVOLU] ' + user.username, // Subject line
             text: 'OD: ' + user.username + '\nPORUKA: ' + message + '\nEMAIL ZA KONTAKT: ' + email + '\nVRSTA ZAHTEVA: '
-             + requestType + (permitID !== '' ? '\nKOD DOZVOLE: ' + permit.code : ''), // plain text body
+                + requestType + (permitID ? '\nKOD DOZVOLE: ' + permit.code : '') + (permitType !== '' ?
+                    '\nVRSTA DOZVOLE: ' + permitType + '\nVRSTA OTPADA: ' + trashType : ''), // plain text body
         });
-        res.send(200).json(true);
+        res.status(200).json(true);
     } catch (e) {
         console.log(e);
         res.sendStatus(500);
