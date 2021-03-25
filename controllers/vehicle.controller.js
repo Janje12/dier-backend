@@ -125,7 +125,7 @@ exports.updateMany = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.updateMethod(query, updatingData);
+        const data = await this.updateOneMethod(query, updatingData);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);
@@ -153,7 +153,7 @@ exports.deleteOne = async (req, res) => {
     let query = {};
     query[type] = value;
     try {
-        const data = await this.deleteMethod(query);
+        const data = await this.deleteOneMethod(query);
         res.status(200).json(data);
     } catch (err) {
         console.log('[REQUEST-ERROR]: ', err);

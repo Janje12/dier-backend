@@ -113,7 +113,7 @@ exports.verify = async (req, res) => {
         const user = await userController.readOneMethod({'verificationToken': verificationToken});
         const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
             'http://localhost:4200/auth/email-confirm';
-        const errorLink =  process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/login' :
+        const errorLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/login' :
             'http://localhost:4200/auth/login';
         if (user) {
             user.verified = true;
@@ -186,9 +186,9 @@ exports.permitRequest = async (req, res) => {
             from: '"DIER APP" <abelink10@gmail.com>', // sender address
             to: 'serbiansolutions@gmail.com', // list of receivers
             subject: '[ZAHTEV ZA DOZVOLU] ' + user.username, // Subject line
-            text: 'OD: ' + user.username + '\nPORUKA: ' + message + '\nEMAIL ZA KONTAKT: ' + email + '\nVRSTA ZAHTEVA: '
-                + requestType + (permitID ? '\nKOD DOZVOLE: ' + permit.code : '') + (permitType !== '' ?
-                    '\nVRSTA DOZVOLE: ' + permitType + '\nVRSTA OTPADA: ' + trashType : ''), // plain text body
+            text: 'OD: ' + user.username + '\nEMAIL ZA KONTAKT: ' + email + '\nTELEFON: ' + user.phone + '\nVRSTA ZAHTEVA: '
+                + requestType + (permitID ? '\nKOD DOZVOLE: ' + permit.code : '') + (permitType ?
+                    '\nVRSTA DOZVOLE: ' + permitType + '\nVRSTA OTPADA: ' + trashType : '') + '\nPORUKA: ' + message , // plain text body
         });
         res.status(200).json(true);
     } catch (e) {
