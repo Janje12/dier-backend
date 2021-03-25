@@ -6,14 +6,13 @@ const permitController = require('./permit.controller');
 const handlebars = require('handlebars');
 
 exports.generateTransporter = function () {
-    const transporter = mailer.createTransport({
+    return mailer.createTransport({
         service: 'Gmail',
         auth: {
             user: process.env.MAIL_USERNAME,
             pass: process.env.MAIL_PASSWORD
         }
     });
-    return transporter;
 };
 
 exports.sendMailVerification = async (user) => {
@@ -24,22 +23,24 @@ exports.sendMailVerification = async (user) => {
         const userLink = hostLink + user.verificationToken;
         fs.readFile('./mail_templates/verify-user.html', async (err, data) => {
             if (err) {
-                throw err(err);
+                throw new err;
             }
             const template = handlebars.compile(data.toString());
             const html = template({firstName: user.firstName, lastName: user.lastName, userLink: userLink});
             const info = await transporter.sendMail({
                 from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
                 to: user.email, // list of receivers
-                subject: 'Aktiviraj nalog', // Subject line
+                subject: '[DIERS] Aktivirajte Vaš nalog', // Subject line
                 text: 'Aktiviraj nalog, link: ' + userLink, // plain text body
                 html: html, // html body
             });
+            if (info.rejected.length > 0) {
+                return false;
+            }
         });
         return true;
-    } catch (e) {
-        console.log(e);
-        return false;
+    } catch (err) {
+        throw new Error(err);
     }
 };
 
@@ -58,10 +59,13 @@ exports.sendMailResetPassword = async (user, token) => {
             const info = await transporter.sendMail({
                 from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
                 to: user.email, // list of receivers
-                subject: 'Zaboravljenja lozinka', // Subject line
+                subject: '[DIERS] Zaboravljenja lozinka', // Subject line
                 text: 'Zaboravljenja lozinka, link: ' + userLink, // plain text body
                 html: html, // html body
             });
+            if (info.rejected.length > 0) {
+                return false;
+            }
         });
         return true;
     } catch (e) {
@@ -85,10 +89,13 @@ exports.sendMailPasswordChanged = async (user, token) => {
             const info = await transporter.sendMail({
                 from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
                 to: user.email, // list of receivers
-                subject: 'Lozinka promenjena', // Subject line
+                subject: '[DIERS] Lozinka promenjena', // Subject line
                 text: 'Uspešno ste promenili lozinuku!', // plain text body
                 html: html, // html body
             });
+            if (info.rejected.length > 0) {
+                return false;
+            }
         });
         return true;
     } catch (e) {
@@ -104,15 +111,17 @@ exports.verify = async (req, res) => {
     const verificationToken = req.params.verificationToken;
     try {
         const user = await userController.readOneMethod({'verificationToken': verificationToken});
-        if (user !== null) {
+        const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
+            'http://localhost:4200/auth/email-confirm';
+        const errorLink =  process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/login' :
+            'http://localhost:4200/auth/login';
+        if (user) {
             user.verified = true;
             user.verificationToken = '';
             await userController.updateOneMethod({'_id': user._id}, user, {$unset: {verificationToken: ''}});
-            const hostLink = process.env.NODE_ENV ? 'https://janje12.github.io/dier_frontend/auth/email-confirm' :
-                'http://localhost:4200/auth/email-confirm';
             res.redirect(hostLink);
         } else {
-            res.sendStatus(401);
+            res.redirect(errorLink);
         }
     } catch (e) {
         console.log(e);

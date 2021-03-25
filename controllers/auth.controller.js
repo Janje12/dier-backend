@@ -32,10 +32,10 @@ exports.login = async (req, res) => {
             res.sendStatus(403);
             return;
         }
-        /*if (!foundUser.verified) {
+        if (!foundUser.verified) {
              res.sendStatus(403);
              return;
-         }*/
+         }
         bcrypt.compare(user.password, foundUser.password, async (err, result) => {
             if (err) {
                 console.log('[METHOD-ERROR] ', err);
@@ -139,10 +139,9 @@ exports.resetPassword = async (req, res) => {
     // FIX THIS FUCKIN ELL
     const token = req.headers['referer'].split('token=')[1];
     try {
-        const data = await tokenController.extractUserInfo(undefined, token);
-        const email = data.data.email;
-        console.log(data);
-        if (Date.now() >= data.exp * 1000) {
+        const {data, exp} = await tokenController.extractUserInfo(undefined, token);
+        const email = data.email;
+        if (Date.now() >= exp * 1000 || !email) {
             res.sendStatus(403);
             return;
         }
@@ -151,10 +150,9 @@ exports.resetPassword = async (req, res) => {
             res.sendStatus(403);
             return;
         }
-        user.passResetToken = '';
         user.password = await tokenController.hashPassword(password);
-        await userController.updateOneMethod({'_id': user._id}, user, {$unset: {'passResetToken': ''}});
-        res.status(201).json({'message': 'OK'});
+        await userController.updateOneMethod({'_id': user._id}, user);
+        res.status(201).json(true);
     } catch (err) {
         console.log('[REQUEST-ERROR] ', err);
         res.sendStatus(500);
@@ -274,7 +272,7 @@ exports.register = async (req, res) => {
     try {
         company = await companyController.createMethod(company);
     } catch (err) {
-        //console.log(err);
+        console.log(err);
         res.sendStatus(500);
         return;
     }
