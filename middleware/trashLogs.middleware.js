@@ -3,7 +3,7 @@ const tokenController = require('../controllers/token.controller');
 const logsController = require('../controllers/transaction.controller');
 
 exports.trashMethod = async (req, method, resBody, storageID, prevTrash, currTrash, wmd) => {
-    const data = await tokenController.extractUserInfo( req.headers);
+    const {data, exp} = await tokenController.extractUserInfo( req.headers);
     const userID = data.user._id;
     const companyID = data.company._id;
     storageID = req.body.storageID !== undefined ? req.body.storageID : storageID;

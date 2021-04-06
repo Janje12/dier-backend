@@ -301,7 +301,6 @@ exports.readCompaniesStoragesMethod = async (companyID, storageType) => {
         for (let i = 0; i < storages.length; i++) {
             storages[i] = await storageController.readOneMethod(storages[i]._id);
         }
-        console.log(storages);
         return storages;
     } catch (err) {
         console.log('[METHOD-ERROR]: ', err);
