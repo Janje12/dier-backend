@@ -1,11 +1,11 @@
 const express = require('express');
+const helmet = require('helmet');
 const app = express();
 const createError = require('http-errors');
 const cors = require('cors');
 const logger = require('morgan');
 const path = require('path');
 const db = require('./db');
-const helmet = require('helmet');
 const routes = require('./routes.js');
 
 // view engine setup
