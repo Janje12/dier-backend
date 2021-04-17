@@ -7,7 +7,9 @@ const handlebars = require('handlebars');
 
 exports.generateTransporter = function () {
     return mailer.createTransport({
-        service: 'Gmail',
+        host: '185-119-89-55.cprapid.com',
+        port: 465,
+        secure: true,
         auth: {
             user: process.env.MAIL_USERNAME,
             pass: process.env.MAIL_PASSWORD
@@ -28,7 +30,7 @@ exports.sendMailVerification = async (user) => {
             const template = handlebars.compile(data.toString());
             const html = template({firstName: user.firstName, lastName: user.lastName, userLink: userLink});
             const info = await transporter.sendMail({
-                from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
+                from: '"DIER APP" <' + process.env.MAIL_USERNAME + '>', // sender address
                 to: user.email, // list of receivers
                 subject: '[DIERS] Aktivirajte Vaš nalog', // Subject line
                 text: 'Aktiviraj nalog, link: ' + userLink, // plain text body
@@ -57,7 +59,7 @@ exports.sendMailResetPassword = async (user, token) => {
             const template = handlebars.compile(data.toString());
             const html = template({firstName: user.firstName, lastName: user.lastName, userLink: userLink});
             const info = await transporter.sendMail({
-                from: '"DIER APP" <' + 'process.env.MAIL_USERNAME' + '>', // sender address
+                from: '"DIER APP" <' + process.env.MAIL_USERNAME + '>', // sender address
                 to: user.email, // list of receivers
                 subject: '[DIERS] Zaboravljenja lozinka', // Subject line
                 text: 'Zaboravljenja lozinka, link: ' + userLink, // plain text body
@@ -138,19 +140,46 @@ exports.contact = async (req, res) => {
     const message = req.body.message;
     const username = req.body.username;
     const email = req.body.email;
+    const user = await userController.readOneMethod({'email': email});
     try {
         let transporter = this.generateTransporter();
         const info = await transporter.sendMail({
-            from: '"DIER APP" <abelink10@gmail.com>', // sender address
+            from: '"DIER APP" + <' + process.env.MAIL_USERNAME + '>', // sender address
             to: 'serbiansolutions@gmail.com', // list of receivers
             subject: '[BUG REPORT] ' + title, // Subject line
             text: 'OD: ' + username + '\nBROJ TELEFONA:' + user.phone + '\nPORUKA: '
                 + message + '\nEMAIL ZA KONTAKT: ' + email, // plain text body
         });
+        console.log(info);
         res.status(200).json(true);
     } catch (e) {
         console.log(e);
         res.sendStatus(500);
+    }
+};
+
+exports.contactSite = async (req, res) => {
+    if (!req.body.firstName || !req.body.email || !req.body.message) {
+        res.redirect('https://www.dier.rs/greska-mail');
+        return;
+    }
+    const title = 'DIER.RS';
+    const message = req.body.message;
+    const firstName = req.body.firstName;
+    const email = req.body.email;
+    try {
+        let transporter = this.generateTransporter();
+        const info = await transporter.sendMail({
+            from: '"DIER SITE" + <' + process.env.MAIL_USERNAME + '>', // sender address
+            to: 'office@dier.rs', // list of receivers
+            subject: '[CONTACT] ' + title, // Subject line
+            text: 'OD: ' + firstName + '\nEMAIL ZA KONTAKT: ' + email + '\nPORUKA: '
+                + message, // plain text body
+        });
+        res.redirect('https://www.dier.rs/uspeh-mail');
+    } catch (e) {
+        console.log(e);
+        res.redirect('https://www.dier.rs/greska-mail');
     }
 };
 
@@ -183,12 +212,12 @@ exports.permitRequest = async (req, res) => {
     try {
         let transporter = this.generateTransporter();
         const info = await transporter.sendMail({
-            from: '"DIER APP" <abelink10@gmail.com>', // sender address
+            from: '"DIER APP" <' + process.env.MAIL_USERNAME + '>', // sender address
             to: 'serbiansolutions@gmail.com', // list of receivers
             subject: '[ZAHTEV ZA DOZVOLU] ' + user.username, // Subject line
             text: 'OD: ' + user.username + '\nEMAIL ZA KONTAKT: ' + email + '\nTELEFON: ' + user.phone + '\nVRSTA ZAHTEVA: '
                 + requestType + (permitID ? '\nKOD DOZVOLE: ' + permit.code : '') + (permitType ?
-                    '\nVRSTA DOZVOLE: ' + permitType + '\nVRSTA OTPADA: ' + trashType : '') + '\nPORUKA: ' + message , // plain text body
+                    '\nVRSTA DOZVOLE: ' + permitType + '\nVRSTA OTPADA: ' + trashType : '') + '\nPORUKA: ' + message, // plain text body
         });
         res.status(200).json(true);
     } catch (e) {
