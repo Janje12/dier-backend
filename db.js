@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 exports.databaseInit = () => {
     const env = process.env.NODE_ENV || 'development';
     console.log('Environment ', env);
-    let dbURI = process.env.DB;
+   /* let dbURI = process.env.DB;
     if (env === 'development')
         dbURI = 'mongodb://localhost:27017/dierTest';
     try {
@@ -19,5 +19,5 @@ exports.databaseInit = () => {
     } catch (err) {
         console.log('[DB] Problem with connecting with database!');
         console.log(err);
-    }
+    }*/
 };
