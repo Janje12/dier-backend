@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 const crypto = require('crypto');
 const iv = Buffer.from(process.env.NRIZ_IV_TOKEN, 'binary');

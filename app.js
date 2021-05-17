@@ -35,6 +35,6 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
-console.log('[SERVER] Server up and running on port', process.env.PORT === undefined ? '3000.' : process.env.PORT);
+console.log('[SERVER] Server up and running on port', process.env.PORT === undefined ? '3000' : process.env.PORT);
 
 module.exports = app;

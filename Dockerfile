@@ -3,4 +3,4 @@ RUN apk add
 WORKDIR /Dier-Backend
 COPY . .
 RUN npm install --production
-CMD ["node", "src/index.js"]
+CMD ["node", "src/app.js"]
