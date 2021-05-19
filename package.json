@@ -6,8 +6,8 @@
   "description": "Backend REST API server for the frontend DIER APP.",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-    "start:dev": "nodemon ./bin/www",
+    "start": "node app",
+    "start:dev": "nodemon app",
     "deploy": "git add . && git commit -m \"new version\" && git push"
   },
   "dependencies": {
