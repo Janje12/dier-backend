@@ -13,10 +13,12 @@ exports.databaseInit = () => {
             useFindAndModify: false,
             useUnifiedTopology: true,
             useCreateIndex: true
-        }).catch(err => {
-            console.log('[DB] Problem with connecting with database!');
-            console.log(err);
-        }).then(() => console.log('[DB] Connection to database initialized!'));
+        });
+        const db = mongoose.connection;
+        db.on('error', console.error.bind(console, 'connection error:'));
+        db.once('open', function() {
+            console.log('[DB] Connected with database!')
+        });
     } catch (err) {
         console.log('[DB] Problem with connecting with database!');
         console.log(err);
