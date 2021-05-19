@@ -27,7 +27,7 @@ app.use((req, res, next) => {
     next();
 });
 
-//db.databaseInit();
+db.databaseInit();
 routes.routesInit(app);
 
 // catch 404 and forward to error handler
