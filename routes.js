@@ -14,8 +14,8 @@ exports.routesInit = (app) => {
     const specialWasteRouter = require('./routes/specialWaste.router');
     const catalogRouter = require('./routes/catalog.router');
     const occupationRouter = require('./routes/occupation.router');
-    const storageRouter = require('./routes/storage.router');/*
-    const wmdRouter = require('./routes/wmd.router');
+    const storageRouter = require('./routes/storage.router');
+    /*const wmdRouter = require('./routes/wmd.router');
     const monthlyReportRouter = require('./routes/monthlyReport.router');
     const yearlyReportRouter = require('./routes/yearlyReport.router');*/
 
