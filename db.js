@@ -6,7 +6,6 @@ exports.databaseInit = () => {
    let dbURI = process.env.DB;
     if (env === 'development')
         dbURI = 'mongodb://localhost:27017/dierTest';
-    console.log(dbURI);
     try {
         mongoose.connect(dbURI, {
             useNewUrlParser: true,
