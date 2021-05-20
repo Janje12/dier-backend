@@ -13,7 +13,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 const corsOptions = {
-    origin: process.env.NODE_ENV ? 'http://app.dier.rs' : 'http://localhost:4200',
+    origin: process.env.NODE_ENV ? 'https://app.dier.rs' : 'http://localhost:4200',
 };
 
 app.use(logger('dev'));
